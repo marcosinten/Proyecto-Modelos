@@ -1,4 +1,5 @@
 import * as T from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 export function crearVisor(element) {
   let renderer;
   try { renderer = new T.WebGLRenderer({ antialias: true, alpha: true }); }
@@ -64,8 +65,10 @@ export function crearVisor(element) {
   let progress;
   scene.add(new T.HemisphereLight(0xc2ddff, 0x364769, 3));
   const light = new T.DirectionalLight(0xffffff, 4); light.position.set(3, 7, 5); scene.add(light);
-  const road = new T.Mesh(new T.BoxGeometry(34, .08, 3.2), new T.MeshStandardMaterial({color:0x273449}));
-  road.position.y = -.61;
+  const roadTop = -.57;
+  const roadThickness = .08;
+  const road = new T.Mesh(new T.BoxGeometry(34, roadThickness, 3.2), new T.MeshStandardMaterial({color:0x273449}));
+  road.position.y = roadTop - roadThickness / 2;
   scene.add(road);
   const roadLine = new T.MeshBasicMaterial({color:0x75879f});
   const dash = new T.MeshBasicMaterial({color:0xffd470});
@@ -118,34 +121,104 @@ export function crearVisor(element) {
     box(.04,.12,.35,1.81,.08,z,head);
     box(.04,.1,.38,-1.81,.12,z,new T.MeshStandardMaterial({color:0xef4444,emissive:0xff2020,emissiveIntensity:.5}));
   }
-  const render=()=>renderer.render(scene,camera);
-  const observer=new ResizeObserver(()=>{
-    const w=element.clientWidth,h=element.clientHeight;
+  // Cache mesh vertices in car-local coordinates. A rotated bounding box
+  // would overestimate the clearance around the curved tires and roof.
+  const contactPoints = [];
+  const point = new T.Vector3();
+  for (const mesh of car.children) {
+    mesh.updateMatrix();
+    const vertices = mesh.geometry.attributes.position;
+    for (let i = 0; i < vertices.count; i++) {
+      point.fromBufferAttribute(vertices, i).applyMatrix4(mesh.matrix);
+      contactPoints.push(point.x, point.y, point.z);
+    }
+  }
+  const orientation = new T.Matrix4();
+
+  function fitToRoad() {
+    const rotation = orientation.makeRotationFromQuaternion(car.quaternion).elements;
+    let lowest = Infinity;
+    for (let i = 0; i < contactPoints.length; i += 3) {
+      const y = rotation[1] * contactPoints[i] +
+        rotation[5] * contactPoints[i + 1] +
+        rotation[9] * contactPoints[i + 2];
+      lowest = Math.min(lowest, y);
+    }
+    car.position.y = roadTop - lowest + .008;
+  }
+  fitToRoad();
+
+  const render = () => renderer.render(scene, camera);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enabled = false;
+  controls.enablePan = false;
+  controls.minZoom = .65;
+  controls.maxZoom = 3;
+  controls.minPolarAngle = .12;
+  controls.maxPolarAngle = Math.PI / 2;
+  controls.target.set(0, .15, 0);
+  controls.update();
+  controls.addEventListener('change', render);
+
+  function resizeCamera() {
+    const w = element.clientWidth;
+    const h = element.clientHeight;
     if (!w || !h) return;
-    renderer.setSize(w,h);
     const halfWidth = view === 'lateral' ? 8 : 4.1;
     camera.left = -halfWidth;
     camera.right = halfWidth;
     camera.top = halfWidth * h / w;
     camera.bottom = -camera.top;
     camera.updateProjectionMatrix();
+  }
+
+  function advanceOnRoad() {
+    const x = (view === 'lateral' || view === 'libre') && progress != null
+      ? -5.65 + 11.3 * progress : 0;
+    if (view === 'libre') {
+      // Follow the replay without overwriting the angle the viewer chose.
+      camera.position.x += x - controls.target.x;
+      controls.target.x = x;
+    }
+    car.position.x = x;
+  }
+
+  const observer = new ResizeObserver(() => {
+    if (!element.clientWidth || !element.clientHeight) return;
+    renderer.setSize(element.clientWidth, element.clientHeight);
+    resizeCamera();
     render();
-  }); observer.observe(element);
+  });
+  observer.observe(element);
+
   return {
-    update(m, avance) {progress = avance; car.position.x = view === 'lateral' && progress != null ? -5.65 + 11.3 * progress : 0; car.rotation.set(T.MathUtils.degToRad(m.roll_deg),0,T.MathUtils.degToRad(m.pitch_deg),'XYZ');render();},
-    camera(next) {
-      view = next;
-      car.position.x = view === 'lateral' && progress != null ? -5.65 + 11.3 * progress : 0;
-      camera.position.set(...(view==='frontal'?[12,2,0]:view==='lateral'?[0,2.7,12]:[7,4,9]));
-      camera.lookAt(0,.15,0);
-      const halfWidth = view === 'lateral' ? 8 : 4.1;
-      camera.left = -halfWidth;
-      camera.right = halfWidth;
-      camera.top = halfWidth * element.clientHeight / Math.max(1,element.clientWidth);
-      camera.bottom = -camera.top;
-      camera.updateProjectionMatrix();
+    update(sample, advance) {
+      progress = advance;
+      advanceOnRoad();
+      car.rotation.set(T.MathUtils.degToRad(sample.roll_deg), 0, T.MathUtils.degToRad(sample.pitch_deg), 'XYZ');
+      fitToRoad();
       render();
     },
-    destroy(){observer.disconnect();scene.traverse(o=>{o.geometry?.dispose(); if(o.material) o.material.dispose();});renderer.dispose();renderer.domElement.remove();}
+    camera(next) {
+      view = next;
+      controls.enabled = view === 'libre';
+      controls.target.set(0, .15, 0);
+      camera.zoom = 1;
+      camera.position.set(...(view === 'frontal' ? [12,2,0] : view === 'lateral' ? [0,2.7,12] : [7,4,9]));
+      advanceOnRoad();
+      resizeCamera();
+      controls.update();
+      render();
+    },
+    destroy() {
+      observer.disconnect();
+      controls.dispose();
+      scene.traverse(object => {
+        object.geometry?.dispose();
+        object.material?.dispose();
+      });
+      renderer.dispose();
+      renderer.domElement.remove();
+    }
   };
 }
