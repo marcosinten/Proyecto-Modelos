@@ -61,27 +61,29 @@ export function crearVisor(element) {
   const scene = new T.Scene();
   const camera = new T.OrthographicCamera(-8, 8, 3, -3, .1, 100);
   camera.position.set(0, 2.7, 12); camera.lookAt(0, .15, 0);
-  let view = 'lateral';
+  let view = 'seguimiento';
   let progress;
+  const chaseCamera = new T.PerspectiveCamera(48, 1, .1, 110);
+  scene.fog = new T.Fog(0x101b30, 22, 60);
   scene.add(new T.HemisphereLight(0xc2ddff, 0x364769, 3));
   const light = new T.DirectionalLight(0xffffff, 4); light.position.set(3, 7, 5); scene.add(light);
   const roadTop = -.57;
   const roadThickness = .08;
-  const road = new T.Mesh(new T.BoxGeometry(34, roadThickness, 3.2), new T.MeshStandardMaterial({color:0x273449}));
-  road.position.y = roadTop - roadThickness / 2;
+  const road = new T.Mesh(new T.BoxGeometry(104, roadThickness, 6.4), new T.MeshStandardMaterial({color:0x273449}));
+  road.position.set(14, roadTop - roadThickness / 2, 1.6);
   scene.add(road);
   const roadLine = new T.MeshBasicMaterial({color:0x75879f});
   const dash = new T.MeshBasicMaterial({color:0xffd470});
-  for (const z of [-1.48, 1.48]) {
-    const edge = new T.Mesh(new T.PlaneGeometry(34, .035), roadLine);
+  for (const z of [-1.45, 4.65]) {
+    const edge = new T.Mesh(new T.PlaneGeometry(104, .045), roadLine);
     edge.rotation.x = -Math.PI / 2;
-    edge.position.set(0, -.565, z);
+    edge.position.set(14, roadTop + .005, z);
     scene.add(edge);
   }
-  for (let x = -16; x <= 16; x += 1.1) {
-    const stripe = new T.Mesh(new T.PlaneGeometry(.65, .055), dash);
+  for (let x = -36; x <= 64; x += 2.6) {
+    const stripe = new T.Mesh(new T.PlaneGeometry(1.45, .065), dash);
     stripe.rotation.x = -Math.PI / 2;
-    stripe.position.set(x, -.564, 0);
+    stripe.position.set(x, roadTop + .006, 1.6);
     scene.add(stripe);
   }
   const car = new T.Group(); scene.add(car);
@@ -121,6 +123,34 @@ export function crearVisor(element) {
     box(.04,.12,.35,1.81,.08,z,head);
     box(.04,.1,.38,-1.81,.12,z,new T.MeshStandardMaterial({color:0xef4444,emissive:0xff2020,emissiveIntensity:.5}));
   }
+  // Tail details are visible from the chase camera.
+  box(.07,.13,1.45,-1.82,-.025,0,black);
+  const exhaustMaterial = new T.MeshStandardMaterial({color:0x64748b,metalness:.7,roughness:.35});
+  for (const z of [-.48,.48]) {
+    const exhaust = new T.Mesh(new T.TorusGeometry(.056,.014,8,20),exhaustMaterial);
+    exhaust.rotation.y = Math.PI / 2;
+    exhaust.position.set(-1.86,-.055,z);
+    car.add(exhaust);
+  }
+
+  // Soft contact shadow makes the reference plane readable without WebGL shadow maps.
+  const shadowSize = 32;
+  const shadowPixels = new Uint8Array(shadowSize * shadowSize * 4);
+  for (let y = 0; y < shadowSize; y++) {
+    for (let x = 0; x < shadowSize; x++) {
+      const radius = Math.hypot((x + .5) / shadowSize * 2 - 1, (y + .5) / shadowSize * 2 - 1);
+      shadowPixels[(y * shadowSize + x) * 4 + 3] = 120 * Math.max(0, 1 - radius) ** 1.4;
+    }
+  }
+  const shadowTexture = new T.DataTexture(shadowPixels,shadowSize,shadowSize);
+  shadowTexture.magFilter = T.LinearFilter;
+  shadowTexture.needsUpdate = true;
+  const shadow = new T.Mesh(new T.PlaneGeometry(6,3.3),
+    new T.MeshBasicMaterial({map:shadowTexture,transparent:true,depthWrite:false}));
+  shadow.rotation.x = -Math.PI / 2;
+  shadow.position.y = roadTop + .007;
+  scene.add(shadow);
+
   // Cache mesh vertices in car-local coordinates. A rotated bounding box
   // would overestimate the clearance around the curved tires and roof.
   const contactPoints = [];
@@ -148,7 +178,7 @@ export function crearVisor(element) {
   }
   fitToRoad();
 
-  const render = () => renderer.render(scene, camera);
+  const render = () => renderer.render(scene, view === 'seguimiento' ? chaseCamera : camera);
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enabled = false;
   controls.enablePan = false;
@@ -170,10 +200,12 @@ export function crearVisor(element) {
     camera.top = halfWidth * h / w;
     camera.bottom = -camera.top;
     camera.updateProjectionMatrix();
+    chaseCamera.aspect = w / h;
+    chaseCamera.updateProjectionMatrix();
   }
 
   function advanceOnRoad() {
-    const x = (view === 'lateral' || view === 'libre') && progress != null
+    const x = ['seguimiento', 'lateral', 'libre'].includes(view) && progress != null
       ? -5.65 + 11.3 * progress : 0;
     if (view === 'libre') {
       // Follow the replay without overwriting the angle the viewer chose.
@@ -181,7 +213,14 @@ export function crearVisor(element) {
       controls.target.x = x;
     }
     car.position.x = x;
+    shadow.position.x = x;
+    if (view === 'seguimiento') {
+      // Track position only. A rollover never rotates the horizon.
+      chaseCamera.position.set(x - 5.8, roadTop + 3.1, 0);
+      chaseCamera.lookAt(x + 4.2, roadTop + .4, 0);
+    }
   }
+  advanceOnRoad();
 
   const observer = new ResizeObserver(() => {
     if (!element.clientWidth || !element.clientHeight) return;
@@ -217,6 +256,7 @@ export function crearVisor(element) {
         object.geometry?.dispose();
         object.material?.dispose();
       });
+      shadowTexture.dispose();
       renderer.dispose();
       renderer.domElement.remove();
     }
