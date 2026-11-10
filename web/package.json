@@ -1,0 +1,16 @@
+{
+  "name": "telemetria-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "vite": "^7.0.0",
+    "three": "^0.180.0",
+    "chart.js": "^4.5.0",
+    "@fontsource/inter": "^5.2.0",
+    "exceljs": "^4.4.0"
+  }
+}

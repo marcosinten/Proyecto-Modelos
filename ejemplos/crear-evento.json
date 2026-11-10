@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "evento": {
+    "id": "EV-001",
+    "sesion_id": "SES-001",
+    "tipo": "vuelco",
+    "gravedad": "alta",
+    "estado": "confirmado",
+    "t_inicio_ms": 0,
+    "t_fin_ms": 2000,
+    "t_deteccion_ms": 600,
+    "t_activacion_ms": 620,
+    "ubicacion": null
+  }
+}

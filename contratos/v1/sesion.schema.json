@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,64}$"
+    },
+    "origen": {
+      "type": "string",
+      "enum": [
+        "real",
+        "simulado"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "origen"
+  ],
+  "additionalProperties": false,
+  "description": "Contrato v1. Restricciones entre tiempos y orden de muestras se validan adicionalmente en la API. Ver docs/API.md."
+}

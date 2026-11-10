@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "sesion": {
+    "id": "SES-002",
+    "origen": "simulado"
+  },
+  "evento": {
+    "id": "EV-002",
+    "tipo": "vuelco",
+    "gravedad": "alta",
+    "estado": "confirmado",
+    "t_inicio_ms": 1000,
+    "t_fin_ms": 3000,
+    "t_deteccion_ms": 1500,
+    "t_activacion_ms": 1520,
+    "ubicacion": null,
+    "sesion_id": "SES-002"
+  },
+  "mediciones": [
+    {
+      "t_ms": 1000,
+      "ax": 0.05,
+      "ay": 1.2,
+      "az": 9.75,
+      "roll_deg": 5.0,
+      "pitch_deg": 1.0,
+      "numero": 1
+    },
+    {
+      "t_ms": 1500,
+      "ax": -1.5,
+      "ay": 18.2,
+      "az": 3.5,
+      "roll_deg": 65.0,
+      "pitch_deg": 8.0,
+      "numero": 2
+    },
+    {
+      "t_ms": 2200,
+      "ax": -0.2,
+      "ay": 9.8,
+      "az": 0.1,
+      "roll_deg": 90.0,
+      "pitch_deg": 12.0,
+      "numero": 3
+    }
+  ]
+}
