@@ -25,5 +25,5 @@ test('simulación normal sin incidente y vuelco con umbral y permanencia',()=>{
 });
 test('un impacto breve se filtra con una permanencia prolongada',()=>{
  assert.ok(generarEscenario('impacto',16,60,0).evento);
- assert.equal(generarEscenario('impacto',16,60,2000).evento,null);
+ assert.equal(generarEscenario('impacto',16,60,150,2000).evento,null);
 });
