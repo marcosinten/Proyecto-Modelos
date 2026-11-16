@@ -30,6 +30,11 @@
       "type": "number",
       "minimum": -90,
       "maximum": 90
+    },
+    "rueda_rps": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1000
     }
   },
   "required": [

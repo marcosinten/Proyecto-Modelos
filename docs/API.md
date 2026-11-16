@@ -24,6 +24,9 @@ Si aparecen eventos nuevos mientras navegas el listado por offset, actualiza la 
 - `id`/`sesion_id`: 1–64 caracteres alfanuméricos, guion y guion bajo. Crea un id de sesión distinto tras reiniciar el contador del dispositivo.
 - `origen`: `real` o `simulado`. No mezclar los dos orígenes dentro de la misma sesión.
 - Una medición contiene `numero`, `t_ms`, `ax`, `ay`, `az`, `roll_deg`, `pitch_deg`. El `sesion_id` se toma de la ruta.
+- `rueda_rps` es opcional: vueltas de rueda por segundo, de 0 a 1000. Si no hay sensor Hall se omite el campo; omitirlo no significa rueda detenida.
+- `GET /api/v1/sesiones?limite=50&offset=0` lista todas las sesiones, con o sin evento, con su número de mediciones y eventos.
+- Signos: `roll_deg` positivo levanta el lado izquierdo; `pitch_deg` positivo levanta la trompa. Ver docs/CONEXION-ESP32.md.
 - `numero`: entero desde 1, único dentro de la sesión. `t_ms`: entero no negativo desde el comienzo de la sesión, no una fecha UTC.
 - `ax`, `ay`, `az`: números finitos en m/s². El emisor debe convertir las unidades del sensor si la biblioteca devuelve otra unidad. La aceleración puede incluir gravedad.
 - `roll_deg`: −180 a 180; `pitch_deg`: −90 a 90. Fijar físicamente los ejes y acordar el signo antes de calibrar. La API no calcula estos ángulos a partir de la aceleración.

@@ -36,6 +36,8 @@ export function crearApp({ repositorio, apiKey = '', origins = ['http://localhos
     const creado = repositorio.crearSesion(sesion);
     res.status(creado ? 201 : 200).json({ version: 1, creado, sesion });
   });
+  // Todas las sesiones, con o sin evento, para revisar también las corridas sin accidente.
+  api.get('/sesiones', (req, res) => res.json({ version: 1, ...repositorio.listarSesiones(enteroQuery(req.query.limite, 50, 200, 1), enteroQuery(req.query.offset, 0, Number.MAX_SAFE_INTEGER)) }));
   api.get('/sesiones/:id', (req, res) => res.json({ version: 1, sesion: repositorio.obtenerSesion(validarId(req.params.id)) }));
   api.post('/sesiones/:id/mediciones', (req, res) => {
     const { mediciones } = validar(loteSchema, req.body);
