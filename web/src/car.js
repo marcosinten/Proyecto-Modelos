@@ -1,4 +1,6 @@
 import * as T from 'three';
+import { prepareWheels } from './scene-assets.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 export function crearVisor(element) {
   let renderer;
@@ -37,12 +39,13 @@ export function crearVisor(element) {
     let view = 'lateral';
     let sample = { roll_deg: 0, pitch_deg: 0 };
     let progress;
+    let jolt = 0;
     function draw() {
       const front = view === 'frontal';
       const x = front || progress == null ? 325 : 100 + 450 * progress;
       const roll = sample.roll_deg * Math.PI / 180;
       const scaleY = front ? 1 : Math.sign(Math.cos(roll) || 1) * Math.max(.36, Math.abs(Math.cos(roll)));
-      car.setAttribute('transform', `translate(${x} 136) rotate(${front ? sample.roll_deg : -sample.pitch_deg}) scale(1 ${scaleY})`);
+      car.setAttribute('transform', `translate(${x + jolt * 28} 136) rotate(${front ? sample.roll_deg : -sample.pitch_deg}) scale(1 ${scaleY})`);
       shadow.setAttribute('transform', `translate(${x})`);
       car.querySelector('[data-side]').setAttribute('visibility', front ? 'hidden' : 'visible');
       car.querySelector('[data-front]').setAttribute('visibility', front ? 'visible' : 'hidden');
@@ -50,7 +53,7 @@ export function crearVisor(element) {
     draw();
     return {
       mode: '2d',
-      update(m, avance) { sample = m; progress = avance; draw(); },
+      update(m, avance, impact = 0) { sample = m; progress = avance; jolt = impact; draw(); },
       camera(next) { view = next; draw(); },
       destroy() { element.replaceChildren(); }
     };
@@ -64,29 +67,39 @@ export function crearVisor(element) {
   let view = 'seguimiento';
   let progress;
   const chaseCamera = new T.PerspectiveCamera(48, 1, .1, 110);
-  scene.fog = new T.Fog(0x101b30, 22, 60);
+  scene.fog = new T.Fog(0x101b30, 14, 32);
   scene.add(new T.HemisphereLight(0xc2ddff, 0x364769, 3));
   const light = new T.DirectionalLight(0xffffff, 4); light.position.set(3, 7, 5); scene.add(light);
   const roadTop = -.57;
+  const fallbackRoad = new T.Group(); scene.add(fallbackRoad);
+  const verge = new T.Mesh(new T.PlaneGeometry(104, 26), new T.MeshStandardMaterial({color:0x253b30}));
+  verge.rotation.x = -Math.PI / 2;
+  verge.position.set(14, roadTop - .06, 1.6);
+  scene.add(verge);
+  let wheels = [];
+  let wheelRadius = .25;
+  let lastDistance = -1;
   const roadThickness = .08;
   const road = new T.Mesh(new T.BoxGeometry(104, roadThickness, 6.4), new T.MeshStandardMaterial({color:0x273449}));
+  road.name = 'straight-road';
   road.position.set(14, roadTop - roadThickness / 2, 1.6);
-  scene.add(road);
+  fallbackRoad.add(road);
   const roadLine = new T.MeshBasicMaterial({color:0x75879f});
   const dash = new T.MeshBasicMaterial({color:0xffd470});
   for (const z of [-1.45, 4.65]) {
     const edge = new T.Mesh(new T.PlaneGeometry(104, .045), roadLine);
     edge.rotation.x = -Math.PI / 2;
     edge.position.set(14, roadTop + .005, z);
-    scene.add(edge);
+    fallbackRoad.add(edge);
   }
   for (let x = -36; x <= 64; x += 2.6) {
     const stripe = new T.Mesh(new T.PlaneGeometry(1.45, .065), dash);
     stripe.rotation.x = -Math.PI / 2;
     stripe.position.set(x, roadTop + .006, 1.6);
-    scene.add(stripe);
+    fallbackRoad.add(stripe);
   }
-  const car = new T.Group(); scene.add(car);
+  const vehicle = new T.Group(); scene.add(vehicle);
+  const car = new T.Group(); vehicle.add(car);
   const blue = new T.MeshStandardMaterial({color:0x2563eb,metalness:.6,roughness:.25});
   const glass = new T.MeshStandardMaterial({color:0x163346,metalness:.65,roughness:.15});
   const black = new T.MeshStandardMaterial({color:0x10151c,roughness:.85});
@@ -151,18 +164,26 @@ export function crearVisor(element) {
   shadow.position.y = roadTop + .007;
   scene.add(shadow);
 
-  // Cache mesh vertices in car-local coordinates. A rotated bounding box
-  // would overestimate the clearance around the curved tires and roof.
+  // Cache the mesh vertices relative to the car pivot for road contact.
   const contactPoints = [];
   const point = new T.Vector3();
-  for (const mesh of car.children) {
-    mesh.updateMatrix();
-    const vertices = mesh.geometry.attributes.position;
-    for (let i = 0; i < vertices.count; i++) {
-      point.fromBufferAttribute(vertices, i).applyMatrix4(mesh.matrix);
-      contactPoints.push(point.x, point.y, point.z);
-    }
+  const localMatrix = new T.Matrix4();
+  const inverseCar = new T.Matrix4();
+  function collectContactPoints() {
+    contactPoints.length = 0;
+    car.updateWorldMatrix(true, true);
+    inverseCar.copy(car.matrixWorld).invert();
+    car.traverse(mesh => {
+      if (!mesh.isMesh) return;
+      localMatrix.multiplyMatrices(inverseCar, mesh.matrixWorld);
+      const vertices = mesh.geometry.attributes.position;
+      for (let i = 0; i < vertices.count; i++) {
+        point.fromBufferAttribute(vertices, i).applyMatrix4(localMatrix);
+        contactPoints.push(point.x, point.y, point.z);
+      }
+    });
   }
+  collectContactPoints();
   const orientation = new T.Matrix4();
 
   function fitToRoad() {
@@ -204,20 +225,40 @@ export function crearVisor(element) {
     chaseCamera.updateProjectionMatrix();
   }
 
+  const forward = new T.Vector3(1, 0, 0);
+  const lateral = new T.Vector3(0, 0, 1);
+  const previousTarget = new T.Vector3();
   function advanceOnRoad() {
-    const x = ['seguimiento', 'lateral', 'libre'].includes(view) && progress != null
-      ? -5.65 + 11.3 * progress : 0;
+    const fraction = progress == null ? 0 : T.MathUtils.clamp(progress, 0, 1);
+    const distance = 11.3 * fraction;
+    vehicle.position.set(progress == null ? 0 : -5.65 + distance, 0, 0);
+    const target = vehicle.position.clone(); target.y = .15;
     if (view === 'libre') {
-      // Follow the replay without overwriting the angle the viewer chose.
-      camera.position.x += x - controls.target.x;
-      controls.target.x = x;
+      camera.position.add(target.clone().sub(previousTarget));
+      controls.target.copy(target);
+    } else if (view !== 'seguimiento') {
+      camera.position.copy(target).addScaledVector(view === 'frontal' ? forward : lateral, 12);
+      camera.position.y = 2.7;
+      camera.lookAt(target);
+      controls.target.copy(target);
     }
-    car.position.x = x;
-    shadow.position.x = x;
+    previousTarget.copy(target);
+    shadow.position.x = vehicle.position.x + car.position.x;
+    shadow.position.z = vehicle.position.z;
+    shadow.rotation.z = vehicle.rotation.y;
     if (view === 'seguimiento') {
-      // Track position only. A rollover never rotates the horizon.
-      chaseCamera.position.set(x - 5.8, roadTop + 3.1, 0);
-      chaseCamera.lookAt(x + 4.2, roadTop + .4, 0);
+      chaseCamera.position.copy(vehicle.position).addScaledVector(forward, -6.8);
+      chaseCamera.position.y = roadTop + 3.7;
+      const look = vehicle.position.clone().addScaledVector(forward, 5);
+      look.y = roadTop + .4;
+      chaseCamera.lookAt(look);
+    }
+    // Illustrative playback distance: never written into telemetry.
+    if (wheels.length && distance !== lastDistance) {
+      wheels.forEach(wheel => { wheel.rotation.x = -distance / wheelRadius; });
+      lastDistance = distance;
+      collectContactPoints();
+      fitToRoad();
     }
   }
   advanceOnRoad();
@@ -230,18 +271,83 @@ export function crearVisor(element) {
   });
   observer.observe(element);
 
+  function disposeModel(model) {
+    const geometries = new Set();
+    const materials = new Set();
+    const textures = new Set();
+    model.traverse(object => {
+      if (object.geometry) geometries.add(object.geometry);
+      if (object.material) {
+        for (const material of [].concat(object.material)) materials.add(material);
+      }
+    });
+    for (const material of materials) {
+      for (const value of Object.values(material)) {
+        if (value?.isTexture) textures.add(value);
+      }
+      material.dispose();
+    }
+    for (const geometry of geometries) geometry.dispose();
+    for (const texture of textures) texture.dispose();
+  }
+
+  let destroyed = false;
+  let lastRoll, lastPitch;
+  const modelUrl = new URL('./assets/oldsmobile_cutlass_supreme_sedan_71.glb', import.meta.url).href;
+  new GLTFLoader().loadAsync(modelUrl).then(({scene: model}) => {
+    if (destroyed) {
+      disposeModel(model);
+      return;
+    }
+
+    // The downloaded scene includes its own presentation floor.
+    const floor = model.getObjectByName('ground_M_Dome_0');
+    if (floor) {
+      floor.removeFromParent();
+      disposeModel(floor);
+    }
+    wheels = prepareWheels(model);
+    const aligned = new T.Group();
+    aligned.add(model);
+    aligned.rotation.y = -Math.PI / 2;
+    const bounds = new T.Box3().setFromObject(aligned, true);
+    const center = bounds.getCenter(new T.Vector3());
+    const scale = 3.8 / (bounds.max.x - bounds.min.x);
+    aligned.scale.setScalar(scale);
+    aligned.position.copy(center).multiplyScalar(-scale);
+
+    disposeModel(car);
+    car.clear();
+    car.add(aligned);
+    if (wheels.length) {
+      car.updateWorldMatrix(true, true);
+      wheelRadius = wheels[0].userData.localRadius * wheels[0].getWorldScale(new T.Vector3()).y;
+    }
+    lastDistance = -1;
+    advanceOnRoad();
+    collectContactPoints();
+    fitToRoad();
+    render();
+  }).catch(error => console.warn('Se conserva el carro de respaldo:', error));
+
   return {
-    update(sample, advance) {
+    update(sample, advance, impact = 0) {
       progress = advance;
+      car.position.x = impact;
       advanceOnRoad();
-      car.rotation.set(T.MathUtils.degToRad(sample.roll_deg), 0, T.MathUtils.degToRad(sample.pitch_deg), 'XYZ');
-      fitToRoad();
+      if (sample.roll_deg !== lastRoll || sample.pitch_deg !== lastPitch) {
+        lastRoll = sample.roll_deg;
+        lastPitch = sample.pitch_deg;
+        car.rotation.set(T.MathUtils.degToRad(lastRoll), 0, T.MathUtils.degToRad(lastPitch), 'XYZ');
+        fitToRoad();
+      }
       render();
     },
     camera(next) {
       view = next;
       controls.enabled = view === 'libre';
       controls.target.set(0, .15, 0);
+      previousTarget.set(0, .15, 0);
       camera.zoom = 1;
       camera.position.set(...(view === 'frontal' ? [12,2,0] : view === 'lateral' ? [0,2.7,12] : [7,4,9]));
       advanceOnRoad();
@@ -250,13 +356,10 @@ export function crearVisor(element) {
       render();
     },
     destroy() {
+      destroyed = true;
       observer.disconnect();
       controls.dispose();
-      scene.traverse(object => {
-        object.geometry?.dispose();
-        object.material?.dispose();
-      });
-      shadowTexture.dispose();
+      disposeModel(scene);
       renderer.dispose();
       renderer.domElement.remove();
     }
