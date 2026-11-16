@@ -4,7 +4,7 @@ import { dirname } from 'node:path';
 import { ErrorApi } from '../../aplicacion/contratos.js';
 
 const iguales = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-const medicion = r => r && ({ numero: r.numero, t_ms: r.t_ms, ax: r.ax, ay: r.ay, az: r.az, roll_deg: r.roll_deg, pitch_deg: r.pitch_deg });
+const medicion = r => r && ({ numero: r.numero, t_ms: r.t_ms, ax: r.ax, ay: r.ay, az: r.az, roll_deg: r.roll_deg, pitch_deg: r.pitch_deg, ...(r.rueda_rps == null ? {} : { rueda_rps: r.rueda_rps }) });
 const evento = r => r && ({
   id: r.id, sesion_id: r.sesion_id, tipo: r.tipo, gravedad: r.gravedad, estado: r.estado,
   t_inicio_ms: r.t_inicio_ms, t_fin_ms: r.t_fin_ms, t_deteccion_ms: r.t_deteccion_ms,
@@ -18,6 +18,10 @@ export function crearRepositorio(path) {
   const db = new DatabaseSync(path);
   db.exec('PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 3000; PRAGMA journal_mode = WAL;');
   db.exec(readFileSync(new URL('../../../db/migraciones/001_crear_tablas.sql', import.meta.url), 'utf8'));
+  const columnas = db.prepare('PRAGMA table_info(mediciones)').all();
+  if (!columnas.some(c => c.name === 'rueda_rps')) {
+    db.exec('ALTER TABLE mediciones ADD COLUMN rueda_rps REAL CHECK(rueda_rps >= 0 AND rueda_rps <= 1000)');
+  }
   const getSesion = id => {
     const s = db.prepare('SELECT id, origen FROM sesiones WHERE id=?').get(id);
     if (!s) throw new ErrorApi(404, 'SESION_NO_ENCONTRADA', 'Primero crea la sesión');
@@ -32,6 +36,14 @@ export function crearRepositorio(path) {
     cerrar: () => db.close(),
     comprobar: () => db.prepare('SELECT 1').get(),
     obtenerSesion: getSesion,
+    // Sessions with their sample and event counts, newest first. Includes runs without incidents.
+    listarSesiones(limite, offset) {
+      const filas = db.prepare(`SELECT s.id, s.origen,
+          (SELECT COUNT(*) FROM mediciones m WHERE m.sesion_id=s.id) AS mediciones,
+          (SELECT COUNT(*) FROM eventos e WHERE e.sesion_id=s.id) AS eventos
+        FROM sesiones s ORDER BY s.rowid DESC LIMIT ? OFFSET ?`).all(limite + 1, offset);
+      return { sesiones: filas.slice(0, limite).map(f => ({ ...f })), hay_mas: filas.length > limite, siguiente_offset: offset + Math.min(filas.length, limite) };
+    },
     crearSesion(s) {
       const previa = db.prepare('SELECT id, origen FROM sesiones WHERE id=?').get(s.id);
       if (previa) {
@@ -46,7 +58,7 @@ export function crearRepositorio(path) {
       const get = db.prepare('SELECT * FROM mediciones WHERE sesion_id=? AND numero=?');
       const antes = db.prepare('SELECT t_ms FROM mediciones WHERE sesion_id=? AND numero<? ORDER BY numero DESC LIMIT 1');
       const despues = db.prepare('SELECT t_ms FROM mediciones WHERE sesion_id=? AND numero>? ORDER BY numero LIMIT 1');
-      const insert = db.prepare('INSERT INTO mediciones(sesion_id,numero,t_ms,ax,ay,az,roll_deg,pitch_deg) VALUES (?,?,?,?,?,?,?,?)');
+      const insert = db.prepare('INSERT INTO mediciones(sesion_id,numero,t_ms,ax,ay,az,roll_deg,pitch_deg,rueda_rps) VALUES (?,?,?,?,?,?,?,?,?)');
       let insertadas = 0;
       db.exec('BEGIN IMMEDIATE');
       try {
@@ -56,7 +68,7 @@ export function crearRepositorio(path) {
           const a = antes.get(id, m.numero), d = despues.get(id, m.numero);
           if ((a && a.t_ms > m.t_ms) || (d && d.t_ms < m.t_ms))
             throw new ErrorApi(409, 'ORDEN_INVALIDO', 't_ms debe crecer o mantenerse al aumentar numero');
-          insert.run(id, m.numero, m.t_ms, m.ax, m.ay, m.az, m.roll_deg, m.pitch_deg);
+          insert.run(id, m.numero, m.t_ms, m.ax, m.ay, m.az, m.roll_deg, m.pitch_deg, m.rueda_rps ?? null);
           insertadas++;
         }
         db.exec('COMMIT');

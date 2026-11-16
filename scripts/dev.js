@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const backend = root + 'servidor';
+try { process.loadEnvFile(backend + '/.env'); } catch (error) { if (error.code !== 'ENOENT') throw error; }
 const run = (file, cwd) => spawn(process.execPath, [file], { cwd, stdio: 'inherit', env: process.env });
 const seed = run('scripts/seed.js', backend);
 seed.on('exit', code => {

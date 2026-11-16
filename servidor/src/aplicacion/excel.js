@@ -12,12 +12,14 @@ export async function crearExcel(paquete) {
     h.views = [{ state: 'frozen', ySplit: 1 }];
     h.autoFilter = { from: { row: 1, column: 1 }, to: { row: Math.max(1, h.rowCount), column: columnas.length } };
   };
-  hoja('Datos', ['numero', 't_ms', 'ax', 'ay', 'az', 'roll_deg', 'pitch_deg'], paquete.mediciones);
-  const { ubicacion, ...e } = paquete.evento;
-  hoja('Evento', [...Object.keys(e), 'latitud', 'longitud', 'respuesta_ms'], [{
-    ...e, latitud: ubicacion?.latitud ?? null, longitud: ubicacion?.longitud ?? null,
-    respuesta_ms: e.t_activacion_ms === null ? null : e.t_activacion_ms - e.t_deteccion_ms
-  }]);
+  hoja('Datos', ['numero', 't_ms', 'ax', 'ay', 'az', 'roll_deg', 'pitch_deg', 'rueda_rps'], paquete.mediciones);
+  if (paquete.evento) {
+    const { ubicacion, ...e } = paquete.evento;
+    hoja('Evento', [...Object.keys(e), 'latitud', 'longitud', 'respuesta_ms'], [{
+      ...e, latitud: ubicacion?.latitud ?? null, longitud: ubicacion?.longitud ?? null,
+      respuesta_ms: e.t_activacion_ms === null ? null : e.t_activacion_ms - e.t_deteccion_ms
+    }]);
+  }
   hoja('Metadatos', ['campo', 'valor'], [
     { campo: 'version_contrato', valor: paquete.version },
     { campo: 'sesion_id', valor: paquete.sesion.id },

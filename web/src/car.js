@@ -79,6 +79,7 @@ export function crearVisor(element) {
   let wheels = [];
   let wheelRadius = .25;
   let lastDistance = -1;
+  let wheelTurns;
   const roadThickness = .08;
   const road = new T.Mesh(new T.BoxGeometry(104, roadThickness, 6.4), new T.MeshStandardMaterial({color:0x273449}));
   road.name = 'straight-road';
@@ -254,8 +255,8 @@ export function crearVisor(element) {
       chaseCamera.lookAt(look);
     }
     // Illustrative playback distance: never written into telemetry.
-    if (wheels.length && distance !== lastDistance) {
-      wheels.forEach(wheel => { wheel.rotation.x = -distance / wheelRadius; });
+    if (wheels.length && (distance !== lastDistance || wheelTurns != null)) {
+      wheels.forEach(wheel => { wheel.rotation.x = wheelTurns == null ? -distance / (wheel.userData.radius ?? wheelRadius) : -wheelTurns * 2 * Math.PI; });
       lastDistance = distance;
       collectContactPoints();
       fitToRoad();
@@ -321,7 +322,10 @@ export function crearVisor(element) {
     car.add(aligned);
     if (wheels.length) {
       car.updateWorldMatrix(true, true);
-      wheelRadius = wheels[0].userData.localRadius * wheels[0].getWorldScale(new T.Vector3()).y;
+      wheels.forEach(wheel => {
+        wheel.userData.radius = wheel.userData.localRadius * wheel.getWorldScale(new T.Vector3()).y;
+      });
+      wheelRadius = wheels[0].userData.radius;
     }
     lastDistance = -1;
     advanceOnRoad();
@@ -331,14 +335,16 @@ export function crearVisor(element) {
   }).catch(error => console.warn('Se conserva el carro de respaldo:', error));
 
   return {
-    update(sample, advance, impact = 0) {
+    update(sample, advance, impact = 0, turns) {
       progress = advance;
+      wheelTurns = turns;
       car.position.x = impact;
       advanceOnRoad();
       if (sample.roll_deg !== lastRoll || sample.pitch_deg !== lastPitch) {
         lastRoll = sample.roll_deg;
         lastPitch = sample.pitch_deg;
-        car.rotation.set(T.MathUtils.degToRad(lastRoll), 0, T.MathUtils.degToRad(lastPitch), 'XYZ');
+        // Roll first, then pitch about the level lateral axis: the same order the telemetry model uses.
+        car.rotation.set(T.MathUtils.degToRad(lastRoll), 0, T.MathUtils.degToRad(lastPitch), 'YZX');
         fitToRoad();
       }
       render();
