@@ -35,21 +35,21 @@
   5852.579 ms  set-control btn_rearme.pressed = 0
   5954.479 ms  set-control hall_sim.pressed = 1
   5974.479 ms  set-control hall_sim.pressed = 0
-  7285.222 ms  HTTP POST #3 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-EC87D641/mediciones -> 200
-  7320.222 ms  HTTP POST #4 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-EC87D641/mediciones -> 201
-  7355.222 ms  HTTP POST #5 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-EC87D641/mediciones -> 201
-  7390.222 ms  HTTP POST #6 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-EC87D641/mediciones -> 201
-  7425.222 ms  HTTP POST #7 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-EC87D641/mediciones -> 201
+  7285.222 ms  HTTP POST #3 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-7842ADD3/mediciones -> 200
+  7320.222 ms  HTTP POST #4 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-7842ADD3/mediciones -> 201
+  7355.222 ms  HTTP POST #5 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-7842ADD3/mediciones -> 201
+  7390.222 ms  HTTP POST #6 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-7842ADD3/mediciones -> 201
+  7425.222 ms  HTTP POST #7 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-7842ADD3/mediciones -> 201
   7445.479 ms  wait-serial 'JSON evento ' OK
   7460.222 ms  HTTP POST #8 llegó a la API con 201 pero se pierde la respuesta
  10461.479 ms  wait-serial '/eventos evento' OK
  10975.222 ms  HTTP POST #9 http://127.0.0.1:3000/api/v1/eventos -> 200
- 11010.222 ms  HTTP POST #10 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-EC87D641/mediciones -> 201
- 11045.222 ms  HTTP POST #11 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-EC87D641/mediciones -> 201
- 11080.222 ms  HTTP POST #12 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-EC87D641/mediciones -> 201
- 11115.222 ms  HTTP POST #13 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-EC87D641/mediciones -> 201
- 11630.222 ms  HTTP POST #14 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-EC87D641/mediciones -> 201
- 12125.222 ms  HTTP POST #15 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-EC87D641/mediciones -> 201
- 12620.222 ms  HTTP POST #16 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-EC87D641/mediciones -> 201
- 13115.222 ms  HTTP POST #17 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-EC87D641/mediciones -> 201
+ 11010.222 ms  HTTP POST #10 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-7842ADD3/mediciones -> 201
+ 11045.222 ms  HTTP POST #11 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-7842ADD3/mediciones -> 201
+ 11080.222 ms  HTTP POST #12 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-7842ADD3/mediciones -> 201
+ 11115.222 ms  HTTP POST #13 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-7842ADD3/mediciones -> 201
+ 11630.222 ms  HTTP POST #14 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-7842ADD3/mediciones -> 201
+ 12125.222 ms  HTTP POST #15 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-7842ADD3/mediciones -> 201
+ 12620.222 ms  HTTP POST #16 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-7842ADD3/mediciones -> 201
+ 13115.222 ms  HTTP POST #17 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-7842ADD3/mediciones -> 201
  13461.479 ms  FIN escenario fallos=0

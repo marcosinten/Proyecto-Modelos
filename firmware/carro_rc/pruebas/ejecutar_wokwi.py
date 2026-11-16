@@ -60,22 +60,23 @@ def convertir_vcd(ruta):
            "hall_gpio32": [(int(a), v) for a, v in canal(3)],
            "rearme_gpio33": [(int(a), v) for a, v in canal(4)],
            "piezo_gpio27_activo": [], "servo_gpio26_pulso_us": []}
-    # Piezo: ráfaga de flancos PWM = activo; 2 ms sin flancos = inactivo.
-    ult, activo, previo = None, False, None
-    flancos = []
+    # Piezo: una ráfaga PWM (>= 4 flancos separados < 2 ms) = activo. Un flanco
+    # aislado (p. ej. el nivel alto del pin durante el arranque) no cuenta.
+    previo, flancos = None, []
     for a, v in canal(1):
         if previo is not None and v != previo:
             flancos.append(a)
         previo = v
+    rafagas, actual = [], []
     for a in flancos:
-        if not activo or (ult is not None and a - ult > 2000):
-            if activo:
-                out["piezo_gpio27_activo"].append((int(ult), 0))
-            out["piezo_gpio27_activo"].append((int(a), 1))
-            activo = True
-        ult = a
-    if activo:
-        out["piezo_gpio27_activo"].append((int(ult) + 1, 0))
+        if actual and a - actual[-1] > 2000:
+            rafagas.append(actual); actual = []
+        actual.append(a)
+    if actual:
+        rafagas.append(actual)
+    for rf in rafagas:
+        if len(rf) >= 4:
+            out["piezo_gpio27_activo"] += [(int(rf[0]), 1), (int(rf[-1]) + 1, 0)]
     # Servo: ancho de cada pulso alto (µs); se registra solo cuando cambia.
     subida, ancho_prev = None, None
     for a, v in canal(2):
@@ -83,6 +84,9 @@ def convertir_vcd(ruta):
             subida = a
         elif subida is not None:
             ancho = int(round(a - subida))
+            if not 400 <= ancho <= 2600:  # no es un pulso de servo (arranque, pin sin configurar)
+                subida = None
+                continue
             if ancho_prev is None or abs(ancho - ancho_prev) > 5:
                 out["servo_gpio26_pulso_us"].append((int(subida), ancho))
                 ancho_prev = ancho
@@ -93,28 +97,36 @@ def convertir_vcd(ruta):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--solo", nargs="*")
+    ap.add_argument("--sin-ejecutar", action="store_true", help="solo reevalúa los logs ya guardados")
     a = ap.parse_args()
-    if not os.environ.get("WOKWI_CLI_TOKEN"):
+    if a.sin_ejecutar:
+        cli = None
+    elif not os.environ.get("WOKWI_CLI_TOKEN"):
         sys.exit("Falta WOKWI_CLI_TOKEN. Crea un token en https://wokwi.com/dashboard/ci y en PowerShell ejecuta:\n"
                  "  $env:WOKWI_CLI_TOKEN = \"<token>\"   (o setx WOKWI_CLI_TOKEN \"<token>\" y abre otra terminal)")
-    cli = wokwi_cli()
-    if not cli:
-        sys.exit("No se encontró wokwi-cli. Instálalo con: iwr https://wokwi.com/ci/install.ps1 -useb | iex")
-    subprocess.run([sys.executable, str(ep.ESC / "generar.py")], check=True, capture_output=True)
-    b = subprocess.run([sys.executable, "-m", "platformio", "run", "-d", str(ep.FW)], capture_output=True, text=True)
-    if b.returncode:
-        print(b.stdout[-3000:])
-        sys.exit("La compilación con PlatformIO falló")
-    todos = []
+    else:
+        cli = wokwi_cli()
+        if not cli:
+            sys.exit("No se encontró wokwi-cli. Instálalo con: iwr https://wokwi.com/ci/install.ps1 -useb | iex")
+        subprocess.run([sys.executable, str(ep.ESC / "generar.py")], check=True, capture_output=True)
+        b = subprocess.run([sys.executable, "-m", "platformio", "run", "-d", str(ep.FW)], capture_output=True, text=True)
+        if b.returncode:
+            print(b.stdout[-3000:])
+            sys.exit("La compilación con PlatformIO falló")
+    todos, frec = [], []
     for caso in CASOS:
         if a.solo and caso not in a.solo:
             continue
         dest = ep.EVID / caso / "wokwi"
         dest.mkdir(parents=True, exist_ok=True)
-        cmd = [cli, str(ep.FW), "--scenario", str(ep.ESC / f"{caso}.yaml"), "--timeout", "90000",
+        cmd = [cli or "wokwi-cli", str(ep.FW), "--scenario", str(ep.ESC / f"{caso}.yaml"), "--timeout", "90000",
                "--serial-log-file", str(dest / "serial.log"), "--vcd-file", str(dest / "senales.vcd")]
-        p = subprocess.run(cmd, capture_output=True, text=True)
-        (dest / "cli.log").write_text(" ".join(cmd) + "\n\n" + p.stdout + p.stderr, encoding="utf-8")
+        if cli:
+            p = subprocess.run(cmd, capture_output=True, text=True)
+            (dest / "cli.log").write_text(" ".join(cmd) + "\n\n" + p.stdout + p.stderr, encoding="utf-8")
+        else:  # --sin-ejecutar: nunca lanza wokwi-cli ni toca los archivos de la ejecución
+            log = (dest / "cli.log").read_text(encoding="utf-8") if (dest / "cli.log").exists() else ""
+            p = subprocess.CompletedProcess(cmd, 0 if "Scenario completed successfully" in log else 1)
         ev = f"evidencias/{caso}/wokwi/"
         if not (dest / "serial.log").exists():
             todos.append(ep.r(caso, "ejecución en Wokwi", f"wokwi-cli terminó con {p.returncode}; ver cli.log", False, ev))
@@ -138,7 +150,31 @@ def main():
             res.append(ep.r(f"{caso} · escenario Wokwi", "wokwi-cli termina sin fallos de expect-pin",
                             f"código {p.returncode}; ver cli.log", False, ev))
         todos += res
+        if extra.get("frecuencias"):
+            frec.append(extra["frecuencias"])
         print(f"{caso}: " + ", ".join(x["estado"] for x in res))
+    if frec:
+        fa = (min(f["adq"][0] for f in frec), max(f["adq"][1] for f in frec))
+        fd = (min(f["dec"][0] for f in frec), max(f["dec"][1] for f in frec))
+        ft = (min(f["tel"][0] for f in frec), max(f["tel"][1] for f in frec))
+        dt = (min(f["dt"][0] for f in frec), max(f["dt"][1] for f in frec))
+        cm = max(f["ciclo"] for f in frec)
+        # Ventanas de 1 s: el contador entero da ±1 muestra (±0,4 %) según dónde caiga el corte.
+        # Telemetría a largo plazo con el número y el t_ms de las propias muestras enviadas.
+        n_tot = t_tot = 0
+        for caso in CASOS:
+            sl = ep.EVID / caso / "wokwi" / "serial.log"
+            if sl.exists():
+                tel = ep.leer(sl)["tel"]
+                if len(tel) > 1:
+                    n_tot += tel[-1]["n"] - tel[0]["n"]; t_tot += tel[-1]["t"] - tel[0]["t"]
+        f_tel_largo = 1000 * n_tot / t_tot if t_tot else 0
+        # En ventanas de 1 s el contador entero varía ±1 muestra (±0,4 % a 250 Hz, ±2 % a 50 Hz).
+        ok = all(abs(x - 250) <= 2.5 for x in fa + fd) and all(abs(x - 50) <= 1.0 for x in ft)             and abs(f_tel_largo - 50) <= 0.1 and dt[1] <= 4500
+        todos.append(ep.r("Frecuencias", "lectura y decisión a 250 Hz; telemetría a 50 Hz",
+                          f"ventanas de 1 s: f_adq {fa[0]}–{fa[1]} Hz, f_dec {fd[0]}–{fd[1]} Hz, f_tel {ft[0]}–{ft[1]} Hz; "
+                          f"telemetría acumulada {f_tel_largo:.3f} Hz ({n_tot} envíos en {t_tot} ms); "
+                          f"periodo {dt[0]}–{dt[1]} µs, ciclo máx {cm} µs", ok, "evidencias/*/wokwi/serial.log (EST, TEL)"))
     md = ["# Resultados en Wokwi", "", "Generado por `firmware/carro_rc/pruebas/ejecutar_wokwi.py`.", "",
           "| Prueba | Criterio | Valor observado | Estado | Evidencia |", "|---|---|---|---|---|"]
     md += [f"| {x['prueba']} | {x['criterio']} | {x['observado']} | {x['estado']} | `{x['evidencia']}` |" for x in todos]

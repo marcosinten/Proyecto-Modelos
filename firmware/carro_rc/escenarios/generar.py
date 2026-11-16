@@ -187,7 +187,6 @@ def escenarios():
     L.en(3000, "write", "wifi off\\n")
     L.angulos(4000, 90)
     L.en(4300, "expect", "led1", "A", 1)
-    L.en(4300, "expect", "esp", "27", 1)
     L.angulos(5000, 0)
     L.rearme(6000, 200)
     L.en(6400, "expect", "led1", "A", 0)

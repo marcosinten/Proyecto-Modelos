@@ -51,6 +51,10 @@ desde cero con los requisitos de la entrega:
 Cambios hechos para compilar: el anillo de muestras se reserva en el heap (96 KB no caben como dato
 estático) y se usa la API LEDC de Arduino-ESP32 3.x, sin perder compatibilidad con la 2.x.
 
+Corrección tras probar en Wokwi: `WiFi.persistent(false)`. Sin esa línea, `WiFi.begin` escribía la
+configuración en la flash (NVS) y detenía la caché de los dos núcleos, y la tarea de 250 Hz llegaba a
+tener periodos de 7–8 ms al conectar. Con la corrección, el periodo queda entre 3977 y 4022 µs.
+
 ## Compilar (Windows)
 
 ```powershell
@@ -79,6 +83,7 @@ directamente, sin moverlo a `src/`.
 ```powershell
 $env:WOKWI_CLI_TOKEN = "<token de https://wokwi.com/dashboard/ci>"
 py firmware\carro_rc\pruebas\ejecutar_wokwi.py
+py firmware\carro_rc\pruebas\ejecutar_wokwi.py --sin-ejecutar   # solo reevalúa los logs guardados
 ```
 El script guarda `evidencias/<caso>/wokwi/{serial.log, senales.vcd, cli.log, grafica.png}` y genera
 `evidencias/RESULTADOS_WOKWI.md`. Los VCD del analizador lógico (D0 = LED, D1 = piezo, D2 = servo,
@@ -93,9 +98,13 @@ como prueba.
 `escenarios/generar.py` define los estímulos una sola vez y genera `<caso>.yaml` (Wokwi) y `<caso>.pasos`
 (banco nativo). Los valores de cada caso están en [`evidencias/README.md`](../../evidencias/README.md).
 
+Resultado en Wokwi: 25 de 25 comprobaciones en los 10 escenarios (ver `evidencias/README.md`).
+`wokwi-cli` no puede capturar el circuito (solo componentes con pantalla), así que las capturas se toman
+a mano con la opción A.
+
 ## Banco de pruebas nativo
 
-Sin el token de Wokwi, la lógica se comprobó con `pruebas/nativo`. El banco compila **este mismo
+Además de Wokwi, la lógica se comprueba con `pruebas/nativo`. El banco compila **este mismo
 `carro_rc.ino` sin cambios** para el PC, con implementaciones simuladas de Arduino, FreeRTOS, I2C, GPIO,
 LEDC, Wi-Fi y HTTP:
 

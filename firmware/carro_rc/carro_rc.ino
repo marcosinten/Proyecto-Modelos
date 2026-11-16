@@ -789,6 +789,9 @@ void setup() {
   logq("CAL mantén el carro quieto y horizontal 2 s");
   calibrar();
 
+  // Sin escrituras de configuración Wi-Fi en flash (NVS): al escribir en flash se
+  // detiene la caché de ambos núcleos y la tarea de 250 Hz perdía hasta 4 ms.
+  WiFi.persistent(false);
   WiFi.mode(WIFI_STA);  // activa la RF: esp_random usa ruido verdadero
   uint64_t mac = ESP.getEfuseMac();
   snprintf(sesionId, sizeof(sesionId), "RC-%06lX-%08lX", (unsigned long)(mac & 0xFFFFFF), (unsigned long)esp_random());

@@ -1,0 +1,476 @@
+C:\Users\Usuario\.wokwi\bin\wokwi-cli.EXE C:\Users\Usuario\Proyecto-Modelos\firmware\carro_rc --scenario C:\Users\Usuario\Proyecto-Modelos\firmware\carro_rc\escenarios\marcha.yaml --timeout 90000 --serial-log-file C:\Users\Usuario\Proyecto-Modelos\evidencias\marcha\wokwi\serial.log --vcd-file C:\Users\Usuario\Proyecto-Modelos\evidencias\marcha\wokwi\senales.vcd
+
+Wokwi CLI v0.29.1 (0aa185144b92)
+Connected to Wokwi Simulation API 1.0.0-20261114-g480c0991
+Starting simulation...
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:1156
+load:0x40078000,len:11456
+ho 0 tail 12 room 4
+load:0x40080400,len:2972
+entry 0x400805dc
+INICIO carro_rc Grupo 11 origen=simulado ppr=2 umbral_golpe=16.0 m/s2 inclinacion=60 deg vuelco=90 deg permanencia=150 ms
+MPU WHO_AM_I=0x68 SMPLRT_DIV=3 CONFIG=0x02 ACCEL_CONFIG=0x18 (esperado 3, 0x02, 0x18) OK
+CAL mantÃ©n el carro quieto y horizontal 2 s
+CAL OK
+[marcha] Expected text matched: "CAL OK"
+ muestras=500 media=(0.0000, 0.0000, 9.8067) m/s2 desv_norma=0.0000 offsets=(0.0000, 0.0000, 0.0000)
+SESION id=
+[marcha] Expected text matched: "SESION id="
+[marcha] delay 1000ms
+RC-C40A24-BF057284 origen=simulado t0_us_arranque=4025344
+TEL n=1 t=4 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+RED conectando a Wokwi-GUEST t_ms=20
+JSON sesion {"version":1,"sesion":{"id":"RC-C40A24-BF057284","origen":"simulado"}}
+TEL n=2 t=24 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=3 t=44 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=4 t=64 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=5 t=84 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=6 t=104 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=7 t=124 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=8 t=144 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=9 t=164 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=10 t=184 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=11 t=204 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=12 t=224 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=13 t=244 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=14 t=264 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=15 t=284 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=16 t=304 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=17 t=324 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=18 t=344 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=19 t=364 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=20 t=384 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=21 t=404 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=22 t=424 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=23 t=444 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=24 t=464 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=25 t=484 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=26 t=504 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=27 t=524 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=28 t=544 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=29 t=564 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=30 t=584 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=31 t=604 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=32 t=624 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=33 t=644 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=34 t=664 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=35 t=684 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=36 t=704 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=37 t=724 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=38 t=744 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=39 t=764 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=40 t=784 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=41 t=804 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=42 t=824 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=43 t=844 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=44 t=864 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=45 t=884 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=46 t=904 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=47 t=924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=48 t=944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=49 t=964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+[marcha] delay 20ms
+TEL n=50 t=984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+EST t=1000 f_adq=249.7 f_dec=249.7 f_tel=49.9 dt_min_us=3978 dt_max_us=4020 ciclo_max_us=1509 err_i2c=0 anillo=50 perdidas=0 log_perdidas=0 wifi=0 estado
+[marcha] delay 230ms
+=REPOSO
+TEL n=51 t=1004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=52 t=1024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+RED POST /sesiones sesion intento=1 bytes=70 hash=AE155A85 resultado=-1 t_ms=1057
+TEL n=53 t=1044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=54 t=1064 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=55 t=1084 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=56 t=1104 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=57 t=1124 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=58 t=1144 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=59 t=1164 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=60 t=1184 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=61 t=1204 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=62 t=1224 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+[marcha] delay 20ms
+TEL n=63 t=1244 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 230ms
+TEL n=64 t=1264 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=65 t=1284 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=66 t=1304 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=67 t=1324 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=68 t=1344 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=69 t=1364 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=70 t=1384 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=71 t=1404 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=72 t=1424 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=73 t=1444 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=74 t=1464 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 20ms
+TEL n=75 t=1484 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 230ms
+TEL n=76 t=1504 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=77 t=1524 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=78 t=1544 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=79 t=1564 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+RED POST /sesiones sesion intento=2 bytes=70 hash=AE155A85 resultado=-1 t_ms=1590
+TEL n=80 t=1584 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=81 t=1604 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=82 t=1624 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=83 t=1644 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=84 t=1664 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=85 t=1684 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=86 t=1704 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=87 t=1724 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 20ms
+TEL n=88 t=1744 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 230ms
+TEL n=89 t=1764 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=90 t=1784 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=91 t=1804 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=92 t=1824 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=93 t=1844 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=94 t=1864 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=95 t=1884 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=96 t=1904 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=97 t=1924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=98 t=1944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=99 t=1964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 20ms
+TEL n=100 t=1984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+EST t=2000 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3980 dt_max_us=4020 ciclo_max_us=1663 err_i2c=0 anillo=100 perdidas=0 log_perdidas=0 wifi=1 e
+[marcha] delay 230ms
+stado=REPOSO
+TEL n=101 t=2004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=102 t=2024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=103 t=2044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=104 t=2064 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=105 t=2084 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=106 t=2104 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=107 t=2124 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=108 t=2144 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=109 t=2164 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=110 t=2184 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=111 t=2204 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=112 t=2224 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 20ms
+TEL n=113 t=2244 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 230ms
+TEL n=114 t=2264 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=115 t=2284 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=116 t=2304 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=117 t=2324 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=118 t=2344 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=119 t=2364 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=120 t=2384 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=121 t=2404 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=122 t=2424 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=123 t=2444 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=124 t=2464 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 20ms
+TEL n=125 t=2484 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 230ms
+TEL n=126 t=2504 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=127 t=2524 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=128 t=2544 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=129 t=2564 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=130 t=2584 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=131 t=2604 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+RED POST /sesiones sesion intento=3 bytes=70 hash=AE155A85 resultado=-1 t_ms=2624
+TEL n=132 t=2624 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=133 t=2644 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=134 t=2664 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=135 t=2684 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=136 t=2704 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=137 t=2724 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 20ms
+TEL n=138 t=2744 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 230ms
+TEL n=139 t=2764 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=140 t=2784 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=141 t=2804 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=142 t=2824 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=143 t=2844 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=144 t=2864 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=145 t=2884 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=146 t=2904 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=147 t=2924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=148 t=2944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=149 t=2964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 20ms
+TEL n=150 t=2984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+EST t=3000 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3980 dt_max_us=4020 ciclo_max_us=1718 err_i2c=0 anillo=150 perdidas=0 log_perdidas=0 wifi=1 e
+[marcha] delay 230ms
+stado=REPOSO
+TEL n=151 t=3004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=152 t=3024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=153 t=3044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=154 t=3064 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=155 t=3084 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=156 t=3104 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=157 t=3124 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=158 t=3144 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=159 t=3164 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=160 t=3184 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=161 t=3204 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=162 t=3224 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 20ms
+TEL n=163 t=3244 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 230ms
+TEL n=164 t=3264 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=165 t=3284 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=166 t=3304 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=167 t=3324 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=168 t=3344 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=169 t=3364 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=170 t=3384 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=171 t=3404 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=172 t=3424 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=173 t=3444 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=174 t=3464 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 20ms
+TEL n=175 t=3484 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 230ms
+TEL n=176 t=3504 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=177 t=3524 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=178 t=3544 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=179 t=3564 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=180 t=3584 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=181 t=3604 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=182 t=3624 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=183 t=3644 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=184 t=3664 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=185 t=3684 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=186 t=3704 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=187 t=3724 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 20ms
+TEL n=188 t=3744 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 230ms
+TEL n=189 t=3764 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=190 t=3784 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=191 t=3804 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=192 t=3824 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=193 t=3844 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=194 t=3864 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=195 t=3884 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=196 t=3904 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=197 t=3924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=198 t=3944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=199 t=3964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 20ms
+TEL n=200 t=3984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+EST t=4000 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3980 dt_max_us=4020 ciclo_max_us=1708 err_i2c=0 anillo=200 perdidas=0 log_perdidas=0 wifi=1 e
+[marcha] delay 230ms
+stado=REPOSO
+TEL n=201 t=4004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=202 t=4024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=203 t=4044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=204 t=4064 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=205 t=4084 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=206 t=4104 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=207 t=4124 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=208 t=4144 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=209 t=4164 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=210 t=4184 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=211 t=4204 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=212 t=4224 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 20ms
+TEL n=213 t=4244 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 230ms
+TEL n=214 t=4264 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=215 t=4284 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=216 t=4304 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=217 t=4324 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=218 t=4344 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=219 t=4364 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=220 t=4384 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=221 t=4404 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=222 t=4424 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=223 t=4444 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=224 t=4464 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 20ms
+TEL n=225 t=4484 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 230ms
+TEL n=226 t=4504 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=227 t=4524 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=228 t=4544 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=229 t=4564 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=230 t=4584 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=231 t=4604 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=232 t=4624 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+RED POST /sesiones sesion intento=4 bytes=70 hash=AE155A85 resultado=-1 t_ms=4657
+TEL n=233 t=4644 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=234 t=4664 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=235 t=4684 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=236 t=4704 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=237 t=4724 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 20ms
+TEL n=238 t=4744 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 230ms
+TEL n=239 t=4764 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=240 t=4784 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=241 t=4804 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=242 t=4824 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=243 t=4844 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=244 t=4864 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=245 t=4884 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=246 t=4904 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=247 t=4924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=248 t=4944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=249 t=4964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 20ms
+TEL n=250 t=4984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+EST t=5004 f_adq=250.2 f_dec=250.2 f_tel=49.8 dt_min_us=3980 dt_max_us=4020 ciclo_max_us=1708 err_i2c=0 anillo=250 perdidas=0 log_perdidas=0 wifi=1 e
+[marcha] delay 230ms
+stado=REPOSO
+TEL n=251 t=5004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=252 t=5024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=253 t=5044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=254 t=5064 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=255 t=5084 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=256 t=5104 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=257 t=5124 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=258 t=5144 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=259 t=5164 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=260 t=5184 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=261 t=5204 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=262 t=5224 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 20ms
+TEL n=263 t=5244 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 230ms
+TEL n=264 t=5264 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=265 t=5284 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=266 t=5304 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=267 t=5324 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=268 t=5344 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=269 t=5364 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=270 t=5384 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=271 t=5404 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=272 t=5424 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=273 t=5444 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=274 t=5464 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 20ms
+TEL n=275 t=5484 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 230ms
+TEL n=276 t=5504 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=277 t=5524 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=278 t=5544 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=279 t=5564 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=280 t=5584 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=281 t=5604 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=282 t=5624 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=283 t=5644 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=284 t=5664 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=285 t=5684 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=286 t=5704 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=287 t=5724 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 20ms
+TEL n=288 t=5744 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+[marcha] delay 1980ms
+TEL n=289 t=5764 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=290 t=5784 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=291 t=5804 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=292 t=5824 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=293 t=5844 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=294 t=5864 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=295 t=5884 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=296 t=5904 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=297 t=5924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=298 t=5944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=299 t=5964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+TEL n=300 t=5984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=2.00 k=0
+EST t=6004 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3981 dt_max_us=4019 ciclo_max_us=1718 err_i2c=0 anillo=300 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
+TEL n=301 t=6004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=1.86 k=0
+TEL n=302 t=6024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=1.73 k=0
+TEL n=303 t=6044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=1.62 k=0
+TEL n=304 t=6064 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=1.52 k=0
+TEL n=305 t=6084 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=1.43 k=0
+TEL n=306 t=6104 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=1.36 k=0
+TEL n=307 t=6124 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=1.29 k=0
+TEL n=308 t=6144 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=1.22 k=0
+TEL n=309 t=6164 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=1.17 k=0
+TEL n=310 t=6184 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=1.11 k=0
+TEL n=311 t=6204 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=1.07 k=0
+TEL n=312 t=6224 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=1.02 k=0
+TEL n=313 t=6244 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.98 k=0
+TEL n=314 t=6264 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.95 k=0
+TEL n=315 t=6284 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.91 k=0
+TEL n=316 t=6304 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.88 k=0
+TEL n=317 t=6324 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.85 k=0
+TEL n=318 t=6344 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.82 k=0
+TEL n=319 t=6364 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.80 k=0
+TEL n=320 t=6384 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.77 k=0
+TEL n=321 t=6404 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.75 k=0
+TEL n=322 t=6424 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.73 k=0
+TEL n=323 t=6444 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.71 k=0
+TEL n=324 t=6464 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.69 k=0
+TEL n=325 t=6484 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.67 k=0
+HALL rueda_rps=0 t_ms=6504 desde_ultimo_pulso=752.8 ms pulsos=20
+TEL n=326 t=6504 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=327 t=6524 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=328 t=6544 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=329 t=6564 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=330 t=6584 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=331 t=6604 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=332 t=6624 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=333 t=6644 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=334 t=6664 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=335 t=6684 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=336 t=6704 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=337 t=6724 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=338 t=6744 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=339 t=6764 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=340 t=6784 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=341 t=6804 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=342 t=6824 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=343 t=6844 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=344 t=6864 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=345 t=6884 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=346 t=6904 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=347 t=6924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=348 t=6944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=349 t=6964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=350 t=6984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+EST t=7008 f_adq=250.0 f_dec=250.0 f_tel=49.8 dt_min_us=3981 dt_max_us=4019 ciclo_max_us=1723 err_i2c=0 anillo=350 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
+TEL n=351 t=7004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=352 t=7024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=353 t=7044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=354 t=7064 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=355 t=7084 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=356 t=7104 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=357 t=7124 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=358 t=7144 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=359 t=7164 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=360 t=7184 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=361 t=7204 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=362 t=7224 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=363 t=7244 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=364 t=7264 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=365 t=7284 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=366 t=7304 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=367 t=7324 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=368 t=7344 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=369 t=7364 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=370 t=7384 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=371 t=7404 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=372 t=7424 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=373 t=7444 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=374 t=7464 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=375 t=7484 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=376 t=7504 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=377 t=7524 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=378 t=7544 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=379 t=7564 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=380 t=7584 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=381 t=7604 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=382 t=7624 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=383 t=7644 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=384 t=7664 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=385 t=7684 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=386 t=7704 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+TEL n=387 t=7724 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+[marcha] expect-pin led1:A == 0
+[marcha] expect-pin esp:27 == 0
+[marcha] Scenario completed successfully
+VCD file written to: C:\Users\Usuario\Proyecto-Modelos\evidencias\marcha\wokwi\senales.vcd

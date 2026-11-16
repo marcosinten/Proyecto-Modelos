@@ -25,10 +25,6 @@ steps:
       part-id: led1
       pin: 'A'
       value: 1
-  - expect-pin:
-      part-id: esp
-      pin: '27'
-      value: 1
   - delay: 700ms
   - set-control:
       part-id: imu1

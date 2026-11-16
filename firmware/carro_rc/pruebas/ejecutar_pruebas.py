@@ -193,8 +193,12 @@ def evaluar(caso, d, vcd, ev, extra):
         res.append(r("Reposo · ángulos", "roll y pitch en 0 ± 2°",
                      f"roll [{min(rs):+.2f}, {max(rs):+.2f}]°, pitch [{min(ps):+.2f}, {max(ps):+.2f}]°",
                      max(map(abs, rs + ps)) <= 2, ev))
-        servo = {v for _, v in vcd["servo_gpio26_pulso_us"] if _ >= 0}
-        led = {v for _, v in vcd["led_gpio25"]}; pz = {v for _, v in vcd["piezo_gpio27_activo"]}
+        # Desde el inicio de la sesión (antes, el ESP32 arranca y los pines aún no están configurados)
+        def tras_t0(senal):
+            ult = [v for t, v in vcd[senal] if t <= d["t0"]][-1:]
+            return set(ult) | {v for t, v in vcd[senal] if t > d["t0"]}
+        servo = tras_t0("servo_gpio26_pulso_us")
+        led = tras_t0("led_gpio25"); pz = tras_t0("piezo_gpio27_activo") or {0}
         res.append(r("Reposo · salidas y eventos", "LED y piezo apagados, servo en reposo, 0 eventos",
                      f"LED {sorted(led)}, piezo {sorted(pz)}, pulso servo {sorted(servo - {0})} µs (500 = 0°), "
                      f"detecciones {len(dets)}, eventos {len(eventos)}, expect-pin fallos {extra['fallos']}",
