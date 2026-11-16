@@ -1,0 +1,165 @@
+name: 'api'
+version: 1
+author: 'Grupo 11'
+# Integración con la API local: 3 s de marcha a 4 pulsos/s y un golpe de 300 ms; espera el envío del evento.
+steps:
+  - wait-serial: 'CAL OK'
+  - wait-serial: 'SESION id='
+  - delay: 1000ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 2.5
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 30ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 200ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - set-control:
+      part-id: btn_rearme
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 130ms
+  - set-control:
+      part-id: btn_rearme
+      control: pressed
+      value: 0
+  - delay: 100ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - wait-serial: 'JSON evento '
+  - wait-serial: '/eventos evento'
+  - delay: 3000ms

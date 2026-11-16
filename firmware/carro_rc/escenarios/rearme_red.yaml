@@ -1,0 +1,77 @@
+name: 'rearme_red'
+version: 1
+author: 'Grupo 11'
+# Wi-Fi apagado por orden serial; vuelco 1 s; rearme con rebote; segundo rearme sin alarma; Wi-Fi encendido.
+steps:
+  - wait-serial: 'CAL OK'
+  - wait-serial: 'SESION id='
+  - delay: 3000ms
+  - write-serial: "wifi off\n"
+  - delay: 1000ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0.0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 1.0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 0.0
+  - delay: 300ms
+  - expect-pin:
+      part-id: led1
+      pin: 'A'
+      value: 1
+  - expect-pin:
+      part-id: esp
+      pin: '27'
+      value: 1
+  - delay: 700ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0.0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0.0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1.0
+  - delay: 1000ms
+  - set-control:
+      part-id: btn_rearme
+      control: pressed
+      value: 1
+  - delay: 200ms
+  - set-control:
+      part-id: btn_rearme
+      control: pressed
+      value: 0
+  - delay: 200ms
+  - expect-pin:
+      part-id: led1
+      pin: 'A'
+      value: 0
+  - expect-pin:
+      part-id: esp
+      pin: '27'
+      value: 0
+  - delay: 600ms
+  - set-control:
+      part-id: btn_rearme
+      control: pressed
+      value: 1
+  - delay: 200ms
+  - set-control:
+      part-id: btn_rearme
+      control: pressed
+      value: 0
+  - delay: 1800ms
+  - write-serial: "wifi on\n"
+  - delay: 6000ms
+  # fin rearme_red
