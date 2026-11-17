@@ -768,6 +768,12 @@ static void tareaRed(void*) {
 // ============================================================================
 
 void setup() {
+  // Lo primero: el buzzer activo suena con nivel alto. Hasta este punto GPIO 27 está
+  // flotante (en Wokwi se vio en alto ~1,8 s); la resistencia de 4,7 kΩ a GND lo
+  // mantiene en bajo durante el arranque y esta línea lo fija como salida en bajo.
+  pinMode(PIN_BUZZER, OUTPUT);
+  digitalWrite(PIN_BUZZER, LOW);
+
   Serial.begin(115200);
   delay(200);
   mutexSerial = xSemaphoreCreateMutex();
@@ -785,7 +791,6 @@ void setup() {
   digitalWrite(PIN_LED, LOW);
   pinMode(PIN_REARME, INPUT_PULLUP);
   pinMode(PIN_HALL, INPUT_PULLUP);  // el pull-up externo de 4,7 kΩ manda; el interno es redundante
-  pinMode(PIN_BUZZER, OUTPUT);
   escribirBuzzer(false);
   ledcIniciar();
   servoAngulo(SERVO_REPOSO_DEG);

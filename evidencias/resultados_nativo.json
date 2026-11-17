@@ -30,7 +30,7 @@
   {
     "prueba": "Marcha · vuelta a cero",
     "criterio": "< 1 s desde el último pulso hasta la primera lectura de cero",
-    "observado": "último pulso t=5750.455 ms; primera TEL con 0: t=6515 ms (+764.5 ms); firmware: desde_ultimo_pulso=753.3 ms",
+    "observado": "último pulso t=5750.456 ms; primera TEL con 0: t=6515 ms (+764.5 ms); firmware: desde_ultimo_pulso=753.3 ms",
     "estado": "OK",
     "evidencia": "evidencias/marcha/nativo/"
   },
@@ -233,7 +233,7 @@
   {
     "prueba": "API · envío",
     "criterio": "sesión, lotes y evento aceptados por la API local (201/200)",
-    "observado": "17 POST; códigos [200, 201]; evento guardado: GET /eventos/RC-ABCDEF-262CEDD3-EV001 → tipo golpe, gravedad alta, ubicacion None, 90 mediciones en la ventana",
+    "observado": "17 POST; códigos [200, 201]; evento guardado: GET /eventos/RC-ABCDEF-BADC701C-EV001 → tipo golpe, gravedad alta, ubicacion None, 90 mediciones en la ventana",
     "estado": "OK",
     "evidencia": "evidencias/api/nativo/"
   },
@@ -247,7 +247,7 @@
   {
     "prueba": "API · reintento",
     "criterio": "respuesta perdida → reintento con el mismo JSON, ids y tiempos; la API responde 200",
-    "observado": "/sesiones/RC-ABCDEF-262CEDD3/mediciones hash 1B5A11C9: API 201→200 (cuerpos idénticos); /eventos hash B4AFD4A6: API 201→200 (cuerpos idénticos)",
+    "observado": "/sesiones/RC-ABCDEF-BADC701C/mediciones hash 1B5A11C9: API 201→200 (cuerpos idénticos); /eventos hash CFC6A46A: API 201→200 (cuerpos idénticos)",
     "estado": "OK",
     "evidencia": "evidencias/api/nativo/"
   },

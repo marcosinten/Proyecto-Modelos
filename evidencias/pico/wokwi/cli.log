@@ -1,4 +1,4 @@
-C:\Users\Usuario\.wokwi\bin\wokwi-cli.EXE C:\Users\Usuario\Proyecto-Modelos\firmware\carro_rc --scenario C:\Users\Usuario\Proyecto-Modelos\firmware\carro_rc\escenarios\pico.yaml --timeout 90000 --serial-log-file C:\Users\Usuario\Proyecto-Modelos\evidencias\pico\wokwi\serial.log --vcd-file C:\Users\Usuario\Proyecto-Modelos\evidencias\pico\wokwi\senales.vcd
+/home/marcos/.wokwi/bin/wokwi-cli /home/marcos/Descargas/grupo11-telemetria/firmware/carro_rc --scenario /home/marcos/Descargas/grupo11-telemetria/firmware/carro_rc/escenarios/pico.yaml --timeout 90000 --serial-log-file /home/marcos/Descargas/grupo11-telemetria/evidencias/pico/wokwi/serial.log --vcd-file /home/marcos/Descargas/grupo11-telemetria/evidencias/pico/wokwi/senales.vcd
 
 Wokwi CLI v0.29.1 (0aa185144b92)
 Connected to Wokwi Simulation API 1.0.0-20261114-g480c0991
@@ -14,19 +14,19 @@ load:0x40078000,len:11456
 ho 0 tail 12 room 4
 load:0x40080400,len:2972
 entry 0x400805dc
-INICIO carro_rc Grupo 11 origen=simulado ppr=2 umbral_golpe=16.0 m/s2 inclinacion=60 deg vuelco=90 deg permanencia=150 ms
+INICIO carro_rc Grupo 11 origen=simulado ppr=2 umbral_golpe=16.0 m/s2 inclinacion=60 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
 MPU WHO_AM_I=0x68 SMPLRT_DIV=3 CONFIG=0x02 ACCEL_CONFIG=0x18 (esperado 3, 0x02, 0x18) OK
-CAL mantÃ©n el carro quieto y horizontal 2 s
+CAL mantén el carro quieto y horizontal 2 s
 CAL OK
 [pico] Expected text matched: "CAL OK"
  muestras=500 media=(0.0000, 0.0000, 9.8067) m/s2 desv_norma=0.0000 offsets=(0.0000, 0.0000, 0.0000)
 SESION id=
 [pico] Expected text matched: "SESION id="
 [pico] delay 1000ms
-RC-C40A24-1A95FA00 origen=simulado t0_us_arranque=4025304
+RC-C40A24-11BA3072 origen=simulado t0_us_arranque=4027573
 TEL n=1 t=4 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 RED conectando a Wokwi-GUEST t_ms=20
-JSON sesion {"version":1,"sesion":{"id":"RC-C40A24-1A95FA00","origen":"simulado"}}
+JSON sesion {"version":1,"sesion":{"id":"RC-C40A24-11BA3072","origen":"simulado"}}
 TEL n=2 t=24 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=3 t=44 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=4 t=64 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -79,11 +79,11 @@ TEL n=49 t=964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=50 t=984 ax=0.000 ay=0.000 az=9.807 rol
 [pico] delay 100ms
 l=0.00 pitch=0.00 rps=0.00 k=0
-EST t=1000 f_adq=249.7 f_dec=249.7 f_tel=49.9 dt_min_us=3978 dt_max_us=4021 ciclo_max_us=1509 err_i2c=0 anillo=50 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
+EST t=1000 f_adq=249.7 f_dec=249.7 f_tel=49.9 dt_min_us=3981 dt_max_us=4021 ciclo_max_us=1510 err_i2c=0 anillo=50 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
 TEL n=51 t=1004 ax=29.420 ay=0.000 az=9.807 roll=0.00 pitch=71.57 rps=0.00 k=0
 TEL n=52 t=1024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=53 t=1044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-RED POST /sesiones sesion intento=1 bytes=70 hash=3C516794 resultado=-1 t_ms=1074
+RED POST /sesiones sesion intento=1 bytes=70 hash=AAE6B234 resultado=-1 t_ms=1075
 TEL n=54 t=1064 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=55 t=1084 ax=0.000 ay=0.000 az=9.807 ro
 [pico] delay 4ms
@@ -119,7 +119,7 @@ TEL n=76 t=1504 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=77 t=1524 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=78 t=1544 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=79 t=1564 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-RED POST /sesiones sesion intento=2 bytes=70 hash=3C516794 resultado=-1 t_ms=1590
+RED POST /sesiones sesion intento=2 bytes=70 hash=AAE6B234 resultado=-1 t_ms=1590
 TEL n=80 t=1584 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=81 t=1604 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=82 t=1624 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -141,10 +141,10 @@ TEL n=97 t=1924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=98 t=1944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=99 t=1964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 [pico] expect-pin led1:A == 0
-[pico] expect-pin esp:27 == 0
+[pico] expect-pin esp:D27 == 0
 [pico] delay 2000ms
 TEL n=100 t=1984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-EST t=2000 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3978 dt_max_us=4021 ciclo_max_us=1956 err_i2c=0 anillo=100 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
+EST t=2000 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3984 dt_max_us=4019 ciclo_max_us=1923 err_i2c=0 anillo=100 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
 TEL n=101 t=2004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=102 t=2024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=103 t=2044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -175,7 +175,7 @@ TEL n=127 t=2524 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=128 t=2544 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=129 t=2564 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=130 t=2584 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-RED POST /sesiones sesion intento=3 bytes=70 hash=3C516794 resultado=-1 t_ms=2604
+RED POST /sesiones sesion intento=3 bytes=70 hash=AAE6B234 resultado=-1 t_ms=2604
 TEL n=131 t=2604 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=132 t=2624 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=133 t=2644 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -196,7 +196,7 @@ TEL n=147 t=2924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=148 t=2944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=149 t=2964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=150 t=2984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-EST t=3004 f_adq=250.2 f_dec=250.2 f_tel=49.8 dt_min_us=3979 dt_max_us=4021 ciclo_max_us=1544 err_i2c=0 anillo=150 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
+EST t=3000 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3981 dt_max_us=4012 ciclo_max_us=1545 err_i2c=0 anillo=150 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
 TEL n=151 t=3004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=152 t=3024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=153 t=3044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -247,4 +247,4 @@ TEL n=197 t=3924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=198 t=3944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=199 t=3964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 [pico] Scenario completed successfully
-VCD file written to: C:\Users\Usuario\Proyecto-Modelos\evidencias\pico\wokwi\senales.vcd
+VCD file written to: /home/marcos/Descargas/grupo11-telemetria/evidencias/pico/wokwi/senales.vcd

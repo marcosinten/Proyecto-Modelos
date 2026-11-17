@@ -43,6 +43,6 @@ set imu1 accelY 0
 set imu1 accelZ 1
 delay 580
 expect led1 A 0
-expect esp 27 0
+expect esp D27 0
 delay 2000
 mark fin pico

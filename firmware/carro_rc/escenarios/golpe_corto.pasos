@@ -17,6 +17,6 @@ delay 150
 set btn_rearme pressed 0
 delay 150
 expect led1 A 0
-expect esp 27 0
+expect esp D27 0
 delay 1700
 mark fin golpe_corto

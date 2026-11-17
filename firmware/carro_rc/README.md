@@ -85,6 +85,18 @@ $env:WOKWI_CLI_TOKEN = "<token de https://wokwi.com/dashboard/ci>"
 py firmware\carro_rc\pruebas\ejecutar_wokwi.py
 py firmware\carro_rc\pruebas\ejecutar_wokwi.py --sin-ejecutar   # solo reevalúa los logs guardados
 ```
+En Linux (así se ejecutaron las pruebas del 16 de noviembre; el Python del sistema no trae `pip`):
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh && uv tool install platformio   # deja `pio` en el PATH
+curl -L https://wokwi.com/ci/install.sh | sh                                      # wokwi-cli en ~/.wokwi/bin
+uv venv ~/.venvs/carro_rc && uv pip install --python ~/.venvs/carro_rc/bin/python matplotlib
+export WOKWI_CLI_TOKEN=<token>
+~/.venvs/carro_rc/bin/python firmware/carro_rc/pruebas/ejecutar_pruebas.py --api http://127.0.0.1:3000
+~/.venvs/carro_rc/bin/python firmware/carro_rc/pruebas/ejecutar_wokwi.py
+```
+`ejecutar_wokwi.py` compila con `python -m platformio` si ese módulo existe y, si no, con `pio` del PATH
+(o de `~/.platformio/penv`). Si la compilación falla, muestra también la salida de error de PlatformIO.
+
 El script guarda `evidencias/<caso>/wokwi/{serial.log, senales.vcd, cli.log, grafica.png}` y genera
 `evidencias/RESULTADOS_WOKWI.md`. Los VCD del analizador lógico (D0 = LED, D1 = buzzer, D2 = servo,
 D3 = Hall, D4 = rearme) se pueden abrir en PulseView o GTKWave.
@@ -98,9 +110,19 @@ como prueba.
 `escenarios/generar.py` define los estímulos una sola vez y genera `<caso>.yaml` (Wokwi) y `<caso>.pasos`
 (banco nativo). Los valores de cada caso están en [`evidencias/README.md`](../../evidencias/README.md).
 
-**Las pruebas de Wokwi están pendientes de repetir** con este firmware (buzzer activo, golpe corto y `rueda_rps`).
-Las evidencias guardadas en `evidencias/*/wokwi/` son del firmware anterior (25 de 25 el 15 de noviembre).
-El buzzer del simulador puede no sonar con un nivel continuo: compruébalo en el analizador lógico (D1).
+**Resultado en Wokwi (16 de noviembre, placa `wokwi-esp32-devkit-v1`):** 34 de 34 comprobaciones en los
+11 escenarios (`evidencias/RESULTADOS_WOKWI.md`). Una ejecución de `inclinacion` se cortó por un error de
+conexión de Wokwi (`Connection to transport closed unexpectedly: code 1006`) y pasó al repetirla.
+
+**Buzzer en Wokwi.** El canal D1 (GPIO 27) muestra el comportamiento esperado: alterna alto/bajo cada
+200 ms durante la alarma, queda en bajo tras el rearme y no hay ninguna señal de 2,7 kHz (el intervalo
+mínimo entre cambios es de unos 200 ms). Con la resistencia de 4,7 kΩ a GND y el pin configurado al
+principio de `setup()`, D1 empieza en bajo en los 11 escenarios; antes de ese cambio arrancaba en alto
+~1,8 s en 5 de 11. **Si el componente `wokwi-buzzer` suena con un nivel continuo no se pudo observar:**
+`wokwi-cli` no reproduce audio y no captura ese componente (`Failed to render framebuffer for bz1`). Hay que
+escucharlo en VS Code o wokwi.com (opción A) durante una alarma; mientras tanto el buzzer cuenta solo como
+indicador y la comprobación válida es la del analizador lógico.
+
 `wokwi-cli` no puede capturar el circuito (solo componentes con pantalla), así que las capturas se toman
 a mano con la opción A.
 

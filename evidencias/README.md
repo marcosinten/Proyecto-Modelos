@@ -2,19 +2,30 @@
 
 Fecha: 2026-11-15 · Rama: `wokwi-carro-rc` · Firmware: `firmware/carro_rc/carro_rc.ino`
 
-> **Actualización del 16 de noviembre de 2026.** El firmware cambió (buzzer activo, golpe confirmado con
-> 2 lecturas, envío de `rueda_rps`). El banco nativo se repitió: **38 de 38** comprobaciones, incluida la
-> API local (`RESULTADOS_NATIVO.md`). **Las pruebas de Wokwi y la compilación para ESP32 están pendientes
-> de repetir**: la tabla de abajo y las carpetas `*/wokwi/` corresponden al firmware del 15 de noviembre.
-> Para repetirlas: `py -m platformio run -d firmware\carro_rc` y `py firmware\carro_rc\pruebas\ejecutar_wokwi.py`.
+> **Actualización del 16 de noviembre de 2026 (rama `wokwi-materiales-reales`).** Firmware con buzzer
+> activo, golpe confirmado con 2 lecturas, envío de `rueda_rps` y GPIO 27 en bajo desde el principio de
+> `setup()`; circuito con la placa de 30 pines `wokwi-esp32-devkit-v1` y pull-down de 4,7 kΩ en GPIO 27.
+> Se repitieron todas las pruebas en Linux:
+> - **Compilación PlatformIO:** OK, RAM 16,1 %, flash 80,7 %.
+> - **Banco nativo con la API local:** 38 de 38 (`RESULTADOS_NATIVO.md`), con lotes aceptados con 201 y
+>   `rueda_rps` en cada medición (2,0 con 4 pulsos/s y 0 al parar).
+> - **Wokwi:** 34 de 34 en 11 escenarios (`RESULTADOS_WOKWI.md`). Una ejecución de `inclinacion` se cortó por
+>   un error de conexión de Wokwi (`code 1006`) y pasó al repetirla.
+> - **Canal D1 (GPIO 27):** empieza en bajo en los 11 escenarios, alterna cada 200 ms durante la alarma, queda en
+>   bajo tras el rearme y no hay señal de 2,7 kHz.
+> - **PENDIENTE:** si el componente `wokwi-buzzer` suena con nivel continuo (la CLI no reproduce audio ni lo
+>   captura); capturas de pantalla; todo lo físico.
+>
+> La tabla de resultados de abajo es la del **15 de noviembre** (firmware anterior, con piezo pasivo) y se
+> conserva como historial. Las cifras actuales están en `RESULTADOS_NATIVO.md` y `RESULTADOS_WOKWI.md`.
 
 ## Qué se ejecutó y qué falta
 
 | Vía | Estado |
 |---|---|
-| Compilación PlatformIO (esp32dev, Arduino, espressif32 8.0.0) | **OK**: RAM 16,1 % (52 724 B), flash 80,6 % (1 056 955 B), sin advertencias |
-| **Wokwi** (wokwi-cli 0.29.1, escenarios YAML) | **OK**: 25 de 25 comprobaciones en 10 escenarios. Los 10 `cli.log` terminan con "Scenario completed successfully" |
-| Banco nativo (mismo `.ino`, reloj virtual, MPU con error de cero y ruido) | **OK**: 28 de 28, incluida la integración con la API local real |
+| Compilación PlatformIO (esp32dev, Arduino, espressif32 8.0.0) | **OK** (16 nov): RAM 16,1 % (52 740 B), flash 80,7 %, sin advertencias |
+| **Wokwi** (wokwi-cli 0.29.1, escenarios YAML) | **OK** (16 nov): 34 de 34 comprobaciones en 11 escenarios. Los 11 `cli.log` terminan con "Scenario completed successfully" |
+| Banco nativo (mismo `.ino`, reloj virtual, MPU con error de cero y ruido) | **OK** (16 nov): 38 de 38, incluida la integración con la API local real |
 | Capturas de pantalla reales | **PENDIENTES**: `wokwi-cli` solo captura componentes con pantalla ("Part does not have a valid framebuffer: esp") y añadir una pantalla saldría de la lista de materiales. Hay que tomarlas a mano (ver más abajo). Cada carpeta tiene una `grafica.png` generada a partir del log y del VCD; no es una captura de pantalla. |
 | API desde Wokwi | No aplica sin el Private Gateway de Wokwi. En Wokwi se comprueban los reintentos del mismo JSON y la integración se validó con el banco nativo contra la API real. |
 | Maqueta física | Pendiente: detección real, calibración, señal de 3,3 V al SG90 y medida del chasis |
@@ -22,7 +33,7 @@ Fecha: 2026-11-15 · Rama: `wokwi-carro-rc` · Firmware: `firmware/carro_rc/carr
 En Wokwi y en el banco las lecturas del MPU6050 se fijan para comprobar la lógica y las señales del
 circuito. La detección con el carro se comprobará con la maqueta.
 
-## Resultados
+## Resultados (15 de noviembre, firmware anterior)
 
 La columna "Wokwi" es la ejecución real en el simulador. La columna "Banco nativo" usa el mismo firmware
 con el error de cero (0,03, −0,02, 0,04 g) y el ruido (0,004 g) de un sensor real. El detalle está en

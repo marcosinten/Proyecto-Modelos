@@ -423,7 +423,7 @@ static int pinDe(const std::string& parte, const std::string& pin) {
   if (parte == "led1") return 25;
   if (parte == "bz1") return 27;
   if (parte == "servo1") return 26;
-  if (parte == "esp") return atoi(pin.c_str());
+  if (parte == "esp") return atoi(pin.c_str() + (pin[0] == 'D' ? 1 : 0));  // "D27" (DevKit V1) o "27"
   return -1;
 }
 

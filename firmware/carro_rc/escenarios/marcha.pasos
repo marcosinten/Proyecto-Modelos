@@ -85,4 +85,4 @@ set hall_sim pressed 0
 delay 1980.0
 mark fin marcha
 expect led1 A 0
-expect esp 27 0
+expect esp D27 0

@@ -2,8 +2,9 @@
 
 Requisitos:
   - WOKWI_CLI_TOKEN definido (https://wokwi.com/dashboard/ci).
-  - PlatformIO: py -m platformio run -d firmware/carro_rc
-  - wokwi-cli en el PATH o en %USERPROFILE%\\.wokwi\\bin
+  - PlatformIO: el módulo `platformio` del Python que ejecuta este script o, si no está,
+    `pio`/`platformio` en el PATH (o en ~/.platformio/penv/bin).
+  - wokwi-cli en el PATH o en ~/.wokwi/bin (%USERPROFILE%\\.wokwi\\bin en Windows).
 
 Uso (desde la raíz del repositorio):
     py firmware/carro_rc/pruebas/ejecutar_wokwi.py [--solo reposo marcha ...]
@@ -13,6 +14,7 @@ y evidencias/RESULTADOS_WOKWI.md. El caso "api" no se ejecuta en Wokwi: la API
 local solo es accesible desde la simulación con el Private Gateway de Wokwi.
 """
 import argparse
+import importlib.util
 import os
 import shutil
 import subprocess
@@ -30,8 +32,26 @@ def wokwi_cli():
     exe = shutil.which("wokwi-cli")
     if exe:
         return exe
-    alt = Path.home() / ".wokwi" / "bin" / "wokwi-cli.exe"
-    return str(alt) if alt.exists() else None
+    for nombre in ("wokwi-cli.exe", "wokwi-cli"):
+        alt = Path.home() / ".wokwi" / "bin" / nombre
+        if alt.exists():
+            return str(alt)
+    return None
+
+
+def platformio():
+    """Orden para invocar PlatformIO: `python -m platformio` si el módulo existe; si no, pio en el PATH."""
+    if importlib.util.find_spec("platformio") is not None:
+        return [sys.executable, "-m", "platformio"]
+    for nombre in ("pio", "platformio"):
+        exe = shutil.which(nombre)
+        if exe:
+            return [exe]
+    for carpeta in (Path.home() / ".platformio" / "penv" / "bin", Path.home() / ".platformio" / "penv" / "Scripts"):
+        for nombre in ("pio", "pio.exe"):
+            if (carpeta / nombre).exists():
+                return [str(carpeta / nombre)]
+    return None
 
 
 def convertir_vcd(ruta):
@@ -94,10 +114,14 @@ def main():
         if not cli:
             sys.exit("No se encontró wokwi-cli. Instálalo con: iwr https://wokwi.com/ci/install.ps1 -useb | iex")
         subprocess.run([sys.executable, str(ep.ESC / "generar.py")], check=True, capture_output=True)
-        b = subprocess.run([sys.executable, "-m", "platformio", "run", "-d", str(ep.FW)], capture_output=True, text=True)
+        pio = platformio()
+        if not pio:
+            sys.exit("No se encontró PlatformIO: ni el módulo `platformio` en este Python ni `pio` en el PATH.")
+        b = subprocess.run([*pio, "run", "-d", str(ep.FW)], capture_output=True, text=True)
         if b.returncode:
             print(b.stdout[-3000:])
-            sys.exit("La compilación con PlatformIO falló")
+            print(b.stderr[-3000:], file=sys.stderr)
+            sys.exit(f"La compilación con PlatformIO falló ({' '.join(pio)} run, código {b.returncode})")
     todos, frec = [], []
     for caso in CASOS:
         if a.solo and caso not in a.solo:

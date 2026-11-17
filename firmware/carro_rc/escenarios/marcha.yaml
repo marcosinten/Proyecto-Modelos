@@ -214,5 +214,5 @@ steps:
       value: 0
   - expect-pin:
       part-id: esp
-      pin: '27'
+      pin: 'D27'
       value: 0

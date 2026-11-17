@@ -103,4 +103,4 @@ set hall_sim pressed 0
 delay 1480.0
 mark fin frenada
 expect led1 A 0
-expect esp 27 0
+expect esp D27 0

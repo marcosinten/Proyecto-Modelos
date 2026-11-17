@@ -4,8 +4,8 @@ wait SESION id=
 mark inicio reposo
 delay 3000.0
 expect led1 A 0
-expect esp 27 0
+expect esp D27 0
 delay 3000
 expect led1 A 0
-expect esp 27 0
+expect esp D27 0
 mark fin reposo

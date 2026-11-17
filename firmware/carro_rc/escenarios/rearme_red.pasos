@@ -19,7 +19,7 @@ delay 200
 set btn_rearme pressed 0
 delay 200
 expect led1 A 0
-expect esp 27 0
+expect esp D27 0
 delay 600
 set btn_rearme pressed 1
 delay 200

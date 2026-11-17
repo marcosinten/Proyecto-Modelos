@@ -98,7 +98,7 @@ class Linea:
 
 def salidas_apagadas(L, t):
     L.en(t, "expect", "led1", "A", 0)
-    L.en(t, "expect", "esp", "27", 0)
+    L.en(t, "expect", "esp", "D27", 0)
 
 
 def escenarios():
@@ -189,7 +189,7 @@ def escenarios():
     L.en(1100, "expect", "led1", "A", 1)
     L.rearme(3000)
     L.en(3300, "expect", "led1", "A", 0)
-    L.en(3300, "expect", "esp", "27", 0)
+    L.en(3300, "expect", "esp", "D27", 0)
     L.en(5000, "mark", "fin golpe_corto")
     res.append(L)
 
@@ -200,7 +200,7 @@ def escenarios():
     L.angulos(5000, 0)
     L.rearme(6000, 200)
     L.en(6400, "expect", "led1", "A", 0)
-    L.en(6400, "expect", "esp", "27", 0)
+    L.en(6400, "expect", "esp", "D27", 0)
     L.rearme(7000, 200)
     L.en(9000, "write", "wifi on\\n")
     L.en(15000, "mark", "fin rearme_red")

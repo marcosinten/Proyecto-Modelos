@@ -1,4 +1,4 @@
-C:\Users\Usuario\.wokwi\bin\wokwi-cli.EXE C:\Users\Usuario\Proyecto-Modelos\firmware\carro_rc --scenario C:\Users\Usuario\Proyecto-Modelos\firmware\carro_rc\escenarios\rearme_red.yaml --timeout 90000 --serial-log-file C:\Users\Usuario\Proyecto-Modelos\evidencias\rearme_red\wokwi\serial.log --vcd-file C:\Users\Usuario\Proyecto-Modelos\evidencias\rearme_red\wokwi\senales.vcd
+/home/marcos/.wokwi/bin/wokwi-cli /home/marcos/Descargas/grupo11-telemetria/firmware/carro_rc --scenario /home/marcos/Descargas/grupo11-telemetria/firmware/carro_rc/escenarios/rearme_red.yaml --timeout 90000 --serial-log-file /home/marcos/Descargas/grupo11-telemetria/evidencias/rearme_red/wokwi/serial.log --vcd-file /home/marcos/Descargas/grupo11-telemetria/evidencias/rearme_red/wokwi/senales.vcd
 
 Wokwi CLI v0.29.1 (0aa185144b92)
 Connected to Wokwi Simulation API 1.0.0-20261114-g480c0991
@@ -14,19 +14,19 @@ load:0x40078000,len:11456
 ho 0 tail 12 room 4
 load:0x40080400,len:2972
 entry 0x400805dc
-INICIO carro_rc Grupo 11 origen=simulado ppr=2 umbral_golpe=16.0 m/s2 inclinacion=60 deg vuelco=90 deg permanencia=150 ms
+INICIO carro_rc Grupo 11 origen=simulado ppr=2 umbral_golpe=16.0 m/s2 inclinacion=60 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
 MPU WHO_AM_I=0x68 SMPLRT_DIV=3 CONFIG=0x02 ACCEL_CONFIG=0x18 (esperado 3, 0x02, 0x18) OK
-CAL mantÃ©n el carro quieto y horizontal 2 s
+CAL mantén el carro quieto y horizontal 2 s
 CAL OK
 [rearme_red] Expected text matched: "CAL OK"
  muestras=500 media=(0.0000, 0.0000, 9.8067) m/s2 desv_norma=0.0000 offsets=(0.0000, 0.0000, 0.0000)
 SESION id=
 [rearme_red] Expected text matched: "SESION id="
 [rearme_red] delay 3000ms
-RC-C40A24-415A3C0C origen=simulado t0_us_arranque=4025168
+RC-C40A24-9D1BB40A origen=simulado t0_us_arranque=4026573
 TEL n=1 t=4 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 RED conectando a Wokwi-GUEST t_ms=20
-JSON sesion {"version":1,"sesion":{"id":"RC-C40A24-415A3C0C","origen":"simulado"}}
+JSON sesion {"version":1,"sesion":{"id":"RC-C40A24-9D1BB40A","origen":"simulado"}}
 TEL n=2 t=24 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=3 t=44 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=4 t=64 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -76,11 +76,11 @@ TEL n=47 t=924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=48 t=944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=49 t=964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=50 t=984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-EST t=1000 f_adq=249.7 f_dec=249.7 f_tel=49.9 dt_min_us=3978 dt_max_us=4020 ciclo_max_us=1509 err_i2c=0 anillo=50 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
+EST t=1000 f_adq=249.7 f_dec=249.7 f_tel=49.9 dt_min_us=3981 dt_max_us=4021 ciclo_max_us=1510 err_i2c=0 anillo=50 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
 TEL n=51 t=1004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=52 t=1024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=53 t=1044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-RED POST /sesiones sesion intento=1 bytes=70 hash=33E5D215 resultado=-1 t_ms=1070
+RED POST /sesiones sesion intento=1 bytes=70 hash=AECD9572 resultado=-1 t_ms=1070
 TEL n=54 t=1064 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=55 t=1084 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=56 t=1104 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -108,7 +108,7 @@ TEL n=77 t=1524 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=78 t=1544 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=79 t=1564 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=80 t=1584 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-RED POST /sesiones sesion intento=2 bytes=70 hash=33E5D215 resultado=-1 t_ms=1604
+RED POST /sesiones sesion intento=2 bytes=70 hash=AECD9572 resultado=-1 t_ms=1604
 TEL n=81 t=1604 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=82 t=1624 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=83 t=1644 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -129,7 +129,7 @@ TEL n=97 t=1924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=98 t=1944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=99 t=1964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=100 t=1984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-EST t=2000 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3980 dt_max_us=4020 ciclo_max_us=1528 err_i2c=0 anillo=100 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
+EST t=2000 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3979 dt_max_us=4022 ciclo_max_us=1530 err_i2c=0 anillo=100 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
 TEL n=101 t=2004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=102 t=2024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=103 t=2044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -161,7 +161,7 @@ TEL n=128 t=2544 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=129 t=2564 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=130 t=2584 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=131 t=2604 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-RED POST /sesiones sesion intento=3 bytes=70 hash=33E5D215 resultado=-1 t_ms=2637
+RED POST /sesiones sesion intento=3 bytes=70 hash=AECD9572 resultado=-1 t_ms=2637
 TEL n=132 t=2624 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=133 t=2644 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=134 t=2664 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -182,11 +182,11 @@ TEL n=148 t=2944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=149 t=2964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 [rearme_red] delay 1000ms
 TEL n=150 t=2984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-EST t=3000 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3980 dt_max_us=4020 ciclo_max_us=1543 err_i2c=0 anillo=150 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
+EST t=3000 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3984 dt_max_us=4016 ciclo_max_us=1545 err_i2c=0 anillo=150 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
 ORDEN wifi off t_ms=3019
 TEL n=151 t=3004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
+RED wifi apagado por orden t_ms=3019; alertas y registro siguen locales
 TEL n=152 t=3024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-RED wifi apagado por orden t_ms=3037; alertas y registro siguen locales
 TEL n=153 t=3044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=154 t=3064 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=155 t=3084 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -236,7 +236,7 @@ TEL n=198 t=3944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=199 t=3964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 [rearme_red] delay 300ms
 TEL n=200 t=3984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-EST t=4000 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3980 dt_max_us=4022 ciclo_max_us=1543 err_i2c=0 anillo=200 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
+EST t=4000 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3985 dt_max_us=4016 ciclo_max_us=1542 err_i2c=0 anillo=200 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
 TEL n=201 t=4004 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
 TEL n=202 t=4024 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
 TEL n=203 t=4044 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
@@ -244,8 +244,8 @@ TEL n=204 t=4064 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
 TEL n=205 t=4084 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
 TEL n=206 t=4104 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
 TEL n=207 t=4124 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
-DETECCION id=RC-C40A24-415A3C0C-EV001 tipo_inicial=vuelco motivo=permanencia t_ms=4156 inicio_condicion=4004 norma=9.81 roll=90.00 pitch=0.00
-ALERTA tipo=vuelco t_det_ms=4156 t_det_us_arranque=8181599 LED=+1.506 ms PIEZO=+1.509 ms SERVO(orden)=+1.512 ms
+DETECCION id=RC-C40A24-9D1BB40A-EV001 tipo_inicial=vuelco motivo=permanencia t_ms=4156 inicio_condicion=4004 norma=9.81 roll=90.00 pitch=0.00
+ALERTA tipo=vuelco t_det_ms=4156 t_det_us_arranque=8183033 LED=+1.480 ms BUZZER=+1.480 ms SERVO(orden)=+1.483 ms
 TEL n=208 t=4144 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
 TEL n=209 t=4164 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
 TEL n=210 t=4184 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
@@ -292,8 +292,8 @@ TEL n=248 t=4944 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
 TEL n=249 t=4964 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
 [rearme_red] delay 1000ms
 TEL n=250 t=4984 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
-EST t=5000 f_adq=249.9 f_dec=249.9 f_tel=50.0 dt_min_us=3978 dt_max_us=4022 ciclo_max_us=2256 err_i2c=0 anillo=250 perdidas=0 log_perdidas=0 wifi=0 estado=EPISODIO
-RED sin conexion t_ms=5014 pendiente=sesion hash=33E5D215 anillo=250; datos y alertas locales activos
+EST t=5000 f_adq=249.9 f_dec=249.9 f_tel=50.0 dt_min_us=3991 dt_max_us=4009 ciclo_max_us=2192 err_i2c=0 anillo=250 perdidas=0 log_perdidas=0 wifi=0 estado=EPISODIO
+RED sin conexion t_ms=5015 pendiente=sesion hash=AECD9572 anillo=250; datos y alertas locales activos
 TEL n=251 t=5004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=252 t=5024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=253 t=5044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -318,7 +318,7 @@ TEL n=271 t=5404 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=272 t=5424 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=273 t=5444 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=274 t=5464 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-EVENTO id=RC-C40A24-415A3C0C-EV001 tipo=vuelco gravedad=alta t_inicio=3004 t_det=4156 t_act=4157 t_fin=5500 cierre=condicion_ausente
+EVENTO id=RC-C40A24-9D1BB40A-EV001 tipo=vuelco gravedad=alta t_inicio=3004 t_det=4156 t_act=4157 t_fin=5500 cierre=condicion_ausente
 TEL n=275 t=5484 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=276 t=5504 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=277 t=5524 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -348,7 +348,7 @@ DET
 [rearme_red] delay 200ms
 ECTOR listo t_ms=6000
 TEL n=300 t=5984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-EST t=6004 f_adq=250.3 f_dec=250.3 f_tel=49.9 dt_min_us=3981 dt_max_us=4019 ciclo_max_us=1550 err_i2c=0 anillo=300 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
+EST t=6004 f_adq=250.3 f_dec=250.3 f_tel=49.9 dt_min_us=3991 dt_max_us=4009 ciclo_max_us=1552 err_i2c=0 anillo=300 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
 TEL n=301 t=6004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 REARME t_ms=6036 alarma=apagada detector=REPOSO eventos=1
 TEL n=302 t=6024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -371,7 +371,7 @@ TEL n=317 t=6324 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=318 t=6344 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=319 t=6364 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 [rearme_red] expect-pin led1:A == 0
-[rearme_red] expect-pin esp:27 == 0
+[rearme_red] expect-pin esp:D27 == 0
 [rearme_red] delay 600ms
 TEL n=320 t=6384 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=321 t=6404 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -405,7 +405,7 @@ TEL n=348 t=6944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=349 t=6964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 [rearme_red] delay 200ms
 TEL n=350 t=6984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-EST t=7008 f_adq=250.0 f_dec=250.0 f_tel=49.8 dt_min_us=3981 dt_max_us=4019 ciclo_max_us=1551 err_i2c=0 anillo=350 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
+EST t=7008 f_adq=250.0 f_dec=250.0 f_tel=49.8 dt_min_us=3991 dt_max_us=4009 ciclo_max_us=1553 err_i2c=0 anillo=350 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
 TEL n=351 t=7004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 REARME t_ms=7036 alarma=ya_inactiva detector=REPOSO eventos=1
 TEL n=352 t=7024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -458,7 +458,7 @@ TEL n=397 t=7924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=398 t=7944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=399 t=7964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=400 t=7984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-EST t=8008 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3981 dt_max_us=4019 ciclo_max_us=1540 err_i2c=0 anillo=400 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
+EST t=8008 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3991 dt_max_us=4009 ciclo_max_us=1542 err_i2c=0 anillo=400 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
 TEL n=401 t=8004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=402 t=8024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=403 t=8044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -511,10 +511,10 @@ TEL n=449 t=8964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 [rearme_red] delay 6000ms
 TEL n=450 t=8984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 ORDEN wifi on t_ms=9007
-EST t=9008 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3981 dt_max_us=4019 ciclo_max_us=1335 err_i2c=0 anillo=450 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
+EST t=9008 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3991 dt_max_us=4009 ciclo_max_us=1336 err_i2c=0 anillo=450 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
 TEL n=451 t=9004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=452 t=9024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-RED conectando a Wokwi-GUEST t_ms=9014
+RED conectando a Wokwi-GUEST t_ms=9015
 TEL n=453 t=9044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=454 t=9064 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=455 t=9084 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -563,14 +563,14 @@ TEL n=497 t=9924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=498 t=9944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=499 t=9964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=500 t=9984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-EST t=10008 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3978 dt_max_us=4022 ciclo_max_us=1540 err_i2c=0 anillo=500 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
-RED sin conexion t_ms=10018 pendiente=sesion hash=33E5D215 anillo=500; datos y alertas locales activos
+EST t=10008 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3982 dt_max_us=4019 ciclo_max_us=1542 err_i2c=0 anillo=500 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
+RED sin conexion t_ms=10020 pendiente=sesion hash=AECD9572 anillo=500; datos y alertas locales activos
 TEL n=501 t=10004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=502 t=10024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=503 t=10044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=504 t=10064 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=505 t=10084 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-RED POST /sesiones sesion intento=4 bytes=70 hash=33E5D215 resultado=-1 t_ms=10104
+RED POST /sesiones sesion intento=4 bytes=70 hash=AECD9572 resultado=-1 t_ms=10104
 TEL n=506 t=10104 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=507 t=10124 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=508 t=10144 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -616,7 +616,7 @@ TEL n=547 t=10924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=548 t=10944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=549 t=10964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=550 t=10984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-EST t=11008 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3980 dt_max_us=4020 ciclo_max_us=1555 err_i2c=0 anillo=550 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
+EST t=11008 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3988 dt_max_us=4012 ciclo_max_us=1557 err_i2c=0 anillo=550 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
 TEL n=551 t=11004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=552 t=11024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=553 t=11044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -667,7 +667,7 @@ TEL n=597 t=11924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=598 t=11944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=599 t=11964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=600 t=11984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-EST t=12008 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3980 dt_max_us=4020 ciclo_max_us=1348 err_i2c=0 anillo=600 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
+EST t=12008 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3991 dt_max_us=4009 ciclo_max_us=1349 err_i2c=0 anillo=600 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
 TEL n=601 t=12004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=602 t=12024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=603 t=12044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -718,7 +718,7 @@ TEL n=647 t=12924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=648 t=12944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=649 t=12964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=650 t=12984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-EST t=13008 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3980 dt_max_us=4020 ciclo_max_us=1348 err_i2c=0 anillo=650 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
+EST t=13008 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3991 dt_max_us=4013 ciclo_max_us=1557 err_i2c=0 anillo=650 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
 TEL n=651 t=13004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=652 t=13024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=653 t=13044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -769,14 +769,14 @@ TEL n=697 t=13924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=698 t=13944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=699 t=13964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=700 t=13984 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-EST t=14008 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3980 dt_max_us=4020 ciclo_max_us=1348 err_i2c=0 anillo=700 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
+EST t=14008 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=3991 dt_max_us=4009 ciclo_max_us=1349 err_i2c=0 anillo=700 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
 TEL n=701 t=14004 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=702 t=14024 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=703 t=14044 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=704 t=14064 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=705 t=14084 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=706 t=14104 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
-RED POST /sesiones sesion intento=5 bytes=70 hash=33E5D215 resultado=-1 t_ms=14137
+RED POST /sesiones sesion intento=5 bytes=70 hash=AECD9572 resultado=-1 t_ms=14137
 TEL n=707 t=14124 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=708 t=14144 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=709 t=14164 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
@@ -821,4 +821,4 @@ TEL n=747 t=14924 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=748 t=14944 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 TEL n=749 t=14964 ax=0.000 ay=0.000 az=9.807 roll=0.00 pitch=0.00 rps=0.00 k=0
 [rearme_red] Scenario completed successfully
-VCD file written to: C:\Users\Usuario\Proyecto-Modelos\evidencias\rearme_red\wokwi\senales.vcd
+VCD file written to: /home/marcos/Descargas/grupo11-telemetria/evidencias/rearme_red/wokwi/senales.vcd

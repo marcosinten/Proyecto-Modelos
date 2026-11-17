@@ -14,7 +14,7 @@ Guía de montaje con los materiales comprados (revisión del 16 de noviembre de 
 | 1 | Buzzer activo de 5 V, TMB12A05 | Alerta sonora: suena con nivel alto, pitido intermitente de 200 ms |
 | 1 | Servo SG90 + banderita | Alerta mecánica (0° en reposo, 90° en alerta) |
 | 1 | Pulsador NA | Rearme |
-| 1 | Resistencia de 4,7 kΩ | Pull-up de la salida del A3144 a 3,3 V |
+| 2 | Resistencia de 4,7 kΩ | Pull-up de la salida del A3144 a 3,3 V y pull-down del buzzer (GPIO27 a GND) |
 | 1 + 1 | Condensador cerámico de 100 nF + electrolítico de 470 µF, 35 V | Desacoplo del Hall y reserva del servo |
 | 1 | Power bank de 5 V (≥ 3 A, 2 salidas) | Salida 1: ESP32. Los 5 V del Hall y del servo: ver «Alimentación de 5 V» |
 | 1 | Protoboard de 400 puntos, jumpers macho-macho y macho-hembra, bornes de tornillo, cable rojo/negro | Montaje |
@@ -25,7 +25,7 @@ Repuestos sin instalar: 1 A3144, 2 imanes, 1 LED, 1 buzzer, resistencias, 1 × 4
 
 El DevKit V1 de 30 pines es casi tan ancho como la protoboard de 400 puntos y no deja filas libres. **No lo insertes**: fíjalo a la base y conecta cada pin con un jumper macho-hembra (la punta hembra en el pin del ESP32 y la macho en la protoboard).
 
-El circuito de Wokwi (`diagram.json`) usa la placa DevKit-C de 38 pines porque es la que ofrece el simulador. Los números de GPIO son los mismos: **guíate por el número impreso junto a cada pin (D21, D22, D25…), no por su posición en el dibujo**.
+El circuito de Wokwi (`diagram.json`) usa la misma placa que compramos, el DevKit V1 de 30 pines (`wokwi-esp32-devkit-v1`), con los mismos nombres de pin que lleva impresos: D21, D22, D25, D26, D27, D32, D33, 3V3, VIN y GND. El dibujo sirve de referencia directa para el montaje. En esta placa no hay un pin llamado «5V»: los 5 V del USB salen por **VIN**.
 
 ## Conexiones pin a pin
 
@@ -37,6 +37,7 @@ El circuito de Wokwi (`diagram.json`) usa la placa DevKit-C de 38 pines porque e
 | MPU6050 SCL | ESP32 GPIO22 | |
 | ESP32 GPIO25 | Resistencia 330 Ω → ánodo del LED (pata larga) | Cátodo (pata corta, lado plano) a GND |
 | ESP32 GPIO27 | Buzzer activo, pata «+» (la larga) | Pata «−» a GND. Antes haz la prueba del buzzer de más abajo |
+| ESP32 GPIO27 | Resistencia 4,7 kΩ → GND | **Pull-down del buzzer.** Durante el arranque (≈ 1,8 s hasta que `setup()` configura el pin) GPIO27 queda flotante; en Wokwi se vio en alto en 5 de 11 arranques, y con un buzzer activo eso es un pitido al encender. La resistencia lo mantiene en bajo; el firmware además pone el pin como salida en bajo como primera instrucción de `setup()`. Con 4,7 kΩ a 3,3 V el pin solo entrega 0,7 mA de más cuando suena |
 | ESP32 GPIO26 | Servo SG90, señal (naranja) | |
 | +5 V (ver «Alimentación de 5 V») | Servo rojo (V+) y A3144 pata 1 (VCC) | |
 | GND de esa misma fuente | Servo marrón (GND), A3144 pata 2 (GND) y **GND del ESP32** | GND común obligatorio |
