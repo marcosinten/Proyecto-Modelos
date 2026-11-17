@@ -1,0 +1,30 @@
+# Wi-Fi apagado por orden serial; vuelco 1 s; rearme con rebote; segundo rearme sin alarma; Wi-Fi encendido.
+wait CAL OK
+wait SESION id=
+delay 3000.0
+write wifi off\n
+delay 1000
+set imu1 accelX 0.0
+set imu1 accelY 1.0
+set imu1 accelZ 0.0
+delay 300
+expect led1 A 1
+delay 700
+set imu1 accelX 0.0
+set imu1 accelY 0.0
+set imu1 accelZ 1.0
+delay 1000
+set btn_rearme pressed 1
+delay 200
+set btn_rearme pressed 0
+delay 200
+expect led1 A 0
+expect esp D27 0
+delay 600
+set btn_rearme pressed 1
+delay 200
+set btn_rearme pressed 0
+delay 1800
+write wifi on\n
+delay 6000
+mark fin rearme_red

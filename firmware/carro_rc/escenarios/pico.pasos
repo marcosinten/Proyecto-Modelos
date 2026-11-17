@@ -1,0 +1,48 @@
+# 5 picos de ax = 3 g (29,4 m/s²) de 4 ms cada 104 ms: caen en fases distintas de la ventana de 20 ms.
+wait CAL OK
+wait SESION id=
+delay 1000.0
+set imu1 accelX 3.0
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 4
+set imu1 accelX 0
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 100
+set imu1 accelX 3.0
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 4
+set imu1 accelX 0
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 100
+set imu1 accelX 3.0
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 4
+set imu1 accelX 0
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 100
+set imu1 accelX 3.0
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 4
+set imu1 accelX 0
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 100
+set imu1 accelX 3.0
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 4
+set imu1 accelX 0
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 580
+expect led1 A 0
+expect esp D27 0
+delay 2000
+mark fin pico

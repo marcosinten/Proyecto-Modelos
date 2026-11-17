@@ -1,0 +1,27 @@
+name: 'reposo'
+version: 1
+author: 'Grupo 11'
+# MPU6050 horizontal (0, 0, 1 g) durante 6 s tras calibrar. Sin estímulos.
+steps:
+  - wait-serial: 'CAL OK'
+  - wait-serial: 'SESION id='
+  # inicio reposo
+  - delay: 3000ms
+  - expect-pin:
+      part-id: led1
+      pin: 'A'
+      value: 0
+  - expect-pin:
+      part-id: esp
+      pin: 'D27'
+      value: 0
+  - delay: 3000ms
+  - expect-pin:
+      part-id: led1
+      pin: 'A'
+      value: 0
+  - expect-pin:
+      part-id: esp
+      pin: 'D27'
+      value: 0
+  # fin reposo

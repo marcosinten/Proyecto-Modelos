@@ -55,5 +55,5 @@ try {
  viewer.update(flat,.3,0,1);
  assert(Math.abs(wheel.rotation.x+2*Math.PI)<1e-9);
  viewer.destroy();
- console.log('PASS: viewer loads the Oldsmobile and straight road; contact at 20 camera/roll combinations; pause, rewind, real-data stationary mode; frozen telemetry untouched.');
+ console.log('PASS: viewer loads the Oldsmobile and straight road; contact at 20 camera/roll combinations; pause, rewind, real-data stationary mode; Hall wheel turns spin in place and hold when stopped; frozen telemetry untouched.');
 } finally {await fs.unlink('scripts/.viewer-harness.mjs');}

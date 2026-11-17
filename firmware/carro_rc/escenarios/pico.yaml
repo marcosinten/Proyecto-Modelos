@@ -1,0 +1,148 @@
+name: 'pico'
+version: 1
+author: 'Grupo 11'
+# 5 picos de ax = 3 g (29,4 m/s²) de 4 ms cada 104 ms: caen en fases distintas de la ventana de 20 ms.
+steps:
+  - wait-serial: 'CAL OK'
+  - wait-serial: 'SESION id='
+  - delay: 1000ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 3.0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 4ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 100ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 3.0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 4ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 100ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 3.0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 4ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 100ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 3.0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 4ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 100ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 3.0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 4ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 580ms
+  - expect-pin:
+      part-id: led1
+      pin: 'A'
+      value: 0
+  - expect-pin:
+      part-id: esp
+      pin: 'D27'
+      value: 0
+  - delay: 2000ms
+  # fin pico

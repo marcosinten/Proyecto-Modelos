@@ -1,0 +1,284 @@
+name: 'frenada'
+version: 1
+author: 'Grupo 11'
+# 4 pulsos/s 3 s; frenada a 2 pulsos/s 2 s con ax hasta -0,714 g (-7 m/s²); 1,5 pulsos/s 2 s; parada.
+steps:
+  - wait-serial: 'CAL OK'
+  - wait-serial: 'SESION id='
+  - delay: 1000ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: -0.3
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 180ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: -0.55
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 200ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: -0.714
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 100ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 380ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: -0.55
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 100ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 80ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: -0.3
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 200ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0.0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 200ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 480ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 646.667ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 646.666ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 1480ms
+  # fin frenada
+  - expect-pin:
+      part-id: led1
+      pin: 'A'
+      value: 0
+  - expect-pin:
+      part-id: esp
+      pin: 'D27'
+      value: 0

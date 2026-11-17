@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "author": "Grupo 11",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-mpu6050", "id": "imu1", "top": -140, "left": 150, "attrs": {} },
+    { "type": "wokwi-led", "id": "led1", "top": 40, "left": 260, "attrs": { "color": "red", "label": "LED alerta" } },
+    { "type": "wokwi-resistor", "id": "r_led", "top": 130, "left": 200, "rotate": 0, "attrs": { "value": "330" } },
+    { "type": "wokwi-buzzer", "id": "bz1", "top": 40, "left": 340, "attrs": { "volume": "0.05" } },
+    { "type": "wokwi-resistor", "id": "r_bz", "top": 120, "left": 400, "rotate": 90, "attrs": { "value": "4700" } },
+    { "type": "wokwi-servo", "id": "servo1", "top": 200, "left": 300, "attrs": { "horn": "single" } },
+    { "type": "wokwi-pushbutton", "id": "btn_rearme", "top": 260, "left": -180, "attrs": { "color": "green", "label": "Rearme" } },
+    { "type": "wokwi-resistor", "id": "r_hall", "top": -60, "left": -200, "rotate": 90, "attrs": { "value": "4700" } },
+    { "type": "wokwi-pushbutton", "id": "hall_sim", "top": 120, "left": -200, "attrs": { "color": "blue", "label": "Estimulo Hall (A3144 OUT)", "bounce": "0" } },
+    { "type": "wokwi-logic-analyzer", "id": "logic1", "top": 360, "left": 60, "attrs": { "bufferSize": "1000000" } }
+  ],
+  "connections": [
+    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+
+    [ "imu1:VCC", "esp:3V3", "red", [] ],
+    [ "imu1:GND", "esp:GND.2", "black", [] ],
+    [ "imu1:SDA", "esp:D21", "green", [] ],
+    [ "imu1:SCL", "esp:D22", "yellow", [] ],
+
+    [ "esp:D25", "r_led:1", "orange", [] ],
+    [ "r_led:2", "led1:A", "orange", [] ],
+    [ "led1:C", "esp:GND.2", "black", [] ],
+
+    [ "bz1:2", "esp:D27", "purple", [] ],
+    [ "bz1:1", "esp:GND.2", "black", [] ],
+    [ "r_bz:1", "esp:D27", "purple", [] ],
+    [ "r_bz:2", "esp:GND.2", "black", [] ],
+
+    [ "servo1:PWM", "esp:D26", "orange", [] ],
+    [ "servo1:V+", "esp:VIN", "red", [] ],
+    [ "servo1:GND", "esp:GND.1", "black", [] ],
+
+    [ "btn_rearme:1.r", "esp:D33", "white", [] ],
+    [ "btn_rearme:2.r", "esp:GND.1", "black", [] ],
+
+    [ "r_hall:1", "esp:3V3", "red", [] ],
+    [ "r_hall:2", "esp:D32", "blue", [] ],
+    [ "hall_sim:1.r", "esp:D32", "blue", [] ],
+    [ "hall_sim:2.r", "esp:GND.1", "black", [] ],
+
+    [ "logic1:D0", "esp:D25", "orange", [] ],
+    [ "logic1:D1", "esp:D27", "purple", [] ],
+    [ "logic1:D2", "esp:D26", "orange", [] ],
+    [ "logic1:D3", "esp:D32", "blue", [] ],
+    [ "logic1:D4", "esp:D33", "white", [] ],
+    [ "logic1:GND", "esp:GND.1", "black", [] ]
+  ],
+  "dependencies": {}
+}

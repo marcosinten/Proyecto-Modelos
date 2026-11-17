@@ -1,0 +1,106 @@
+# 4 pulsos/s 3 s; frenada a 2 pulsos/s 2 s con ax hasta -0,714 g (-7 m/s²); 1,5 pulsos/s 2 s; parada.
+wait CAL OK
+wait SESION id=
+delay 1000.0
+set hall_sim pressed 1
+delay 20.0
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 20.0
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 20.0
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 20.0
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 20.0
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 20.0
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 20.0
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 20.0
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 20.0
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 20.0
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 20.0
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 20.0
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+set imu1 accelX -0.3
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 20.0
+set hall_sim pressed 0
+delay 180.0
+set imu1 accelX -0.55
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 200
+set imu1 accelX -0.714
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 100.0
+set hall_sim pressed 1
+delay 20.0
+set hall_sim pressed 0
+delay 380.0
+set imu1 accelX -0.55
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 100.0
+set hall_sim pressed 1
+delay 20.0
+set hall_sim pressed 0
+delay 80.0
+set imu1 accelX -0.3
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 200
+set imu1 accelX 0.0
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 200.0
+set hall_sim pressed 1
+delay 20.0
+set hall_sim pressed 0
+delay 480.0
+set hall_sim pressed 1
+delay 20.0
+set hall_sim pressed 0
+delay 646.667
+set hall_sim pressed 1
+delay 20.0
+set hall_sim pressed 0
+delay 646.666
+set hall_sim pressed 1
+delay 20.0
+set hall_sim pressed 0
+delay 1480.0
+mark fin frenada
+expect led1 A 0
+expect esp D27 0

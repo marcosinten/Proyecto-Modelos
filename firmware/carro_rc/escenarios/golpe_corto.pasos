@@ -1,0 +1,22 @@
+# Golpe breve: ax = 2,5 g (24,5 m/s²) durante 12 ms (3 lecturas de 250 Hz); rearme 2 s después.
+wait CAL OK
+wait SESION id=
+delay 1000.0
+set imu1 accelX 2.5
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 12
+set imu1 accelX 0
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 88
+expect led1 A 1
+delay 1900
+set btn_rearme pressed 1
+delay 150
+set btn_rearme pressed 0
+delay 150
+expect led1 A 0
+expect esp D27 0
+delay 1700
+mark fin golpe_corto

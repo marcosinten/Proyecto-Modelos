@@ -1,0 +1,11 @@
+# MPU6050 horizontal (0, 0, 1 g) durante 6 s tras calibrar. Sin estímulos.
+wait CAL OK
+wait SESION id=
+mark inicio reposo
+delay 3000.0
+expect led1 A 0
+expect esp D27 0
+delay 3000
+expect led1 A 0
+expect esp D27 0
+mark fin reposo
