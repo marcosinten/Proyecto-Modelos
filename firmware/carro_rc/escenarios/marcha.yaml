@@ -1,0 +1,218 @@
+name: 'marcha'
+version: 1
+author: 'Grupo 11'
+# 4 pulsos/s durante 5 s (20 imanes, 20 ms en LOW), luego sin pulsos 2 s.
+steps:
+  - wait-serial: 'CAL OK'
+  - wait-serial: 'SESION id='
+  - delay: 1000ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  # ultimo pulso programado t=5750 ms
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 1980ms
+  # fin marcha
+  - expect-pin:
+      part-id: led1
+      pin: 'A'
+      value: 0
+  - expect-pin:
+      part-id: esp
+      pin: '27'
+      value: 0

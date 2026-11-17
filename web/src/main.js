@@ -20,6 +20,8 @@ let liveSamples=[], liveActive=false, pageNumber=0, previousRuns=[];
 let liveBusy=false, liveGeneration=0;
 let impactTime;
 let wheelTurnsBySample = [];
+// Live wheel motion: last rueda_rps received, when it arrived and the turns accumulated on screen.
+let liveRps = null, liveStamp = 0, liveTurns = 0, lastLiveFrame = 0;
 const seconds = ms => (ms / 1000).toLocaleString('es-EC', {maximumFractionDigits:3});
 async function request(path,body) {
  const response=await fetch('/api/v1'+path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(6000)});
@@ -44,7 +46,7 @@ function render() {
  const simulation=page==='simulacion';
  let title=detail?`${label[current.evento.tipo]||current.evento.tipo} · ${current.evento.id}`:simulation?'Simulación de incidentes':'Monitor de telemetría';
  const desc=detail?`Sesión ${current.sesion.id} · Reproducción de las mediciones registradas`:simulation?'Explora escenarios y observa cómo responden las reglas de detección.':'Una vista completa del movimiento, la orientación y los incidentes del carro.';
- $('#main').innerHTML=(detail?'<a class="back" href="#historial">← Volver al historial</a>':'')+heading(title,desc,`<button class="secondary" id="export">↓ Exportar Excel</button>`)+(simulation?simulationForm():detail?'':`<div class="mode-row"><div class="tabs"><button id="demo-mode" class="selected">Demostración</button><button id="live-mode">En vivo</button></div><span class="helper" id="mode-help">Escenario local · puedes explorarlo sin conectar el circuito</span></div><form id="live-form" hidden><label>Identificador de sesión <input name="session" placeholder="SES-001 o ID del ESP32" required pattern="[A-Za-z0-9_-]{1,64}"></label><button class="primary">Conectar sesión</button></form>`)+dashboard()+(!simulation&&!detail?`<section class="card recent"><div class="card-title"><div><h2>Eventos recientes</h2><p>El registro de tus últimas pruebas</p></div><a href="#historial">Ver historial →</a></div>${eventTable(events.slice(0,3))}</section>`:'');
+ $('#main').innerHTML=(detail?'<a class="back" href="#historial">← Volver al historial</a>':'')+heading(title,desc,`<button class="secondary" id="export">↓ Exportar Excel</button>`)+(simulation?simulationForm():detail?'':`<div class="mode-row"><div class="tabs"><button id="demo-mode" class="selected">Demostración</button><button id="live-mode">En vivo</button></div><span class="helper" id="mode-help">Escenario local · puedes explorarlo sin conectar el circuito</span></div><form id="live-form" hidden><label>Identificador de sesión <input name="session" placeholder="SES-001 o ID del ESP32" required pattern="[A-Za-z0-9_\\-]{1,64}"></label><button class="primary">Conectar sesión</button></form>`)+dashboard()+(!simulation&&!detail?`<section class="card recent"><div class="card-title"><div><h2>Eventos recientes</h2><p>El registro de tus últimas pruebas</p></div><a href="#historial">Ver historial →</a></div>${eventTable(events.slice(0,3))}</section>`:'');
  $('#export').onclick=openExport;
  viewer=crearVisor($('#car'));
  if(viewer.mode==='2d'){
@@ -191,7 +193,7 @@ function update(){
  const impact = avance != null && elapsed >= 0 && elapsed < 500
    ? -.48 * Math.sin(elapsed * Math.PI / 150) * (1 - elapsed / 500) ** 2
    : 0;
- viewer.update(m, avance, impact, turns);
+ viewer.update(m, avance, impact, liveActive ? (liveRps == null ? undefined : liveTurns) : turns, liveActive);
  const detected = current.evento && position >= current.evento.t_deteccion_ms;
  $('#protocol').textContent = detected
    ? current.sesion.origen === 'simulado'
@@ -210,7 +212,11 @@ function update(){
 
  charts.forEach(c=>c.draw());
 }
-function frame(time){if(running){if(lastFrame)position=Math.min(end(),position+(time-lastFrame)*speed);lastFrame=time;if(position>=end())running=false;update();}requestAnimationFrame(frame);}
+function frame(time){
+ // En vivo: the car keeps rolling at the last reported wheel speed and stops when it reports zero or data goes stale.
+ if(liveActive&&liveRps>.01&&time-liveStamp<1500&&lastLiveFrame){liveTurns+=liveRps*Math.min(.1,(time-lastLiveFrame)/1000);update();}
+ lastLiveFrame=time;
+ if(running){if(lastFrame)position=Math.min(end(),position+(time-lastFrame)*speed);lastFrame=time;if(position>=end())running=false;update();}requestAnimationFrame(frame);}
 function eventTable(list){return `<div class="table-scroll"><table><thead><tr><th>Evento / sesión</th><th>Tipo</th><th>Gravedad</th><th>Origen</th><th>Respuesta</th><th></th></tr></thead><tbody>${list.map(p=>`<tr><td><strong>${escape(p.evento.id)}</strong><small>${escape(p.sesion.id)}</small></td><td>${escape(label[p.evento.tipo]||p.evento.tipo)}</td><td><span class="badge ${p.evento.gravedad==='alta'?'danger':'warning'}">${escape(label[p.evento.gravedad]||p.evento.gravedad)}</span></td><td><span class="badge ${p.sesion.origen==='real'?'neutral':'purple'}">${p.sesion.origen==='real'?'Real':'Simulado'}</span></td><td class="mono">${p.evento.t_activacion_ms===null?'—':p.evento.t_activacion_ms-p.evento.t_deteccion_ms+' ms'}</td><td><button class="text-button" data-event="${escape(p.evento.id)}">Ver detalle →</button></td></tr>`).join('')||'<tr><td colspan="6">No hay eventos con estos filtros.</td></tr>'}</tbody></table></div>`;}
 function bindRows(){document.querySelectorAll('[data-event]').forEach(b=>b.onclick=()=>{current=events.find(p=>p.evento.id===b.dataset.event);position=current.evento.t_deteccion_ms;location.hash='detalle';});}
 function renderHistory(){
@@ -229,12 +235,12 @@ function bindSimulation(){
  $('#save-run').onclick=async()=>{const button=$('#save-run');button.disabled=true;const p=current;try{await request('/sesiones',{version:1,sesion:p.sesion});await request('/sesiones/'+p.sesion.id+'/mediciones',{version:1,mediciones:p.mediciones});if(p.evento)await request('/eventos',{version:1,evento:p.evento});toast('Corrida guardada: '+p.sesion.id);await loadEvents();}catch(e){toast(e.message);button.disabled=false;}};
 }
 async function connectLive(id){
- const generation=++liveGeneration;clearInterval(liveTimer);running=false;cursor=0;liveSamples=[];liveSession=id;
+ const generation=++liveGeneration;clearInterval(liveTimer);running=false;cursor=0;liveSamples=[];liveSession=id;liveRps=null;liveTurns=0;
  try {const session=(await (await request('/sesiones/'+id)).json()).sesion;if(generation!==liveGeneration)return;current={version:1,sesion:session,evento:null,mediciones:[]};liveActive=true;$('#origin').textContent=session.origen==='real'?'Mediciones reales':'Emisor simulado';$('#mode-help').textContent='Consultando sesión '+id;$('#play').disabled=true;$('#timeline').disabled=true;
  async function poll(){if(liveBusy||generation!==liveGeneration)return;liveBusy=true;try{const r=await (await request('/sesiones/'+id+'/mediciones?despues_numero='+cursor+'&limite=1000')).json();if(generation!==liveGeneration)return;const responseEvents=await (await request('/eventos?sesion_id='+id+'&limite=1')).json();
  if(generation!==liveGeneration)return;
  current.evento=responseEvents.eventos[0]??null;
- cursor=r.siguiente_numero;liveSamples.push(...r.mediciones);current.mediciones=liveSamples;$('#mode-help').textContent=r.mediciones.length?'Lecturas recibidas · '+liveSamples.length+' muestras':'Esperando nuevas mediciones · '+liveSamples.length+' recibidas';if(current.mediciones.length){position=current.mediciones.at(-1).t_ms;refreshData();}}catch(e){if(generation===liveGeneration)$('#mode-help').textContent='Conexión interrumpida. Reintentando…';}finally{liveBusy=false;}}
+ cursor=r.siguiente_numero;liveSamples.push(...r.mediciones);if(r.mediciones.length){liveRps=r.mediciones.at(-1).rueda_rps??null;liveStamp=performance.now();}current.mediciones=liveSamples;$('#mode-help').textContent=r.mediciones.length?'Lecturas recibidas · '+liveSamples.length+' muestras':'Esperando nuevas mediciones · '+liveSamples.length+' recibidas';if(current.mediciones.length){position=current.mediciones.at(-1).t_ms;refreshData();}}catch(e){if(generation===liveGeneration)$('#mode-help').textContent='Conexión interrumpida. Reintentando…';}finally{liveBusy=false;}}
  await poll();liveTimer=setInterval(poll,500);
  }catch(e){toast(e.message);}
 }

@@ -1,0 +1,268 @@
+[
+  {
+    "prueba": "Reposo · aceleración",
+    "criterio": "X e Y en 0 ± 0,3 m/s²; Z en 9,81 ± 0,3 m/s²",
+    "observado": "300 muestras; X media +0.001 [-0.104, +0.135]; Y media -0.000 [-0.110, +0.105]; Z media 9.853 [9.794, 9.957]; offsets ('0.2955', '-0.1960', '0.3912')",
+    "estado": "OK",
+    "evidencia": "evidencias/reposo/nativo/"
+  },
+  {
+    "prueba": "Reposo · ángulos",
+    "criterio": "roll y pitch en 0 ± 2°",
+    "observado": "roll [-0.64, +0.61]°, pitch [-0.61, +0.79]°",
+    "estado": "OK",
+    "evidencia": "evidencias/reposo/nativo/"
+  },
+  {
+    "prueba": "Reposo · salidas y eventos",
+    "criterio": "LED y buzzer apagados, servo en reposo, 0 eventos",
+    "observado": "LED [0], buzzer [0], pulso servo [500] µs (500 = 0°), detecciones 0, eventos 0, expect-pin fallos 0",
+    "estado": "OK",
+    "evidencia": "evidencias/reposo/nativo/"
+  },
+  {
+    "prueba": "Marcha · rueda_rps",
+    "criterio": "4 pulsos/s, 2 por vuelta: estable entre 1,8 y 2,2 vueltas/s",
+    "observado": "20 flancos contados; 188 lecturas desde +1 s hasta el último pulso: min 2.000, max 2.000 vueltas/s",
+    "estado": "OK",
+    "evidencia": "evidencias/marcha/nativo/"
+  },
+  {
+    "prueba": "Marcha · vuelta a cero",
+    "criterio": "< 1 s desde el último pulso hasta la primera lectura de cero",
+    "observado": "último pulso t=5750.455 ms; primera TEL con 0: t=6515 ms (+764.5 ms); firmware: desde_ultimo_pulso=753.3 ms",
+    "estado": "OK",
+    "evidencia": "evidencias/marcha/nativo/"
+  },
+  {
+    "prueba": "Frenada normal",
+    "criterio": "Desaceleración hasta -7 m/s² y menos pulsos: sin detección ni alerta",
+    "observado": "ax mínima -7.11 m/s², |a| máx 12.13 m/s² (< 16), |pitch| máx 36.0° (< 60); rueda_rps 4/s→2.00–2.00, 2/s→1.00–1.00, 1,5/s→0.75–0.86; detecciones 0",
+    "estado": "OK",
+    "evidencia": "evidencias/frenada/nativo/"
+  },
+  {
+    "prueba": "Golpe · clasificación",
+    "criterio": "un solo evento 'golpe', gravedad alta",
+    "observado": "detecciones 1, eventos 1: golpe/alta t_inicio=3 t_det=1007 t_act=1008 t_fin=1799 cierre=condicion_ausente",
+    "estado": "OK",
+    "evidencia": "evidencias/golpe/nativo/"
+  },
+  {
+    "prueba": "Alertas · latencia",
+    "criterio": "LED, buzzer y orden del servo < 50 ms desde la detección",
+    "observado": "firmware: LED +0.223 ms, buzzer +0.224 ms, servo +0.227 ms · señal virtual: LED +0.223 ms, buzzer +0.224 ms, pulso servo 1450 µs +0.227 ms",
+    "estado": "OK",
+    "evidencia": "evidencias/golpe/nativo/"
+  },
+  {
+    "prueba": "Golpe · buzzer activo",
+    "criterio": "nivel alto/bajo cada 200 ms durante la alarma (sin PWM de audio) y bajo al final",
+    "observado": "12 cambios de nivel; tramos intermedios 200–200 ms; nivel final 0",
+    "estado": "OK",
+    "evidencia": "evidencias/golpe/nativo/"
+  },
+  {
+    "prueba": "Golpe · rearme",
+    "criterio": "el pulsador apaga LED, buzzer y servo",
+    "observado": "t=3335 alarma=apagada; expect-pin fallos 0",
+    "estado": "OK",
+    "evidencia": "evidencias/golpe/nativo/"
+  },
+  {
+    "prueba": "Inclinacion · clasificación",
+    "criterio": "un solo evento 'inclinacion', gravedad media",
+    "observado": "detecciones 1, eventos 1: inclinacion/media t_inicio=3 t_det=1155 t_act=1156 t_fin=3499 cierre=condicion_ausente",
+    "estado": "OK",
+    "evidencia": "evidencias/inclinacion/nativo/"
+  },
+  {
+    "prueba": "Alertas · latencia",
+    "criterio": "LED, buzzer y orden del servo < 50 ms desde la detección",
+    "observado": "firmware: LED +0.223 ms, buzzer +0.224 ms, servo +0.227 ms · señal virtual: LED +0.223 ms, buzzer +0.224 ms, pulso servo 1450 µs +0.227 ms",
+    "estado": "OK",
+    "evidencia": "evidencias/inclinacion/nativo/"
+  },
+  {
+    "prueba": "Inclinacion · buzzer activo",
+    "criterio": "nivel alto/bajo cada 200 ms durante la alarma (sin PWM de audio) y bajo al final",
+    "observado": "18 cambios de nivel; tramos intermedios 200–200 ms; nivel final 0",
+    "estado": "OK",
+    "evidencia": "evidencias/inclinacion/nativo/"
+  },
+  {
+    "prueba": "Inclinacion · rearme",
+    "criterio": "el pulsador apaga LED, buzzer y servo",
+    "observado": "t=4535 alarma=apagada; expect-pin fallos 0",
+    "estado": "OK",
+    "evidencia": "evidencias/inclinacion/nativo/"
+  },
+  {
+    "prueba": "Vuelco costado · clasificación",
+    "criterio": "un solo evento 'vuelco', gravedad alta",
+    "observado": "detecciones 1, eventos 1: vuelco/alta t_inicio=3 t_det=1155 t_act=1156 t_fin=6155 cierre=duracion_maxima",
+    "estado": "OK",
+    "evidencia": "evidencias/vuelco_costado/nativo/"
+  },
+  {
+    "prueba": "Alertas · latencia",
+    "criterio": "LED, buzzer y orden del servo < 50 ms desde la detección",
+    "observado": "firmware: LED +0.223 ms, buzzer +0.224 ms, servo +0.227 ms · señal virtual: LED +0.223 ms, buzzer +0.224 ms, pulso servo 1450 µs +0.227 ms",
+    "estado": "OK",
+    "evidencia": "evidencias/vuelco_costado/nativo/"
+  },
+  {
+    "prueba": "Vuelco costado · buzzer activo",
+    "criterio": "nivel alto/bajo cada 200 ms durante la alarma (sin PWM de audio) y bajo al final",
+    "observado": "28 cambios de nivel; tramos intermedios 200–200 ms; nivel final 0",
+    "estado": "OK",
+    "evidencia": "evidencias/vuelco_costado/nativo/"
+  },
+  {
+    "prueba": "Vuelco costado · rearme",
+    "criterio": "el pulsador apaga LED, buzzer y servo",
+    "observado": "t=6535 alarma=apagada; expect-pin fallos 0",
+    "estado": "OK",
+    "evidencia": "evidencias/vuelco_costado/nativo/"
+  },
+  {
+    "prueba": "Vuelco boca abajo · clasificación",
+    "criterio": "un solo evento 'vuelco', gravedad alta",
+    "observado": "detecciones 1, eventos 1: vuelco/alta t_inicio=3 t_det=1155 t_act=1156 t_fin=5499 cierre=condicion_ausente",
+    "estado": "OK",
+    "evidencia": "evidencias/vuelco_boca_abajo/nativo/"
+  },
+  {
+    "prueba": "Alertas · latencia",
+    "criterio": "LED, buzzer y orden del servo < 50 ms desde la detección",
+    "observado": "firmware: LED +0.223 ms, buzzer +0.224 ms, servo +0.227 ms · señal virtual: LED +0.223 ms, buzzer +0.224 ms, pulso servo 1450 µs +0.227 ms",
+    "estado": "OK",
+    "evidencia": "evidencias/vuelco_boca_abajo/nativo/"
+  },
+  {
+    "prueba": "Vuelco boca abajo · buzzer activo",
+    "criterio": "nivel alto/bajo cada 200 ms durante la alarma (sin PWM de audio) y bajo al final",
+    "observado": "26 cambios de nivel; tramos intermedios 200–200 ms; nivel final 0",
+    "estado": "OK",
+    "evidencia": "evidencias/vuelco_boca_abajo/nativo/"
+  },
+  {
+    "prueba": "Vuelco boca abajo · rearme",
+    "criterio": "el pulsador apaga LED, buzzer y servo",
+    "observado": "t=6035 alarma=apagada; expect-pin fallos 0",
+    "estado": "OK",
+    "evidencia": "evidencias/vuelco_boca_abajo/nativo/"
+  },
+  {
+    "prueba": "Inclinacion a vuelco · clasificación",
+    "criterio": "un solo evento 'vuelco', gravedad alta",
+    "observado": "detecciones 1, eventos 1: vuelco/alta t_inicio=703 t_det=1855 t_act=1856 t_fin=6299 cierre=condicion_ausente; clasificación inicial inclinacion → final vuelco",
+    "estado": "OK",
+    "evidencia": "evidencias/inclinacion_a_vuelco/nativo/"
+  },
+  {
+    "prueba": "Alertas · latencia",
+    "criterio": "LED, buzzer y orden del servo < 50 ms desde la detección",
+    "observado": "firmware: LED +0.223 ms, buzzer +0.224 ms, servo +0.227 ms · señal virtual: LED +0.223 ms, buzzer +0.224 ms, pulso servo 1450 µs +0.227 ms",
+    "estado": "OK",
+    "evidencia": "evidencias/inclinacion_a_vuelco/nativo/"
+  },
+  {
+    "prueba": "Inclinacion a vuelco · buzzer activo",
+    "criterio": "nivel alto/bajo cada 200 ms durante la alarma (sin PWM de audio) y bajo al final",
+    "observado": "24 cambios de nivel; tramos intermedios 200–200 ms; nivel final 0",
+    "estado": "OK",
+    "evidencia": "evidencias/inclinacion_a_vuelco/nativo/"
+  },
+  {
+    "prueba": "Inclinacion a vuelco · rearme",
+    "criterio": "el pulsador apaga LED, buzzer y servo",
+    "observado": "t=6535 alarma=apagada; expect-pin fallos 0",
+    "estado": "OK",
+    "evidencia": "evidencias/inclinacion_a_vuelco/nativo/"
+  },
+  {
+    "prueba": "Pico entre envíos",
+    "criterio": "5 picos de 4 ms (1 muestra de 250 Hz) aparecen en la muestra enviada a 50 Hz",
+    "observado": "5 TEL con ax>20: n=51 ax=29.47 k=0, n=56 ax=29.46 k=1, n=61 ax=29.45 k=2, n=66 ax=29.40 k=3, n=71 ax=29.41 k=4; posiciones k (0–4) en la ventana: [0, 1, 2, 3, 4]; detecciones 0",
+    "estado": "OK",
+    "evidencia": "evidencias/pico/nativo/"
+  },
+  {
+    "prueba": "Golpe corto · clasificación",
+    "criterio": "un solo evento 'golpe', gravedad alta",
+    "observado": "detecciones 1, eventos 1: golpe/alta t_inicio=3 t_det=1007 t_act=1008 t_fin=1511 cierre=condicion_ausente",
+    "estado": "OK",
+    "evidencia": "evidencias/golpe_corto/nativo/"
+  },
+  {
+    "prueba": "Alertas · latencia",
+    "criterio": "LED, buzzer y orden del servo < 50 ms desde la detección",
+    "observado": "firmware: LED +0.223 ms, buzzer +0.224 ms, servo +0.227 ms · señal virtual: LED +0.223 ms, buzzer +0.224 ms, pulso servo 1450 µs +0.227 ms",
+    "estado": "OK",
+    "evidencia": "evidencias/golpe_corto/nativo/"
+  },
+  {
+    "prueba": "Golpe corto · buzzer activo",
+    "criterio": "nivel alto/bajo cada 200 ms durante la alarma (sin PWM de audio) y bajo al final",
+    "observado": "12 cambios de nivel; tramos intermedios 200–200 ms; nivel final 0",
+    "estado": "OK",
+    "evidencia": "evidencias/golpe_corto/nativo/"
+  },
+  {
+    "prueba": "Golpe corto · rearme",
+    "criterio": "el pulsador apaga LED, buzzer y servo",
+    "observado": "t=3035 alarma=apagada; expect-pin fallos 0",
+    "estado": "OK",
+    "evidencia": "evidencias/golpe_corto/nativo/"
+  },
+  {
+    "prueba": "Red · alertas sin Wi-Fi",
+    "criterio": "con Wi-Fi apagado la detección y las alertas siguen locales",
+    "observado": "'wifi off' en línea 160, ALERTA en línea 220; 2 avisos 'RED sin conexion' (anillo conserva muestras: 501); eventos 1",
+    "estado": "OK",
+    "evidencia": "evidencias/rearme_red/nativo/"
+  },
+  {
+    "prueba": "Rearme · antirrebote y duplicados",
+    "criterio": "1 REARME por pulsación con rebote; 1 evento por episodio",
+    "observado": "t=6035 alarma=apagada; t=7039 alarma=ya_inactiva; detecciones 1, eventos 1; expect-pin fallos 0",
+    "estado": "OK",
+    "evidencia": "evidencias/rearme_red/nativo/"
+  },
+  {
+    "prueba": "API · envío",
+    "criterio": "sesión, lotes y evento aceptados por la API local (201/200)",
+    "observado": "17 POST; códigos [200, 201]; evento guardado: GET /eventos/RC-ABCDEF-AB8BDC41-EV001 → tipo golpe, gravedad alta, ubicacion None, 90 mediciones en la ventana",
+    "estado": "OK",
+    "evidencia": "evidencias/api/nativo/"
+  },
+  {
+    "prueba": "API · rueda_rps en el lote",
+    "criterio": "cada medición enviada lleva rueda_rps; 4 pulsos/s dan 2,0 ±10 % y luego 0",
+    "observado": "595 valores en 595 mediciones enviadas; máximo 2.0; último 0.0",
+    "estado": "OK",
+    "evidencia": "evidencias/api/nativo/"
+  },
+  {
+    "prueba": "API · reintento",
+    "criterio": "respuesta perdida → reintento con el mismo JSON, ids y tiempos; la API responde 200",
+    "observado": "/sesiones/RC-ABCDEF-AB8BDC41/mediciones hash 1B5A11C9: API 201→200 (cuerpos idénticos); /eventos hash B766B28E: API 201→200 (cuerpos idénticos)",
+    "estado": "OK",
+    "evidencia": "evidencias/api/nativo/"
+  },
+  {
+    "prueba": "Frecuencias",
+    "criterio": "lectura y decisión a 250 Hz; telemetría a 50 Hz (líneas EST de todos los casos)",
+    "observado": "f_adq 250.0–250.0 Hz, f_dec 250.0–250.0 Hz, f_tel 50.0–50.0 Hz, periodo 4000–4000 µs, ciclo máx 227 µs (coste modelado de I2C)",
+    "estado": "OK",
+    "evidencia": "evidencias/*/nativo/serial.log (EST)"
+  },
+  {
+    "prueba": "Reintentos sin API",
+    "criterio": "cada reintento envía el mismo JSON (mismo hash FNV-1a)",
+    "observado": "frenada: sesion → 2 intentos, hashes ['731C9EBD']; vuelco_costado: sesion → 2 intentos, hashes ['731C9EBD']; inclinacion_a_vuelco: sesion → 2 intentos, hashes ['731C9EBD']; rearme_red: sesion → 2 intentos, hashes ['731C9EBD']",
+    "estado": "OK",
+    "evidencia": "evidencias/*/nativo/serial.log (RED POST)"
+  }
+]

@@ -53,7 +53,7 @@ export function crearVisor(element) {
     draw();
     return {
       mode: '2d',
-      update(m, avance, impact = 0) { sample = m; progress = avance; jolt = impact; draw(); },
+      update(m, avance, impact = 0, turns, loop = false) { sample = m; progress = loop && turns != null ? ((turns * 2 * Math.PI * .35) % 11.3) / 11.3 : avance; jolt = impact; draw(); },
       camera(next) { view = next; draw(); },
       destroy() { element.replaceChildren(); }
     };
@@ -335,8 +335,9 @@ export function crearVisor(element) {
   }).catch(error => console.warn('Se conserva el carro de respaldo:', error));
 
   return {
-    update(sample, advance, impact = 0, turns) {
-      progress = advance;
+    update(sample, advance, impact = 0, turns, loop = false) {
+      // Live sessions: the car travels the distance its wheel has rolled and re-enters the road when it reaches the end.
+      progress = loop && turns != null ? ((turns * 2 * Math.PI * wheelRadius) % 11.3) / 11.3 : advance;
       wheelTurns = turns;
       car.position.x = impact;
       advanceOnRoad();

@@ -1,0 +1,55 @@
+  2200.677 ms  wait-serial 'CAL OK' OK
+  2200.677 ms  wait-serial 'SESION id=' OK
+  2220.222 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
+  3200.677 ms  set-control hall_sim.pressed = 1
+  3220.677 ms  set-control hall_sim.pressed = 0
+  3450.677 ms  set-control hall_sim.pressed = 1
+  3470.677 ms  set-control hall_sim.pressed = 0
+  3700.677 ms  set-control hall_sim.pressed = 1
+  3720.677 ms  set-control hall_sim.pressed = 0
+  3735.222 ms  HTTP POST #1 http://127.0.0.1:3000/api/v1/sesiones -> 201
+  3770.222 ms  HTTP POST #2 llegó a la API con 201 pero se pierde la respuesta
+  3950.677 ms  set-control hall_sim.pressed = 1
+  3970.677 ms  set-control hall_sim.pressed = 0
+  4200.677 ms  set-control hall_sim.pressed = 1
+  4200.677 ms  set-control imu1.accelX = 2.5
+  4200.677 ms  set-control imu1.accelY = 0
+  4200.677 ms  set-control imu1.accelZ = 1
+  4220.677 ms  set-control hall_sim.pressed = 0
+  4450.677 ms  set-control hall_sim.pressed = 1
+  4470.677 ms  set-control hall_sim.pressed = 0
+  4500.677 ms  set-control imu1.accelX = 0
+  4500.677 ms  set-control imu1.accelY = 0
+  4500.677 ms  set-control imu1.accelZ = 1
+  4700.677 ms  set-control hall_sim.pressed = 1
+  4720.677 ms  set-control hall_sim.pressed = 0
+  4950.677 ms  set-control hall_sim.pressed = 1
+  4970.677 ms  set-control hall_sim.pressed = 0
+  5200.677 ms  set-control hall_sim.pressed = 1
+  5220.677 ms  set-control hall_sim.pressed = 0
+  5450.677 ms  set-control hall_sim.pressed = 1
+  5470.677 ms  set-control hall_sim.pressed = 0
+  5700.677 ms  set-control hall_sim.pressed = 1
+  5700.677 ms  set-control btn_rearme.pressed = 1
+  5722.577 ms  set-control hall_sim.pressed = 0
+  5852.577 ms  set-control btn_rearme.pressed = 0
+  5954.477 ms  set-control hall_sim.pressed = 1
+  5974.477 ms  set-control hall_sim.pressed = 0
+  7285.222 ms  HTTP POST #3 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-AB8BDC41/mediciones -> 200
+  7320.222 ms  HTTP POST #4 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-AB8BDC41/mediciones -> 201
+  7355.222 ms  HTTP POST #5 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-AB8BDC41/mediciones -> 201
+  7390.222 ms  HTTP POST #6 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-AB8BDC41/mediciones -> 201
+  7425.222 ms  HTTP POST #7 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-AB8BDC41/mediciones -> 201
+  7445.477 ms  wait-serial 'JSON evento ' OK
+  7460.222 ms  HTTP POST #8 llegó a la API con 201 pero se pierde la respuesta
+ 10461.477 ms  wait-serial '/eventos evento' OK
+ 10975.222 ms  HTTP POST #9 http://127.0.0.1:3000/api/v1/eventos -> 200
+ 11010.222 ms  HTTP POST #10 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-AB8BDC41/mediciones -> 201
+ 11045.222 ms  HTTP POST #11 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-AB8BDC41/mediciones -> 201
+ 11080.222 ms  HTTP POST #12 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-AB8BDC41/mediciones -> 201
+ 11115.222 ms  HTTP POST #13 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-AB8BDC41/mediciones -> 201
+ 11630.222 ms  HTTP POST #14 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-AB8BDC41/mediciones -> 201
+ 12125.222 ms  HTTP POST #15 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-AB8BDC41/mediciones -> 201
+ 12620.222 ms  HTTP POST #16 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-AB8BDC41/mediciones -> 201
+ 13115.222 ms  HTTP POST #17 http://127.0.0.1:3000/api/v1/sesiones/RC-ABCDEF-AB8BDC41/mediciones -> 201
+ 13461.477 ms  FIN escenario fallos=0

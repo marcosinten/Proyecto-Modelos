@@ -1,0 +1,37 @@
+  2200.677 ms  wait-serial 'CAL OK' OK
+  2200.677 ms  wait-serial 'SESION id=' OK
+  2220.222 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
+  3200.677 ms  set-control imu1.accelX = 3
+  3200.677 ms  set-control imu1.accelY = 0
+  3200.677 ms  set-control imu1.accelZ = 1
+  3204.677 ms  set-control imu1.accelX = 0
+  3204.677 ms  set-control imu1.accelY = 0
+  3204.677 ms  set-control imu1.accelZ = 1
+  3304.677 ms  set-control imu1.accelX = 3
+  3304.677 ms  set-control imu1.accelY = 0
+  3304.677 ms  set-control imu1.accelZ = 1
+  3308.677 ms  set-control imu1.accelX = 0
+  3308.677 ms  set-control imu1.accelY = 0
+  3308.677 ms  set-control imu1.accelZ = 1
+  3408.677 ms  set-control imu1.accelX = 3
+  3408.677 ms  set-control imu1.accelY = 0
+  3408.677 ms  set-control imu1.accelZ = 1
+  3412.677 ms  set-control imu1.accelX = 0
+  3412.677 ms  set-control imu1.accelY = 0
+  3412.677 ms  set-control imu1.accelZ = 1
+  3512.677 ms  set-control imu1.accelX = 3
+  3512.677 ms  set-control imu1.accelY = 0
+  3512.677 ms  set-control imu1.accelZ = 1
+  3516.677 ms  set-control imu1.accelX = 0
+  3516.677 ms  set-control imu1.accelY = 0
+  3516.677 ms  set-control imu1.accelZ = 1
+  3616.677 ms  set-control imu1.accelX = 3
+  3616.677 ms  set-control imu1.accelY = 0
+  3616.677 ms  set-control imu1.accelZ = 1
+  3620.677 ms  set-control imu1.accelX = 0
+  3620.677 ms  set-control imu1.accelY = 0
+  3620.677 ms  set-control imu1.accelZ = 1
+  4200.677 ms  expect-pin led1:A = 0 -> leído 0 OK
+  4200.677 ms  expect-pin esp:27 = 0 -> leído 0 OK
+  6200.677 ms  MARCA fin pico
+  6200.677 ms  FIN escenario fallos=0

@@ -1,0 +1,49 @@
+  2200.677 ms  wait-serial 'CAL OK' OK
+  2200.677 ms  wait-serial 'SESION id=' OK
+  2220.222 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
+  3200.677 ms  set-control hall_sim.pressed = 1
+  3220.677 ms  set-control hall_sim.pressed = 0
+  3450.677 ms  set-control hall_sim.pressed = 1
+  3470.677 ms  set-control hall_sim.pressed = 0
+  3700.677 ms  set-control hall_sim.pressed = 1
+  3720.677 ms  set-control hall_sim.pressed = 0
+  3950.677 ms  set-control hall_sim.pressed = 1
+  3970.677 ms  set-control hall_sim.pressed = 0
+  4200.677 ms  set-control hall_sim.pressed = 1
+  4220.677 ms  set-control hall_sim.pressed = 0
+  4450.677 ms  set-control hall_sim.pressed = 1
+  4470.677 ms  set-control hall_sim.pressed = 0
+  4700.677 ms  set-control hall_sim.pressed = 1
+  4720.677 ms  set-control hall_sim.pressed = 0
+  4950.677 ms  set-control hall_sim.pressed = 1
+  4970.677 ms  set-control hall_sim.pressed = 0
+  5200.677 ms  set-control hall_sim.pressed = 1
+  5220.677 ms  set-control hall_sim.pressed = 0
+  5450.677 ms  set-control hall_sim.pressed = 1
+  5470.677 ms  set-control hall_sim.pressed = 0
+  5700.677 ms  set-control hall_sim.pressed = 1
+  5720.677 ms  set-control hall_sim.pressed = 0
+  5950.677 ms  set-control hall_sim.pressed = 1
+  5970.677 ms  set-control hall_sim.pressed = 0
+  6200.677 ms  set-control hall_sim.pressed = 1
+  6220.677 ms  set-control hall_sim.pressed = 0
+  6450.677 ms  set-control hall_sim.pressed = 1
+  6470.677 ms  set-control hall_sim.pressed = 0
+  6700.677 ms  set-control hall_sim.pressed = 1
+  6720.222 ms  HTTP POST #1 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
+  6720.677 ms  set-control hall_sim.pressed = 0
+  6950.677 ms  set-control hall_sim.pressed = 1
+  6970.677 ms  set-control hall_sim.pressed = 0
+  7200.677 ms  set-control hall_sim.pressed = 1
+  7220.677 ms  set-control hall_sim.pressed = 0
+  7450.677 ms  set-control hall_sim.pressed = 1
+  7470.677 ms  set-control hall_sim.pressed = 0
+  7700.677 ms  set-control hall_sim.pressed = 1
+  7720.677 ms  set-control hall_sim.pressed = 0
+  7950.677 ms  set-control hall_sim.pressed = 1
+  7950.677 ms  MARCA ultimo pulso programado t=5750 ms
+  7970.677 ms  set-control hall_sim.pressed = 0
+  9950.677 ms  MARCA fin marcha
+  9950.677 ms  expect-pin led1:A = 0 -> leído 0 OK
+  9950.677 ms  expect-pin esp:27 = 0 -> leído 0 OK
+  9950.677 ms  FIN escenario fallos=0

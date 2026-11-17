@@ -1,0 +1,91 @@
+# Rampa de roll de 0° a 180° en pasos de 10° cada 100 ms; 3 s boca abajo; regreso; rearme.
+wait CAL OK
+wait SESION id=
+delay 1000.0
+set imu1 accelX 0.0
+set imu1 accelY 0.0
+set imu1 accelZ 1.0
+delay 100
+set imu1 accelX 0.0
+set imu1 accelY 0.1736
+set imu1 accelZ 0.9848
+delay 100
+set imu1 accelX 0.0
+set imu1 accelY 0.342
+set imu1 accelZ 0.9397
+delay 100
+set imu1 accelX 0.0
+set imu1 accelY 0.5
+set imu1 accelZ 0.866
+delay 100
+set imu1 accelX 0.0
+set imu1 accelY 0.6428
+set imu1 accelZ 0.766
+delay 100
+set imu1 accelX 0.0
+set imu1 accelY 0.766
+set imu1 accelZ 0.6428
+delay 100
+set imu1 accelX 0.0
+set imu1 accelY 0.866
+set imu1 accelZ 0.5
+delay 100
+set imu1 accelX 0.0
+set imu1 accelY 0.9397
+set imu1 accelZ 0.342
+delay 100
+set imu1 accelX 0.0
+set imu1 accelY 0.9848
+set imu1 accelZ 0.1736
+delay 100
+set imu1 accelX 0.0
+set imu1 accelY 1.0
+set imu1 accelZ 0.0
+delay 100
+set imu1 accelX 0.0
+set imu1 accelY 0.9848
+set imu1 accelZ -0.1736
+delay 100
+set imu1 accelX 0.0
+set imu1 accelY 0.9397
+set imu1 accelZ -0.342
+delay 100
+set imu1 accelX 0.0
+set imu1 accelY 0.866
+set imu1 accelZ -0.5
+delay 100
+set imu1 accelX 0.0
+set imu1 accelY 0.766
+set imu1 accelZ -0.6428
+delay 100
+set imu1 accelX 0.0
+set imu1 accelY 0.6428
+set imu1 accelZ -0.766
+delay 100
+set imu1 accelX 0.0
+set imu1 accelY 0.5
+set imu1 accelZ -0.866
+delay 100
+set imu1 accelX 0.0
+set imu1 accelY 0.342
+set imu1 accelZ -0.9397
+delay 100
+set imu1 accelX 0.0
+set imu1 accelY 0.1736
+set imu1 accelZ -0.9848
+delay 100
+set imu1 accelX 0.0
+set imu1 accelY 0.0
+set imu1 accelZ -1.0
+delay 3000
+set imu1 accelX 0.0
+set imu1 accelY 0.0
+set imu1 accelZ 1.0
+delay 700
+set btn_rearme pressed 1
+delay 150
+set btn_rearme pressed 0
+delay 150
+expect led1 A 0
+delay 1700
+mark fin inclinacion_a_vuelco
