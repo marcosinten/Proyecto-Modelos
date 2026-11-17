@@ -16,7 +16,7 @@ test('cinco escenarios, gravedad, parada, postura y detección coherentes',()=>{
   if(type==='vuelco') {
    assert.equal(p.mediciones.at(-1).roll_deg,180);
    assert(Math.abs(p.mediciones.at(-1).az+9.81)<1e-9);
-   const m=p.mediciones.find(m=>m.t_ms===p.evento.t_deteccion_ms);
+   const m=p.mediciones.find(m=>m.t_ms>=p.evento.t_deteccion_ms);
    assert(m.roll_deg>=90);
   }
   const repo=crearRepositorio(':memory:');
@@ -41,16 +41,30 @@ test('contrato admite históricos y rechaza Hall inválido',()=>{
  validar(loteSchema,{version:1,mediciones:[legacy]});
  for(const invalid of [-1,Infinity,1001])assert.throws(()=>validar(loteSchema,{version:1,mediciones:[{...m,rueda_rps:invalid}]}));
 });
-test('modelo de sensor: reproducible, saturación y golpes más cortos que el muestreo',()=>{
+test('modelo de sensor: reproducible y con saturación',()=>{
  const o={ruido:.3,semilla:7,rango_g:8};
  assert.deepEqual(generarEscenario('impacto',16,60,150,20,o).mediciones,generarEscenario('impacto',16,60,150,20,o).mediciones);
  validar(loteSchema,{version:1,mediciones:generarEscenario('vuelco',16,60,150,20,o).mediciones});
  const limite=2*9.80665;
  assert(generarEscenario('impacto',16,60,150,20,{rango_g:2}).mediciones.every(m=>Math.abs(m.ax)<=limite));
- assert.equal(generarEscenario('impacto',16,60,150,20,{duracion_impacto_ms:20}).evento,null);
  assert.throws(()=>generarEscenario('impacto',16,60,150,20,{rango_g:3}));
 });
 test('frenada: la trompa baja y la gravedad se suma a la desaceleración',()=>{
  const m=generarEscenario('frenada').mediciones.reduce((a,b)=>b.ax<a.ax?b:a);
  assert(m.pitch_deg<0&&m.ax<-4);
+});
+test('mismas reglas que el firmware: lecturas a 250 Hz y golpe con 2 lecturas',()=>{
+ // Un golpe real de 20 ms dura menos que la permanencia de inclinación, pero el firmware lo detecta.
+ const corto=generarEscenario('impacto',16,60,150,8,{duracion_impacto_ms:20});
+ assert.equal(corto.evento?.tipo,'golpe');
+ // La muestra publicada conserva el pico, como la telemetría del firmware.
+ assert(corto.mediciones.some(m=>Math.hypot(m.ax,m.ay,m.az)>=16));
+ // 50 Hz publicados, con tiempos crecientes.
+ assert.equal(corto.mediciones.length,501);
+ assert(corto.mediciones.every((m,i,a)=>i===0||m.t_ms>a[i-1].t_ms));
+ // Una sola lectura alta no basta (permanencia de 8 ms = 2 lecturas).
+ assert.equal(corto.parametros.lecturas_golpe,2);
+ // Inclinación y vuelco siguen necesitando 150 ms sostenidos.
+ assert.equal(generarEscenario('inclinacion',16,30,150).evento.tipo,'inclinacion');
+ assert.equal(generarEscenario('vuelco').evento.tipo,'vuelco');
 });

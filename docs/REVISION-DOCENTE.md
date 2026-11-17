@@ -19,7 +19,7 @@ La solución es viable y cubre el núcleo del software solicitado. La entrega co
 | IA | Punto de integración documentado, modelo no integrado |
 
 ## Modelo usado
-Escenarios de 10 s muestreados cada 20 ms (50 Hz). El avance sintético parte de una velocidad longitudinal de 2 m/s, con arranque y parada suaves. Estos parámetros son ilustrativos y deben ajustarse al carro real.
+Escenarios de 10 s. Como en el firmware, el sensor se lee cada 4 ms (250 Hz) y las reglas se evalúan sobre esas lecturas; se publican 50 muestras por segundo, cada una la de mayor aceleración total de su grupo de 5. El avance sintético parte de una velocidad longitudinal de 2 m/s, con arranque y parada suaves. Estos parámetros son ilustrativos y deben ajustarse al carro real.
 
 Se utiliza s(u)=3u²−2u³ para transiciones suaves, con u limitado a [0,1]. La aceleración longitudinal a se calcula como derivada numérica de la velocidad. Para roll r y pitch p:
 - ax = a + g sen(p) (pitch positivo levanta la trompa)
@@ -31,7 +31,7 @@ Se utiliza s(u)=3u²−2u³ para transiciones suaves, con u limitado a [0,1]. La
 
 La magnitud incluye gravedad. Una lectura estática de 9,81 no implica desplazamiento. Los ángulos físicos deberán provenir de la estimación calibrada en el ESP32, preferiblemente combinando acelerómetro y giroscopio: durante golpes la aceleración dinámica contamina una inclinación calculada únicamente a partir del acelerómetro.
 
-El impacto dura aproximadamente 100 ms. Tiene su propio tiempo de permanencia, predeterminado 20 ms. La inclinación usa otro contador, predeterminado 150 ms. Un contador no hereda el tiempo de otro. El paquete actual resume un evento por corrida, con prioridad al vuelco confirmado. No reconstruye todavía una cronología de varios incidentes. La etiqueta de gravedad es experimental: impacto y vuelco alta, inclinación media.
+El impacto dura aproximadamente 100 ms. Tiene su propio tiempo de permanencia, predeterminado 8 ms: 2 lecturas seguidas de 250 Hz, la misma regla que el firmware (LECTURAS_GOLPE), porque un choque real dura entre 5 y 20 ms. La inclinación y el vuelco usan otro contador, predeterminado 150 ms, también igual que el firmware. Un contador no hereda el tiempo de otro. El paquete actual resume un evento por corrida, con prioridad al vuelco confirmado. No reconstruye todavía una cronología de varios incidentes. La etiqueta de gravedad es experimental: impacto y vuelco alta, inclinación media.
 
 ## Resultados reproducibles con parámetros predeterminados
 | Escenario | Resultado | Pico total m/s² | Máximo roll | Detección |
