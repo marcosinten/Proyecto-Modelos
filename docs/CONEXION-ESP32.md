@@ -22,7 +22,7 @@ numero aumenta por muestra y t_ms utiliza el reloj monotónico del ESP32 desde e
 t_deteccion_ms marca el cumplimiento de la regla. t_activacion_ms marca la orden de activación, no el momento en que el servo terminó de moverse. null significa pendiente/sin medición. Enviar el evento cuando se conozcan los valores definitivos: el endpoint actual admite reenvío idéntico pero rechaza cambios sobre el mismo ID.
 
 ## Pendientes físicos
-Este cambio no contiene firmware. Antes de la demostración verificar MPU6050 fijo, Hall y alimentación, tierra común, alimentación del servo independiente del regulador de 3,3 V, reglas locales y actuación LED/buzzer/servo. Medir latencia de la web y respuesta del protocolo en ensayos de reposo, marcha, frenada, golpe, inclinación y vuelco.
+Antes de la demostración verificar MPU6050 fijo, Hall y alimentación, tierra común, alimentación del servo independiente del regulador de 3,3 V, reglas locales y actuación LED/buzzer/servo. Medir latencia de la web y respuesta del protocolo en ensayos de reposo, marcha, frenada, golpe, inclinación y vuelco.
 
 Pruebas de software no certifican el montaje ni la precisión real. Guardar corridas normales y accidentes, y etiquetarlas con observación independiente para entrenar la IA.
 
@@ -34,8 +34,12 @@ Prueba de ejes antes de fijar el sensor (monitor serie o pestaña En vivo):
 - Trompa hacia arriba 90°: ax ≈ +9,81, pitch ≈ +90.
 - Lado izquierdo hacia arriba 90°: ay ≈ +9,81, roll ≈ +90.
 - Boca abajo: az ≈ −9,81, |roll| ≈ 180.
-Si algún signo sale al revés, corregir las macros EJE_X, EJE_Y y EJE_Z de firmware/carro_rc/carro_rc.ino.
+Si algún signo sale al revés, revisar la orientación del GY-521 (flecha X hacia la trompa, Y hacia la izquierda, componentes arriba) descrita en firmware/carro_rc/README.md.
 
-El firmware base configura el MPU6050 en ±16 g con filtro de 94 Hz, lee y decide a 250 Hz, y envía 50 muestras por segundo. De cada cinco lecturas envía la que más se aparta de la gravedad, para conservar el pico de los golpes. Normaliza roll a ±180 y pitch a ±90, descarta lecturas no numéricas y reintenta cada lote con el mismo texto JSON. Cada reinicio crea una sesión nueva (RC-XXXXXXXX) que se muestra por el puerto serie.
+El firmware (firmware/carro_rc/carro_rc.ino, procedente de la rama wokwi-carro-rc) configura el MPU6050 en ±16 g con filtro de 94 Hz por registros I2C (sin librerías externas), lee y decide a 250 Hz y envía 50 muestras por segundo. De cada cinco lecturas envía la de mayor |a|, para conservar el pico de los golpes. Mide rueda_rps con el A3144 en GPIO32 (2 imanes por vuelta, 0 tras 750 ms sin pulsos) y lo envía en cada muestra. Reintenta cada lote con el mismo texto JSON. Cada reinicio crea una sesión nueva (RC-xxxxxx-xxxxxxxx) que se muestra por el puerto serie.
 
-No fue compilado ni probado en una placa: revisar primero en Wokwi, incluido el uso simultáneo de servo y piezo.
+La constante ORIGEN_SESION elige el origen: "simulado" (Wokwi, red Wokwi-GUEST y API en host.wokwi.internal) o "real" (red del equipo, IP de la PC y API_KEY). Los datos de Wokwi se guardan y se muestran siempre como simulados ("Emisor simulado" en la web).
+
+Diferencias con el firmware base anterior de main (Adafruit MPU6050, sin Hall): aquel combinaba giroscopio y acelerómetro (filtro complementario) para el roll y el pitch. El actual los calcula solo con el acelerómetro, válido en reposo y en Wokwi, pero sensible a aceleraciones durante la marcha. Incorporar de nuevo el giroscopio en el carro real es una decisión pendiente del equipo; el código anterior sigue en el historial de git (commit 7e6c826).
+
+Ejecución en Wokwi y prueba de extremo a extremo: ver docs/WOKWI-API.md.

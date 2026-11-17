@@ -1,0 +1,216 @@
+name: 'api_vuelco'
+version: 1
+author: 'Grupo 11'
+# Extremo a extremo: marcha 4 pulsos/s 4 s, parada 3 s, vuelco roll = 90° 6 s, regreso y rearme; espera el evento en la API.
+steps:
+  - wait-serial: 'CAL OK'
+  - wait-serial: 'SESION id='
+  - delay: 1000ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 20ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 3230ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0.0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 1.0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 0.0
+  - delay: 300ms
+  - expect-pin:
+      part-id: led1
+      pin: 'A'
+      value: 1
+  - delay: 5700ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0.0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0.0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1.0
+  - delay: 500ms
+  - set-control:
+      part-id: btn_rearme
+      control: pressed
+      value: 1
+  - delay: 150ms
+  - set-control:
+      part-id: btn_rearme
+      control: pressed
+      value: 0
+  - delay: 150ms
+  - expect-pin:
+      part-id: led1
+      pin: 'A'
+      value: 0
+  - delay: 200ms
+  - wait-serial: '/eventos evento'
+  - delay: 3000ms

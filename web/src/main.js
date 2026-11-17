@@ -64,7 +64,7 @@ function render() {
  if(simulation)bindSimulation();
  if(!simulation&&!detail){
   $('#demo-mode').onclick=()=>{current=demo;position=0;render();};
-  $('#live-mode').onclick=()=>{$('#live-form').hidden=false;$('#mode-help').textContent='Escribe la sesión creada por el dispositivo o el emisor de pruebas.';$('#live-form input').focus();};
+  $('#live-mode').onclick=()=>{$('#demo-mode').classList.remove('selected');$('#live-mode').classList.add('selected');$('#live-form').hidden=false;$('#mode-help').textContent='Escribe la sesión creada por el dispositivo o el emisor de pruebas.';$('#live-form input').focus();};
   $('#live-form').onsubmit=e=>{e.preventDefault();connectLive(new FormData(e.target).get('session'));};
  }
 }
