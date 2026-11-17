@@ -100,7 +100,14 @@ test('Excel real conserva números, filas, origen y tiempo de respuesta del JSON
   const libro = new ExcelJS.Workbook(); await libro.xlsx.load(Buffer.from(await r.arrayBuffer()));
   const h = libro.getWorksheet('Datos'); assert.equal(h.rowCount, 4);
   for (let n = 0; n < 3; n++) assert.deepEqual(h.getRow(n + 2).values.slice(1), Object.values(fixture.mediciones[n]));
-  const e = libro.getWorksheet('Evento'); assert.equal(e.getRow(2).getCell(e.columnCount).value, 20);
+  assert.deepEqual(h.getRow(1).values.slice(1), ['numero', 't_ms', 'ax', 'ay', 'az', 'roll_deg', 'pitch_deg', 'rueda_rps']);
+  const e = libro.getWorksheet('Evento'); const claves = e.getRow(1).values;
+  const dato = clave => e.getRow(2).getCell(claves.indexOf(clave)).value;
+  assert.equal(dato('respuesta_ms'), 20); assert.equal(dato('t_deteccion_s'), fixture.evento.t_deteccion_ms / 1000);
+  assert.deepEqual(libro.worksheets.map(x => x.name), ['Resumen', 'Evento', 'Datos', 'Columnas', 'Metadatos']);
+  const m = libro.getWorksheet('Metadatos'); assert.deepEqual(m.getRow(1).values.slice(1, 3), ['campo', 'valor']);
+  assert.deepEqual(m.getRow(3).values.slice(1, 3), ['sesion_id', 'SES-001']); assert.equal(m.getRow(2).getCell(4).value, 'simulado');
+  assert.match(libro.getWorksheet('Resumen').getCell('A2').value, /SIMULADOS/);
 });
 test('JSON malformado y cuerpos excesivos tienen errores controlados', async t => {
   const { base } = await entorno(t);

@@ -6,6 +6,7 @@ import './style.css';
 import Chart from 'chart.js/auto';
 import {crearVisor} from './car.js';
 import {generarEscenario} from './simulation.js';
+import {crearExcel} from '../../compartido/libro-excel.js';
 import ev1 from '../../ejemplos/vuelco.json';
 import ev2 from '../../ejemplos/vuelco-002.json';
 
@@ -251,14 +252,12 @@ async function connectLive(id){
 async function loadEvents(){try{let list=[],offset=0;while(true){const r=await (await request('/eventos?limite=200&offset='+offset)).json();list.push(...r.eventos);if(!r.hay_mas)break;offset=r.siguiente_offset;}const loaded=[];for(const e of list){loaded.push(await (await request('/eventos/'+e.id)).json());}events=loaded;apiAvailable=true;}catch{apiAvailable=false;}$('#connection').textContent=apiAvailable?'● API conectada':'○ Modo local';$('#connection').className='badge '+(apiAvailable?'success':'neutral');}
 function openExport(){
  const p=structuredClone(current);
- $('#export-body').innerHTML=`<div class="export-icon">↓</div><h2>Exportar ${p.evento?'evento':'corrida'}</h2><p>Las mediciones del escenario seleccionado, listas para analizar.</p><div class="export-info"><strong>${escape(p.evento?.id||p.sesion.id)}.xlsx</strong><span>${p.mediciones.length} mediciones · ${p.sesion.origen==='real'?'Datos reales':'Datos simulados'}</span><small>Hojas Datos, ${p.evento?'Evento, ':''}Metadatos${p.parametros?', Parámetros':''}</small></div><div id="export-error" role="alert"></div><div class="dialog-actions"><button id="cancel-export" class="secondary">Cancelar</button><button id="download" class="primary">↓ Descargar .xlsx</button></div>`;
+ $('#export-body').innerHTML=`<div class="export-icon">↓</div><h2>Exportar ${p.evento?'evento':'corrida'}</h2><p>Las mediciones del escenario seleccionado, listas para analizar.</p><div class="export-info"><strong>${escape(p.evento?.id||p.sesion.id)}.xlsx</strong><span>${p.mediciones.length} mediciones · ${p.sesion.origen==='real'?'Datos reales':'Datos simulados'}</span><small>Hojas Resumen, ${p.evento?'Evento, ':''}Datos, ${p.parametros?'Parámetros, ':''}Columnas y Metadatos</small></div><div id="export-error" role="alert"></div><div class="dialog-actions"><button id="cancel-export" class="secondary">Cancelar</button><button id="download" class="primary">↓ Descargar .xlsx</button></div>`;
  $('#export-dialog').showModal();$('#cancel-export').onclick=()=>$('#export-dialog').close();
  $('#download').onclick=async()=>{const b=$('#download');b.disabled=true;b.textContent='Preparando archivo…';try{
- const {default:ExcelJS}=await import('exceljs');const book=new ExcelJS.Workbook();
- const sheet=(name,rows)=>{const h=book.addWorksheet(name);if(rows.length){h.columns=Object.keys(rows[0]).map(k=>({header:k,key:k,width:22}));h.addRows(rows);h.getRow(1).font={bold:true};h.views=[{state:'frozen',ySplit:1}];}};
- sheet('Datos',p.mediciones);if(p.evento){const {ubicacion,...e}=p.evento;sheet('Evento',[{...e,latitud:ubicacion?.latitud??null,longitud:ubicacion?.longitud??null,respuesta_ms:e.t_activacion_ms===null?null:e.t_activacion_ms-e.t_deteccion_ms}]);}
- sheet('Metadatos',[{sesion:p.sesion.id,origen:p.sesion.origen,aceleracion:'m/s²',angulos:'grados',tiempo:'ms desde inicio de sesión'}]);if(p.parametros)sheet('Parámetros',[p.parametros]);
- const url=URL.createObjectURL(new Blob([await book.xlsx.writeBuffer()],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));const a=document.createElement('a');a.href=url;a.download=(p.evento?.id||p.sesion.id)+'.xlsx';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);$('#export-dialog').close();toast('Descarga iniciada');
+ const {default:ExcelJS}=await import('exceljs');
+ const buffer=await crearExcel(ExcelJS,p,{fuente:'web'});
+ const url=URL.createObjectURL(new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));const a=document.createElement('a');a.href=url;a.download=(p.evento?.id||p.sesion.id)+'.xlsx';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);$('#export-dialog').close();toast('Descarga iniciada');
  }catch(e){$('#export-error').textContent='No se pudo preparar el archivo. '+e.message;}finally{b.disabled=false;b.textContent='↓ Descargar .xlsx';}};
 }
 function route(){const hash=location.hash.slice(1);page=['simulacion','historial','detalle'].includes(hash)?hash:'monitor';if(page==='detalle'&&!current.evento){current=ev2;}if(page==='monitor'){current=demo;position=0;}if(page==='simulacion'){current=generarEscenario('vuelco');position=0;}render();}
