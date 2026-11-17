@@ -1,0 +1,234 @@
+diff --cc scripts/check-viewer.mjs
+index 13c7713,4a86139..0000000
+--- a/scripts/check-viewer.mjs
++++ b/scripts/check-viewer.mjs
+@@@ -41,6 -41,19 +41,22 @@@ try 
+     viewer.update(sample,undefined); assert(Math.abs(wheel.rotation.x)<1e-12);
+    }
+   }
+++<<<<<<< HEAD
+++=======
++  const flat=Object.freeze({roll_deg:0,pitch_deg:0});
++  viewer.camera('seguimiento');
++  viewer.update(flat,.3,0,1);
++  const wheel=globalThis.captured.scene.getObjectByName('animated-wheel');
++  const center=wheel.position.clone();
++  viewer.update(flat,.3,0,1.25);
++  assert(wheel.position.equals(center),'Wheel axle must not translate when spinning');
++  assert(Math.abs(wheel.rotation.x+2.5*Math.PI)<1e-9);
++  const stopped=wheel.rotation.x;
++  viewer.update(flat,.3,0,1.25);
++  assert.equal(wheel.rotation.x,stopped,'Stationary Hall signal must keep wheel pose');
++  viewer.update(flat,.3,0,1);
++  assert(Math.abs(wheel.rotation.x+2*Math.PI)<1e-9);
+++>>>>>>> main
+   viewer.destroy();
+   console.log('PASS: viewer loads the Oldsmobile and straight road; contact at 20 camera/roll combinations; pause, rewind, real-data stationary mode; frozen telemetry untouched.');
+  } finally {await fs.unlink('scripts/.viewer-harness.mjs');}
+diff --cc web/src/car.js
+index 6b40f08,980f5cd..0000000
+--- a/web/src/car.js
++++ b/web/src/car.js
+@@@ -79,6 -79,7 +79,10 @@@ export function crearVisor(element) 
+    let wheels = [];
+    let wheelRadius = .25;
+    let lastDistance = -1;
+++<<<<<<< HEAD
+++=======
++   let wheelTurns;
+++>>>>>>> main
+    const roadThickness = .08;
+    const road = new T.Mesh(new T.BoxGeometry(104, roadThickness, 6.4), new T.MeshStandardMaterial({color:0x273449}));
+    road.name = 'straight-road';
+@@@ -254,8 -255,8 +258,13 @@@
+        chaseCamera.lookAt(look);
+      }
+      // Illustrative playback distance: never written into telemetry.
+++<<<<<<< HEAD
+ +    if (wheels.length && distance !== lastDistance) {
+ +      wheels.forEach(wheel => { wheel.rotation.x = -distance / wheelRadius; });
+++=======
++     if (wheels.length && (distance !== lastDistance || wheelTurns != null)) {
++       wheels.forEach(wheel => { wheel.rotation.x = wheelTurns == null ? -distance / (wheel.userData.radius ?? wheelRadius) : -wheelTurns * 2 * Math.PI; });
+++>>>>>>> main
+        lastDistance = distance;
+        collectContactPoints();
+        fitToRoad();
+@@@ -321,7 -322,10 +330,14 @@@
+      car.add(aligned);
+      if (wheels.length) {
+        car.updateWorldMatrix(true, true);
+++<<<<<<< HEAD
+ +      wheelRadius = wheels[0].userData.localRadius * wheels[0].getWorldScale(new T.Vector3()).y;
+++=======
++       wheels.forEach(wheel => {
++         wheel.userData.radius = wheel.userData.localRadius * wheel.getWorldScale(new T.Vector3()).y;
++       });
++       wheelRadius = wheels[0].userData.radius;
+++>>>>>>> main
+      }
+      lastDistance = -1;
+      advanceOnRoad();
+@@@ -331,14 -335,16 +347,25 @@@
+    }).catch(error => console.warn('Se conserva el carro de respaldo:', error));
+  
+    return {
+++<<<<<<< HEAD
+ +    update(sample, advance, impact = 0) {
+ +      progress = advance;
+++=======
++     update(sample, advance, impact = 0, turns) {
++       progress = advance;
++       wheelTurns = turns;
+++>>>>>>> main
+        car.position.x = impact;
+        advanceOnRoad();
+        if (sample.roll_deg !== lastRoll || sample.pitch_deg !== lastPitch) {
+          lastRoll = sample.roll_deg;
+          lastPitch = sample.pitch_deg;
+++<<<<<<< HEAD
+ +        car.rotation.set(T.MathUtils.degToRad(lastRoll), 0, T.MathUtils.degToRad(lastPitch), 'XYZ');
+++=======
++         // Roll first, then pitch about the level lateral axis: the same order the telemetry model uses.
++         car.rotation.set(T.MathUtils.degToRad(lastRoll), 0, T.MathUtils.degToRad(lastPitch), 'YZX');
+++>>>>>>> main
+          fitToRoad();
+        }
+        render();
+diff --cc web/src/main.js
+index d2c0ed2,b8ef9c5..0000000
+--- a/web/src/main.js
++++ b/web/src/main.js
+@@@ -19,6 -19,7 +19,10 @@@ let viewer, charts=[], events=[ev2,ev1]
+  let liveSamples=[], liveActive=false, pageNumber=0, previousRuns=[];
+  let liveBusy=false, liveGeneration=0;
+  let impactTime;
+++<<<<<<< HEAD
+++=======
++ let wheelTurnsBySample = [];
+++>>>>>>> main
+  const seconds = ms => (ms / 1000).toLocaleString('es-EC', {maximumFractionDigits:3});
+  async function request(path,body) {
+   const response=await fetch('/api/v1'+path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(6000)});
+@@@ -32,7 -33,7 +36,11 @@@ function layout() 
+  function heading(title,description,action='') {return `<div class="page-heading"><div><div class="eyebrow">OBSERVAR · ANALIZAR · COMPRENDER</div><h1>${title}</h1><p>${description}</p></div>${action}</div>`;}
+  function metric(name,id,unit,color='') {return `<div class="metric"><span><i style="background:${color||'#64748b'}"></i>${name}</span><strong id="${id}">—</strong><small>${unit}</small></div>`;}
+  function dashboard() {
+++<<<<<<< HEAD
+ + return `<div class="metrics">${metric('Aceleración X','ax','m/s²','#1d4ed8')}${metric('Aceleración Y','ay','m/s²','#0f766e')}${metric('Aceleración Z','az','m/s²','#7e22ce')}${metric('Inclinación lateral','roll','Roll · grados')}${metric('Inclinación frontal','pitch','Pitch · grados')}</div><div class="visual-grid"><section class="card stage-card"><div class="card-title"><div><h2>Postura del carro</h2><p>Orientación según datos · recorrido y ruedas ilustrativos en simulación</p><p style="font-size:10px">Modelo: <a href="https://sketchfab.com/3d-models/oldsmobile-cutlass-supreme-sedan-71-78f76d386a4341b0b71745bdc50fd5ab" target="_blank" rel="noopener noreferrer">Barbo</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · Adaptado al visor</p></div><span class="badge purple" id="origin">Datos simulados</span></div><div class="stage"><div class="scene-label"><span class="status-dot"></span> VISTA 3D <small id="sample-time">1 500 ms</small></div><div id="car"></div><div class="camera-controls"><button data-camera="seguimiento" class="selected">Seguimiento</button><button data-camera="lateral">Lateral</button><button data-camera="frontal">Frontal</button><button data-camera="libre" title="Arrastra para girar y usa la rueda o pellizca para acercar">Libre 3D</button></div><span class="axis-guide">X → &nbsp; Y ↗ &nbsp; Z ↑</span></div><div class="player"><div class="player-top"><button id="play" class="primary small">▶ Reproducir</button><button id="reset" class="secondary small" title="Volver al inicio">↺ Reiniciar</button><label class="speed"><span>Ritmo de reproducción</span><select id="speed"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label><span class="mono" id="clock"></span></div><input id="timeline" type="range" aria-label="Tiempo de la sesión en milisegundos" step="1"><div class="timeline-labels"><span id="range-start"></span><span>Tiempo desde inicio de sesión</span><span id="range-end"></span></div></div></section><div class="chart-stack"><section class="card"><div class="card-title"><h2>Aceleración por eje</h2><span class="unit">m/s²</span></div><div class="chart-wrap"><canvas id="accel"></canvas></div></section><section class="card"><div class="card-title"><h2>Inclinación</h2><span class="unit">grados</span></div><div class="chart-wrap"><canvas id="angles"></canvas></div></section><output id="graph-reading" class="card graph-reading" aria-label="Lectura seleccionada"></output></div></div><div class="result-strip" id="result"></div><details class="card data-table"><summary>Ver tabla de mediciones <span id="sample-count"></span></summary><div class="table-scroll" id="samples"></div></details>`;
+++=======
++  return `<div class="metrics">${metric('Aceleración X','ax','m/s²','#1d4ed8')}${metric('Aceleración Y','ay','m/s²','#0f766e')}${metric('Aceleración Z','az','m/s²','#7e22ce')}${metric('Inclinación lateral','roll','Roll · grados')}${metric('Inclinación frontal','pitch','Pitch · grados')}</div><div class="visual-grid"><section class="card stage-card"><div class="card-title"><div><h2>Postura del carro</h2><p>Orientación según datos · recorrido y ruedas ilustrativos en simulación</p><p style="font-size:10px">Modelo: <a href="https://sketchfab.com/3d-models/oldsmobile-cutlass-supreme-sedan-71-78f76d386a4341b0b71745bdc50fd5ab" target="_blank" rel="noopener noreferrer">Barbo</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · Adaptado al visor</p></div><span class="badge purple" id="origin">Datos simulados</span></div><div class="stage"><div class="scene-label"><span class="status-dot"></span> VISTA 3D <small id="sample-time">1 500 ms</small></div><div id="car"></div><div class="camera-controls"><button data-camera="seguimiento" class="selected">Seguimiento</button><button data-camera="lateral">Lateral</button><button data-camera="frontal">Frontal</button><button data-camera="libre" title="Arrastra para girar y usa la rueda o pellizca para acercar">Libre 3D</button></div><span class="axis-guide">X → &nbsp; Y ↗ &nbsp; Z ↑</span></div><div class="player"><div class="player-top"><button id="play" class="primary small">▶ Reproducir</button><button id="reset" class="secondary small" title="Volver al inicio">↺ Reiniciar</button><label class="speed"><span>Ritmo de reproducción</span><select id="speed"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label><span class="mono" id="clock"></span></div><input id="timeline" type="range" aria-label="Tiempo de la sesión en milisegundos" step="1"><div class="timeline-labels"><span id="range-start"></span><span>Tiempo desde inicio de sesión</span><span id="range-end"></span></div></div></section><div class="chart-stack"><section class="card"><div class="card-title"><h2>Aceleración por eje</h2><span class="unit">m/s²</span></div><div class="chart-wrap"><canvas id="accel"></canvas></div></section><section class="card"><div class="card-title"><h2>Inclinación</h2><span class="unit">grados</span></div><div class="chart-wrap"><canvas id="angles"></canvas></div></section><section class="card"><div class="card-title"><h2>Intensidad de la señal</h2><span class="unit">m/s² · incluye gravedad</span></div><div class="chart-wrap"><canvas id="magnitude"></canvas></div></section><output id="graph-reading" class="card graph-reading" aria-label="Lectura seleccionada"></output></div></div><div class="result-strip" id="result"></div><p class="helper" id="protocol" role="status"></p><details class="card data-table"><summary>Ver tabla de mediciones <span id="sample-count"></span></summary><div class="table-scroll" id="samples"></div></details>`;
+++>>>>>>> main
+  }
+  function render() {
+   running=false; clearInterval(liveTimer); liveGeneration++; liveActive=false;
+@@@ -57,8 -58,9 +65,13 @@@
+   $('#reset').onclick=()=>{running=false;position=start();update();};
+   $('#speed').onchange=e=>speed=Number(e.target.value);
+   $('#timeline').oninput=e=>{running=false;position=Number(e.target.value);update();};
+++<<<<<<< HEAD
+ + charts=[makeChart('accel',['ax','ay','az'],['X · adelante/atrás','Y · lado a lado','Z · arriba/abajo'],['#1d4ed8','#0f766e','#7e22ce']),makeChart('angles',['roll_deg','pitch_deg'],['Lateral','Frontal'],['#1d4ed8','#d97706'])];
+++=======
++  charts=[makeChart('accel',['ax','ay','az'],['X · adelante/atrás','Y · lado a lado','Z · arriba/abajo'],['#1d4ed8','#0f766e','#7e22ce']),makeChart('angles',['roll_deg','pitch_deg'],['Lateral','Frontal'],['#1d4ed8','#d97706']),makeChart('magnitude',['total'],['Aceleración total'],['#be123c'])];
+++>>>>>>> main
+   bindRows(); refreshData();
++  $('.data-table').ontoggle=()=>{if(liveActive&&$('.data-table').open)refreshData();};
+   if(simulation)bindSimulation();
+   if(!simulation&&!detail){
+    $('#demo-mode').onclick=()=>{current=demo;position=0;render();};
+@@@ -66,10 -68,10 +79,17 @@@
+    $('#live-form').onsubmit=e=>{e.preventDefault();connectLive(new FormData(e.target).get('session'));};
+   }
+  }
+++<<<<<<< HEAD
+ +const start=()=>current.evento?.t_inicio_ms??current.mediciones[0]?.t_ms??0;
+ +const end=()=>current.evento?.t_fin_ms??current.mediciones.at(-1)?.t_ms??1000;
+ +function makeChart(id, keys, names, colors) {
+ + const unit = id === 'accel' ? ' m/s²' : '°';
+++=======
++ const start=()=>liveActive ? current.mediciones[0]?.t_ms??0 : current.evento?.t_inicio_ms??current.mediciones[0]?.t_ms??0;
++ const end=()=>liveActive ? current.mediciones.at(-1)?.t_ms??1000 : current.evento?.t_fin_ms??current.mediciones.at(-1)?.t_ms??1000;
++ function makeChart(id, keys, names, colors) {
++  const unit = id === 'angles' ? '°' : ' m/s²';
+++>>>>>>> main
+   const cursor = {
+    id:'timeCursor',
+    afterDraw(chart) {
+@@@ -84,6 -86,21 +104,24 @@@
+     ctx.lineTo(x, chartArea.bottom);
+     ctx.stroke();
+     ctx.restore();
+++<<<<<<< HEAD
+++=======
++    if (id === 'magnitude') {
++     const lines = [{value:9.81,text:'Gravedad ≈ 9,81',color:'#64748b'}];
++     if (current.parametros) lines.push({value:current.parametros.aceleracion,text:'Umbral de impacto',color:'#dc2626'});
++     for (const line of lines) {
++      const y = scales.y.getPixelForValue(line.value);
++      if (y < chartArea.top || y > chartArea.bottom) continue;
++      ctx.save();
++      ctx.strokeStyle=line.color;
++      ctx.fillStyle=line.color;
++      ctx.setLineDash([4,4]);
++      ctx.beginPath();ctx.moveTo(chartArea.left,y);ctx.lineTo(chartArea.right,y);ctx.stroke();
++      ctx.font='10px Inter';ctx.fillText(line.text,chartArea.left+6,y-4);
++      ctx.restore();
++     }
++    }
+++>>>>>>> main
+    }
+   };
+   return new Chart($('#'+id), {
+@@@ -95,7 -112,7 +133,11 @@@
+    }))},
+    plugins:[cursor],
+    options:{
+++<<<<<<< HEAD
+ +   responsive:true, maintainAspectRatio:false, animation:false,
+++=======
++    responsive:true, maintainAspectRatio:false, animation:false, parsing:false, normalized:true,
+++>>>>>>> main
+     interaction:{mode:'index', axis:'x', intersect:false},
+     onClick(_event, points, chart) {
+      if (liveActive || !points.length) return;
+@@@ -104,6 -121,7 +146,10 @@@
+      update();
+     },
+     plugins:{
+++<<<<<<< HEAD
+++=======
++     decimation:{enabled:true, algorithm:'min-max', threshold:1500},
+++>>>>>>> main
+      tooltip:{callbacks:{
+       title:items=>seconds(items[0].parsed.x)+' s',
+       label:item=>item.dataset.label+' · '+number(item.parsed.y)+unit
+@@@ -149,10 -191,22 +219,29 @@@ function update()
+   const impact = avance != null && elapsed >= 0 && elapsed < 500
+     ? -.48 * Math.sin(elapsed * Math.PI / 150) * (1 - elapsed / 500) ** 2
+     : 0;
+++<<<<<<< HEAD
+ + viewer.update(m, avance, impact);
+ + $('#graph-reading').innerHTML = `<strong>Lectura a ${seconds(m.t_ms)} s</strong>
+ +  <span>X ${number(m.ax)} · Y ${number(m.ay)} · Z ${number(m.az)} m/s²</span>
+ +  <span>Lateral ${number(m.roll_deg)}° · Frontal ${number(m.pitch_deg)}°</span>`;
+++=======
++  viewer.update(m, avance, impact, turns);
++  const detected = current.evento && position >= current.evento.t_deteccion_ms;
++  $('#protocol').textContent = detected
++    ? current.sesion.origen === 'simulado'
++      ? 'Protocolo simulado: encender LED, activar buzzer y levantar señal. Respuesta física pendiente de medir.'
++      : current.evento.t_activacion_ms != null && position >= current.evento.t_activacion_ms
++        ? 'El dispositivo registró la activación del protocolo de emergencia.'
++        : 'Evento recibido. Activación del protocolo pendiente de confirmar por el dispositivo.'
++    : 'Protocolo de emergencia en espera.';
++ 
++  $('#result').style.opacity = detected || !current.evento ? '1' : '.55';
++  $('#result').setAttribute('aria-label', detected ? 'Evento detectado en este instante' : 'Resultado final de la corrida');
++ 
++  $('#graph-reading').innerHTML = `<strong>Lectura a ${seconds(m.t_ms)} s</strong>
++   <span>X ${number(m.ax)} · Y ${number(m.ay)} · Z ${number(m.az)} m/s²</span>
++   <span>Lateral ${number(m.roll_deg)}° · Frontal ${number(m.pitch_deg)}°</span><span>Rueda: ${m.rueda_rps == null ? "sin dato" : m.rueda_rps > .01 ? "girando" : "detenida"}</span>`;
+++>>>>>>> main
+  
+   charts.forEach(c=>c.draw());
+  }
