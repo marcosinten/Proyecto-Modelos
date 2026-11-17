@@ -2,6 +2,13 @@ import * as T from 'three';
 import { prepareWheels } from './scene-assets.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+// Visual scale of the Hall data: scene units the 3D car advances per real wheel turn.
+// A real RC wheel (r ≈ 3 cm) turning 10,6 times per second at 2 m/s would make the model
+// cross the road in about half a second and its spokes alias into a stroboscopic flicker.
+// At 0,17 units per turn that speed shows as ~1,8 units/s, the same pace as the simulated replay.
+// The real value stays in the telemetry and in the readout; only the drawing is scaled.
+const AVANCE_POR_VUELTA = .17;
+
 export function crearVisor(element) {
   let renderer;
   try { renderer = new T.WebGLRenderer({ antialias: true, alpha: true }); }
@@ -53,7 +60,7 @@ export function crearVisor(element) {
     draw();
     return {
       mode: '2d',
-      update(m, avance, impact = 0, turns, loop = false) { sample = m; progress = loop && turns != null ? ((turns * 2 * Math.PI * .35) % 11.3) / 11.3 : avance; jolt = impact; draw(); },
+      update(m, avance, impact = 0, turns, loop = false) { sample = m; progress = loop && turns != null ? ((turns * AVANCE_POR_VUELTA) % 11.3) / 11.3 : avance; jolt = impact; draw(); },
       camera(next) { view = next; draw(); },
       destroy() { element.replaceChildren(); }
     };
@@ -80,6 +87,10 @@ export function crearVisor(element) {
   let wheelRadius = .25;
   let lastDistance = -1;
   let wheelTurns;
+  // Rolled distance shown on screen, in scene units. The wheels always turn by
+  // rolled / radius, so they roll without slipping and never spin faster than the car moves.
+  let rolled;
+  let looping = false;
   const roadThickness = .08;
   const road = new T.Mesh(new T.BoxGeometry(104, roadThickness, 6.4), new T.MeshStandardMaterial({color:0x273449}));
   road.name = 'straight-road';
@@ -255,9 +266,12 @@ export function crearVisor(element) {
       chaseCamera.lookAt(look);
     }
     // Illustrative playback distance: never written into telemetry.
-    if (wheels.length && (distance !== lastDistance || wheelTurns != null)) {
-      wheels.forEach(wheel => { wheel.rotation.x = wheelTurns == null ? -distance / (wheel.userData.radius ?? wheelRadius) : -wheelTurns * 2 * Math.PI; });
-      lastDistance = distance;
+    // Playback on the road: the wheels follow the distance travelled on screen.
+    // Car standing still (real replay) or live loop: they follow the Hall turns at the visual scale.
+    const roll = progress != null && !looping ? distance : rolled ?? 0;
+    if (wheels.length && roll !== lastDistance) {
+      wheels.forEach(wheel => { wheel.rotation.x = -roll / (wheel.userData.radius ?? wheelRadius); });
+      lastDistance = roll;
       collectContactPoints();
       fitToRoad();
     }
@@ -336,9 +350,11 @@ export function crearVisor(element) {
 
   return {
     update(sample, advance, impact = 0, turns, loop = false) {
-      // Live sessions: the car travels the distance its wheel has rolled and re-enters the road when it reaches the end.
-      progress = loop && turns != null ? ((turns * 2 * Math.PI * wheelRadius) % 11.3) / 11.3 : advance;
       wheelTurns = turns;
+      rolled = turns == null ? undefined : turns * AVANCE_POR_VUELTA;
+      looping = loop && rolled != null;
+      // Live sessions: the car travels what its wheel has rolled and re-enters the road at the end.
+      progress = looping ? (rolled % 11.3) / 11.3 : advance;
       car.position.x = impact;
       advanceOnRoad();
       if (sample.roll_deg !== lastRoll || sample.pitch_deg !== lastPitch) {

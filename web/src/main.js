@@ -184,7 +184,11 @@ function update(){
  $('#sample-time').textContent=Math.round(position)+' ms';$('#clock').textContent=(position/1000).toFixed(2)+' / '+(end()/1000).toFixed(2)+' s';
  $('#timeline').value=position;$('#play').textContent=running?'Ⅱ Pausar':'▶ Reproducir';
  const sampleIndex = current.mediciones.indexOf(m);
- const turns = m.rueda_rps == null ? undefined : wheelTurnsBySample[sampleIndex];
+ // Interpolate between samples so the wheel turns smoothly instead of jumping every 20 ms.
+ const next = current.mediciones[sampleIndex + 1];
+ const fraction = next && next.t_ms > m.t_ms ? Math.min(1, Math.max(0, (position - m.t_ms) / (next.t_ms - m.t_ms))) : 0;
+ const turns = m.rueda_rps == null ? undefined
+   : wheelTurnsBySample[sampleIndex] + (next?.rueda_rps != null ? (wheelTurnsBySample[sampleIndex + 1] - wheelTurnsBySample[sampleIndex]) * fraction : 0);
  const totalTurns = wheelTurnsBySample.at(-1);
  const avance = !liveActive && current.sesion.origen === 'simulado' && end() > start()
    ? turns != null ? (totalTurns > 0 ? turns / totalTurns : 0) : Math.min(1, Math.max(0, (position-start())/(end()-start())))
