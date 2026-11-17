@@ -1,0 +1,34 @@
+# Resultados del banco nativo
+
+Firmware `firmware/carro_rc/carro_rc.ino` ejecutado sin cambios sobre el banco de `firmware/carro_rc/pruebas/nativo` (reloj virtual, MPU6050 con error de cero 0,03/-0,02/0,04 g y ruido 0,004 g). No sustituye la ejecución en Wokwi ni la maqueta.
+
+| Prueba | Criterio | Valor observado | Estado | Evidencia |
+|---|---|---|---|---|
+| Reposo · aceleración | X e Y en 0 ± 0,3 m/s²; Z en 9,81 ± 0,3 m/s² | 300 muestras; X media +0.001 [-0.104, +0.135]; Y media -0.000 [-0.110, +0.105]; Z media 9.853 [9.794, 9.957]; offsets ('0.2955', '-0.1960', '0.3912') | OK | `evidencias/reposo/nativo/` |
+| Reposo · ángulos | roll y pitch en 0 ± 2° | roll [-0.64, +0.61]°, pitch [-0.61, +0.79]° | OK | `evidencias/reposo/nativo/` |
+| Reposo · salidas y eventos | LED y piezo apagados, servo en reposo, 0 eventos | LED [0], piezo [0], pulso servo [500] µs (500 = 0°), detecciones 0, eventos 0, expect-pin fallos 0 | OK | `evidencias/reposo/nativo/` |
+| Marcha · rueda_rps | 4 pulsos/s, 2 por vuelta: estable entre 1,8 y 2,2 vueltas/s | 20 flancos contados; 188 lecturas desde +1 s hasta el último pulso: min 2.000, max 2.000 vueltas/s | OK | `evidencias/marcha/nativo/` |
+| Marcha · vuelta a cero | < 1 s desde el último pulso hasta la primera lectura de cero | último pulso t=5750.457 ms; primera TEL con 0: t=6515 ms (+764.5 ms); firmware: desde_ultimo_pulso=753.3 ms | OK | `evidencias/marcha/nativo/` |
+| Frenada normal | Desaceleración hasta -7 m/s² y menos pulsos: sin detección ni alerta | ax mínima -7.11 m/s², |a| máx 12.13 m/s² (< 16), |pitch| máx 36.0° (< 60); rueda_rps 4/s→2.00–2.00, 2/s→1.00–1.00, 1,5/s→0.75–0.86; detecciones 0 | OK | `evidencias/frenada/nativo/` |
+| Golpe · clasificación | un solo evento 'golpe', gravedad alta | detecciones 1, eventos 1: golpe/alta t_inicio=3 t_det=1155 t_act=1156 t_fin=1799 cierre=condicion_ausente | OK | `evidencias/golpe/nativo/` |
+| Alertas · latencia | LED, piezo y orden del servo < 50 ms desde la detección | firmware: LED +0.223 ms, piezo +0.226 ms, servo +0.229 ms · señal virtual: LED +0.223 ms, piezo +0.226 ms, pulso servo 1450 µs +0.229 ms | OK | `evidencias/golpe/nativo/` |
+| Golpe · rearme | el pulsador apaga LED, piezo y servo | t=3335 alarma=apagada; expect-pin fallos 0 | OK | `evidencias/golpe/nativo/` |
+| Inclinacion · clasificación | un solo evento 'inclinacion', gravedad media | detecciones 1, eventos 1: inclinacion/media t_inicio=3 t_det=1155 t_act=1156 t_fin=3499 cierre=condicion_ausente | OK | `evidencias/inclinacion/nativo/` |
+| Alertas · latencia | LED, piezo y orden del servo < 50 ms desde la detección | firmware: LED +0.223 ms, piezo +0.226 ms, servo +0.229 ms · señal virtual: LED +0.223 ms, piezo +0.226 ms, pulso servo 1450 µs +0.229 ms | OK | `evidencias/inclinacion/nativo/` |
+| Inclinacion · rearme | el pulsador apaga LED, piezo y servo | t=4535 alarma=apagada; expect-pin fallos 0 | OK | `evidencias/inclinacion/nativo/` |
+| Vuelco costado · clasificación | un solo evento 'vuelco', gravedad alta | detecciones 1, eventos 1: vuelco/alta t_inicio=3 t_det=1155 t_act=1156 t_fin=6155 cierre=duracion_maxima | OK | `evidencias/vuelco_costado/nativo/` |
+| Alertas · latencia | LED, piezo y orden del servo < 50 ms desde la detección | firmware: LED +0.223 ms, piezo +0.226 ms, servo +0.229 ms · señal virtual: LED +0.223 ms, piezo +0.226 ms, pulso servo 1450 µs +0.229 ms | OK | `evidencias/vuelco_costado/nativo/` |
+| Vuelco costado · rearme | el pulsador apaga LED, piezo y servo | t=6535 alarma=apagada; expect-pin fallos 0 | OK | `evidencias/vuelco_costado/nativo/` |
+| Vuelco boca abajo · clasificación | un solo evento 'vuelco', gravedad alta | detecciones 1, eventos 1: vuelco/alta t_inicio=3 t_det=1155 t_act=1156 t_fin=5499 cierre=condicion_ausente | OK | `evidencias/vuelco_boca_abajo/nativo/` |
+| Alertas · latencia | LED, piezo y orden del servo < 50 ms desde la detección | firmware: LED +0.223 ms, piezo +0.226 ms, servo +0.229 ms · señal virtual: LED +0.223 ms, piezo +0.226 ms, pulso servo 1450 µs +0.229 ms | OK | `evidencias/vuelco_boca_abajo/nativo/` |
+| Vuelco boca abajo · rearme | el pulsador apaga LED, piezo y servo | t=6035 alarma=apagada; expect-pin fallos 0 | OK | `evidencias/vuelco_boca_abajo/nativo/` |
+| Inclinacion a vuelco · clasificación | un solo evento 'vuelco', gravedad alta | detecciones 1, eventos 1: vuelco/alta t_inicio=703 t_det=1855 t_act=1856 t_fin=6299 cierre=condicion_ausente; clasificación inicial inclinacion → final vuelco | OK | `evidencias/inclinacion_a_vuelco/nativo/` |
+| Alertas · latencia | LED, piezo y orden del servo < 50 ms desde la detección | firmware: LED +0.223 ms, piezo +0.226 ms, servo +0.229 ms · señal virtual: LED +0.223 ms, piezo +0.226 ms, pulso servo 1450 µs +0.229 ms | OK | `evidencias/inclinacion_a_vuelco/nativo/` |
+| Inclinacion a vuelco · rearme | el pulsador apaga LED, piezo y servo | t=6535 alarma=apagada; expect-pin fallos 0 | OK | `evidencias/inclinacion_a_vuelco/nativo/` |
+| Pico entre envíos | 5 picos de 4 ms (1 muestra de 250 Hz) aparecen en la muestra enviada a 50 Hz | 5 TEL con ax>20: n=51 ax=29.47 k=0, n=56 ax=29.46 k=1, n=61 ax=29.45 k=2, n=66 ax=29.40 k=3, n=71 ax=29.41 k=4; posiciones k (0–4) en la ventana: [0, 1, 2, 3, 4]; detecciones 0 | OK | `evidencias/pico/nativo/` |
+| Red · alertas sin Wi-Fi | con Wi-Fi apagado la detección y las alertas siguen locales | 'wifi off' en línea 160, ALERTA en línea 220; 2 avisos 'RED sin conexion' (anillo conserva muestras: 501); eventos 1 | OK | `evidencias/rearme_red/nativo/` |
+| Rearme · antirrebote y duplicados | 1 REARME por pulsación con rebote; 1 evento por episodio | t=6035 alarma=apagada; t=7039 alarma=ya_inactiva; detecciones 1, eventos 1; expect-pin fallos 0 | OK | `evidencias/rearme_red/nativo/` |
+| API · envío | sesión, lotes y evento aceptados por la API local (201/200) | 17 POST; códigos [200, 201]; evento guardado: GET /eventos/RC-ABCDEF-7842ADD3-EV001 → tipo golpe, gravedad alta, ubicacion None, 90 mediciones en la ventana | OK | `evidencias/api/nativo/` |
+| API · reintento | respuesta perdida → reintento con el mismo JSON, ids y tiempos; la API responde 200 | /sesiones/RC-ABCDEF-7842ADD3/mediciones hash EB6D914D: API 201→200 (cuerpos idénticos); /eventos hash A2EFFD56: API 201→200 (cuerpos idénticos) | OK | `evidencias/api/nativo/` |
+| Frecuencias | lectura y decisión a 250 Hz; telemetría a 50 Hz (líneas EST de todos los casos) | f_adq 250.0–250.0 Hz, f_dec 250.0–250.0 Hz, f_tel 50.0–50.0 Hz, periodo 4000–4000 µs, ciclo máx 229 µs (coste modelado de I2C) | OK | `evidencias/*/nativo/serial.log (EST)` |
+| Reintentos sin API | cada reintento envía el mismo JSON (mismo hash FNV-1a) | frenada: sesion → 2 intentos, hashes ['731C9EBD']; vuelco_costado: sesion → 2 intentos, hashes ['731C9EBD']; inclinacion_a_vuelco: sesion → 2 intentos, hashes ['731C9EBD']; rearme_red: sesion → 2 intentos, hashes ['731C9EBD'] | OK | `evidencias/*/nativo/serial.log (RED POST)` |
