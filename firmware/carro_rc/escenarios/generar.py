@@ -215,6 +215,18 @@ def escenarios():
     L.en(4000, "wait", "/eventos evento")
     L.en(4000, "delay", 3000)
     res.append(L)
+    # Extremo a extremo con la web (modo En vivo): marcha, parada por timeout del Hall,
+    # vuelco de costado sostenido, regreso y rearme. Datos SIMULADOS (origen "simulado").
+    L = Linea("api_vuelco", "Extremo a extremo: marcha 4 pulsos/s 4 s, parada 3 s, vuelco roll = 90° 6 s, regreso y rearme; espera el evento en la API.")
+    L.pulsos(1000, 4, 4)
+    L.angulos(8000, 90)
+    L.en(8300, "expect", "led1", "A", 1)
+    L.angulos(14000, 0)
+    L.rearme(14500)
+    L.en(14800, "expect", "led1", "A", 0)
+    L.en(15000, "wait", "/eventos evento")
+    L.en(15000, "delay", 3000)
+    res.append(L)
     return res
 
 

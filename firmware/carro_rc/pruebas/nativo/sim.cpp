@@ -11,21 +11,13 @@
 // - Los estímulos se leen de un archivo .pasos generado con escenarios/generar.py,
 //   el mismo origen que los escenarios YAML de Wokwi.
 // - HTTP: "ninguna" (fallo de conexión tras el tiempo de conexión) o reenvío real
-//   a la API local con curl.exe. --perder-respuesta N hace que el POST N llegue a
+//   a la API local con curl (curl.exe en Windows). --perder-respuesta N hace que el POST N llegue a
 //   la API pero el firmware no reciba la respuesta (fuerza un reintento).
-#ifdef _WIN32
-#define POPEN _popen
-#define PCLOSE _pclose
-#define CURL_BIN "curl.exe"
-#else
-#define POPEN popen
-#define PCLOSE pclose
-#define CURL_BIN "curl"
-#endif
 #include "stubs/Arduino.h"
 #include "stubs/Wire.h"
 #include "stubs/WiFi.h"
 #include "stubs/HTTPClient.h"
+#include <chrono>
 #include <condition_variable>
 #include <deque>
 #include <fstream>
@@ -35,6 +27,13 @@
 #include <sstream>
 #include <thread>
 #include <vector>
+#ifdef _WIN32
+#define CURL_BIN "curl.exe"
+#else
+#define CURL_BIN "curl"
+#define _popen popen
+#define _pclose pclose
+#endif
 
 void setup();
 void loop();
@@ -56,6 +55,8 @@ std::vector<Tarea*> tareas;
 Tarea* actual = nullptr;
 thread_local Tarea* yo = nullptr;
 int64_t reloj = 0;
+bool tiempoReal = false;  // --tiempo-real 1: el reloj virtual no adelanta al reloj de pared
+std::chrono::steady_clock::time_point inicioReal;
 bool terminar = false;
 int codigoSalida = 0;
 }  // namespace
@@ -98,6 +99,7 @@ void crear_tarea(void (*fn)(void*), void* p, int prio, const char* nombre) {
 
 void ejecutar(int64_t limite_us) {
   std::unique_lock<std::mutex> lk(M);
+  inicioReal = std::chrono::steady_clock::now();
   while (!terminar) {
     Tarea* sig = nullptr;
     for (Tarea* t : tareas)
@@ -106,7 +108,10 @@ void ejecutar(int64_t limite_us) {
         sig = t;
     if (!sig || sig->despertar == INT64_MAX) break;
     if (sig->despertar > limite_us) { codigoSalida = 3; fprintf(stderr, "tiempo virtual agotado\n"); break; }
-    if (sig->despertar > reloj) reloj = sig->despertar;
+    if (sig->despertar > reloj) {
+      if (tiempoReal) std::this_thread::sleep_until(inicioReal + std::chrono::microseconds(sig->despertar));
+      reloj = sig->despertar;
+    }
     actual = sig;
     sig->turno = true;
     sig->cv.notify_all();
@@ -377,9 +382,9 @@ int HTTPClient::POST(const String& cuerpo) {
     fclose(f);
     std::string cmd = std::string(CURL_BIN) + " -s -m 5 -o \"" + fr + "\" -w %{http_code} -X POST" + cabeceras +
                       " --data-binary @\"" + fb + "\" \"" + destino + "\"";
-    FILE* p = POPEN(cmd.c_str(), "r");
+    FILE* p = _popen(cmd.c_str(), "r");
     char b[16] = {0};
-    if (p) { fgets(b, sizeof b, p); PCLOSE(p); }
+    if (p) { fgets(b, sizeof b, p); _pclose(p); }
     codigo = atoi(b);
     if (codigo == 0) codigo = -1;
     std::ifstream in(fr, std::ios::binary);
@@ -518,6 +523,7 @@ int main(int argc, char** argv) {
     else if (k == "--semilla") semilla ^= std::stoull(v) * 0x2545F4914F6CDD1Dull;
     else if (k == "--red") redDisponible = v == "on";
     else if (k == "--limite-ms") limite_ms = std::stoll(v);
+    else if (k == "--tiempo-real") tiempoReal = v == "1";
     else if (k == "--sesgo") sscanf(v.c_str(), "%lf,%lf,%lf", &sesgoG[0], &sesgoG[1], &sesgoG[2]);
     else if (k == "--ruido") ruidoG = atof(v.c_str());
     else if (k == "--perder-ruta") {

@@ -14,6 +14,7 @@ import json
 import re
 import shutil
 import statistics
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -38,14 +39,17 @@ def compilar():
     build = NATIVO / "build"
     build.mkdir(exist_ok=True)
     shutil.copyfile(FW / "carro_rc.ino", build / "carro_rc.cpp")  # mismo código, sin cambios
-    cmd = [sys.executable, "-m", "ziglang", "c++", "-std=c++17", "-O1", f"-I{NATIVO / 'stubs'}",
+    salida = build / ("banco.exe" if os.name == "nt" else "banco")
+    # Windows: zig c++ (pip install ziglang). Linux/macOS: g++ o clang++ del sistema.
+    cxx = [sys.executable, "-m", "ziglang", "c++"] if os.name == "nt" else [shutil.which("g++") or shutil.which("clang++") or "c++", "-pthread"]
+    cmd = [*cxx, "-std=c++17", "-O1", f"-I{NATIVO / 'stubs'}",
            "-include", str(NATIVO / "stubs" / "Arduino.h"), str(build / "carro_rc.cpp"),
-           str(NATIVO / "sim.cpp"), "-o", str(build / "banco.exe")]
+           str(NATIVO / "sim.cpp"), "-o", str(salida)]
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode:
         print(r.stderr)
         sys.exit("No compiló el banco nativo")
-    return build / "banco.exe"
+    return salida
 
 
 # ---------------------------------------------------------------- lectura de registros
@@ -359,7 +363,7 @@ def main():
             evs = [p for p in posts if p["url"].endswith("/eventos")]
             if evs:
                 eid = evs[-1]["cuerpo"]["evento"]["id"]
-                g = subprocess.run(["curl.exe" if sys.platform == "win32" else "curl", "-s", f"{a.api}/api/v1/eventos/{eid}"], capture_output=True, text=True)
+                g = subprocess.run(["curl.exe" if os.name == "nt" else "curl", "-s", f"{a.api}/api/v1/eventos/{eid}"], capture_output=True, text=True)
                 (dest / "evento_desde_api.json").write_text(g.stdout, encoding="utf-8")
                 try:
                     j = json.loads(g.stdout)

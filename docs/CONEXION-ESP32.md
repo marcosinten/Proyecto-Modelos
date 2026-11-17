@@ -125,3 +125,6 @@ En `firmware/carro_rc/carro_rc.ino`:
 3. En la web, Monitor → En vivo, escribe ese identificador y pulsa «Conectar sesión».
 
 El firmware envía `rueda_rps` en cada medición. Mientras la rueda gira, el carro de la web avanza por la carretera y vuelve a entrar por el inicio al llegar al final; cuando la rueda se detiene, el carro se detiene. Entre que la rueda para y la web lo muestra pasa alrededor de 1 s (750 ms del firmware más la consulta de la web). El sensor mide el giro de la rueda: si patina o gira en el aire, la web mostrará movimiento.
+
+
+Ejecución en Wokwi y prueba de extremo a extremo con la web: ver docs/WOKWI-API.md.

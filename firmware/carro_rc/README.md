@@ -115,6 +115,9 @@ LEDC, Wi-Fi y HTTP:
 - El coste de las operaciones I2C está modelado.
 - Escribe un VCD de las salidas.
 - Puede reenviar los POST a la API local real con `curl` (`curl.exe` en Windows). Compila en Windows y en Linux.
+- `--tiempo-real 1` sincroniza el reloj virtual con el de pared, para ver los datos llegar a la web.
+- El escenario `api_vuelco` es la prueba de extremo a extremo con la API y la web (ver `docs/WOKWI-API.md`).
+- En Linux o macOS se compila con el `g++` del sistema; en Windows, con `zig c++` (`pip install ziglang`).
 
 ```powershell
 py -m pip install --user ziglang matplotlib
