@@ -81,6 +81,9 @@ static const uint32_t SERVO_MIN_US = 500;
 static const uint32_t SERVO_MAX_US = 2400;
 static constexpr uint32_t RAPIDO_MS = 120, LENTO_MS = 500;
 static const uint32_t REARME_ANTIRREBOTE_MS = 30;
+// Mantener el botón de rearme (D33) este tiempo reinicia el ESP32 (sesión nueva) sin tocar
+// el cable USB. La pulsación corta sigue rearmando la alarma como siempre.
+static const uint32_t PULSACION_REINICIO_MS = 3000;
 
 static const int MAX_MUESTRAS_LOTE = 50;
 static const uint32_t ESPERA_LOTE_MS = 500;
@@ -649,7 +652,7 @@ static void tareaAdquisicion(void*) {
   int64_t ventanaIni = esp_timer_get_time(), ultimoCiclo = 0;
   uint32_t dtMin = UINT32_MAX, dtMax = 0, cicloMax = 0;
   bool rearmeEstable = HIGH, rearmeUltimo = HIGH;
-  uint32_t rearmeCambio = 0;
+  uint32_t rearmeCambio = 0, rearmeDesde = 0;
   bool rpsEraCero = true;
 
   TickType_t prox = xTaskGetTickCount();
@@ -701,12 +704,23 @@ static void tareaAdquisicion(void*) {
     if (lectura != rearmeEstable && t - rearmeCambio >= REARME_ANTIRREBOTE_MS) {
       rearmeEstable = lectura;
       if (rearmeEstable == LOW) {
+        rearmeDesde = t;
         bool estaba = alarmaActiva;
         if (estaba) apagarAlarma();
         logq("REARME t_ms=%lu alarma=%s detector=%s eventos=%lu",
              (unsigned long)t, estaba ? "apagada" : "ya_inactiva",
              nombresEstado[estadoDet], (unsigned long)eventosCreados);
       }
+    }
+    if (rearmeEstable == LOW && t - rearmeDesde >= PULSACION_REINICIO_MS) {
+      apagarAlarma();  // LED, buzzer y servo en reposo antes de reiniciar
+      char b[160];
+      snprintf(b, sizeof(b), "REINICIO motivo=pulsacion_larga boton=D33 t_ms=%lu sesion=%s eventos=%lu",
+               (unsigned long)t, sesionId, (unsigned long)eventosCreados);
+      logDirecto("", b);
+      Serial.flush();
+      delay(100);  // deja salir el registro pendiente
+      ESP.restart();
     }
 
     if (norma > picoNorma) {

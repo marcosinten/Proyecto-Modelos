@@ -1,0 +1,91 @@
+name: 'reinicio_boton'
+version: 1
+author: 'Grupo 11'
+# Golpe y pulsación corta (rearma, sin reiniciar); después el botón se mantiene 3,5 s con un golpe en medio: a los 3 s actuadores en reposo, REINICIO y ESP.restart().
+steps:
+  - wait-serial: 'CAL OK'
+  - wait-serial: 'SESION id='
+  - delay: 1000ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 2.5
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 300ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 1700ms
+  - set-control:
+      part-id: btn_rearme
+      control: pressed
+      value: 1
+  - delay: 150ms
+  - set-control:
+      part-id: btn_rearme
+      control: pressed
+      value: 0
+  - delay: 150ms
+  - expect-pin:
+      part-id: led1
+      pin: 'A'
+      value: 0
+  - delay: 3700ms
+  - set-control:
+      part-id: btn_rearme
+      control: pressed
+      value: 1
+  - delay: 1000ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 2.5
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 300ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 100ms
+  - expect-pin:
+      part-id: led1
+      pin: 'A'
+      value: 1
+  - delay: 2100ms
+  - set-control:
+      part-id: btn_rearme
+      control: pressed
+      value: 0
+  - delay: 500ms
+  # fin reinicio_boton (no se alcanza: el ESP32 se reinicia antes)

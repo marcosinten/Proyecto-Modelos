@@ -35,7 +35,7 @@ CASOS = {
     # Exactamente en el umbral: verificar >=90° sin ruido. Los otros escenarios
     # conservan sesgo y ruido; un ángulo que fluctúa bajo 90° no cumple permanencia.
     "inclinacion": SENSOR, "vuelco_costado": [], "vuelco_boca_abajo": SENSOR,
-    "inclinacion_a_vuelco": SENSOR, "pico": SENSOR, "golpe_corto": SENSOR, "rearme_red": SENSOR, "rebote_hall": SENSOR, "sesion_perdida": [*SENSOR, "--api", "falsa"], "api": SENSOR,
+    "inclinacion_a_vuelco": SENSOR, "pico": SENSOR, "golpe_corto": SENSOR, "rearme_red": SENSOR, "rebote_hall": SENSOR, "reinicio_boton": SENSOR, "sesion_perdida": [*SENSOR, "--api", "falsa"], "api": SENSOR,
 }
 
 
@@ -296,6 +296,26 @@ def evaluar(caso, d, vcd, ev, extra):
                      f"expect-pin fallos {extra['fallos']}",
                      len(rea) == 2 and rea[0][1] == "apagada" and rea[1][1] == "ya_inactiva" and len(dets) == 1
                      and not extra["fallos"], ev))
+    elif caso == "reinicio_boton":
+        L = d["lineas"]
+        rea = d["rearme"]
+        rein = [l for l in L if l.startswith("REINICIO motivo=")]
+        caidas = [t for t, v in vcd["rearme_gpio33"] if v == 0 and t >= d["t0"]]
+        t_rein = int(re.search(r"t_ms=(\d+)", rein[0]).group(1)) if rein else None
+        larga = [(t - d["t0"]) / 1000 for t in caidas if (t - d["t0"]) / 1000 > 6000]
+        espera = t_rein - larga[0] if rein and larga else None
+        def ultimo(senal):
+            return vcd[senal][-1][1] if vcd[senal] else None
+        res.append(r("Botón · pulsación corta", "rearma la alarma y no reinicia", f"REARME {[(x[0], x[1]) for x in rea]}; "
+                     f"alertas {len(d['alerta'])}; expect-pin fallos {extra['fallos']}",
+                     len(rea) >= 1 and rea[0][1] == "apagada" and len(d["alerta"]) == 2 and not extra["fallos"], ev))
+        res.append(r("Botón · pulsación larga", "≥ 3 s: LED, buzzer y servo en reposo, REINICIO con motivo y ESP.restart()",
+                     f"{rein[0] if rein else 'sin REINICIO'}; desde que se pulsó {espera} ms; al final LED {ultimo('led_gpio25')}, "
+                     f"buzzer {ultimo('buzzer_gpio27_activo')}, servo {ultimo('servo_gpio26_pulso_us')} µs; "
+                     f"ESP.restart en el banco: {any(l.startswith('BANCO ESP.restart()') for l in L)}",
+                     bool(rein) and espera is not None and 3000 <= espera <= 3100 and ultimo("led_gpio25") == 0
+                     and ultimo("buzzer_gpio27_activo") == 0 and ultimo("servo_gpio26_pulso_us") == 500
+                     and any(l.startswith("BANCO ESP.restart()") for l in L), ev))
     elif caso == "rebote_hall":
         bajadas = [t for t, v in vcd["hall_gpio32"] if v == 0 and t >= d["t0"]]
         pulsos = int(d["hall0"][-1][2]) if d["hall0"] else None

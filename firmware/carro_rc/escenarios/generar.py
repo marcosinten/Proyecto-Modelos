@@ -229,6 +229,20 @@ def escenarios():
     L.en(ultimo + 1500, "mark", "fin rebote_hall")
     res.append(L)
 
+    L = Linea("reinicio_boton", "Golpe y pulsación corta (rearma, sin reiniciar); después el botón se mantiene 3,5 s "
+              "con un golpe en medio: a los 3 s actuadores en reposo, REINICIO y ESP.restart().")
+    L.imu(1000, 2.5, 0, 1)
+    L.imu(1300, 0, 0, 1)
+    L.rearme(3000)
+    L.en(3300, "expect", "led1", "A", 0)
+    L.en(7000, "set", "btn_rearme", "pressed", 1)
+    L.imu(8000, 2.5, 0, 1)
+    L.imu(8300, 0, 0, 1)
+    L.en(8400, "expect", "led1", "A", 1)
+    L.en(10500, "set", "btn_rearme", "pressed", 0)
+    L.en(11000, "mark", "fin reinicio_boton (no se alcanza: el ESP32 se reinicia antes)")
+    res.append(L)
+
     L = Linea("sesion_perdida", "API falsa: a los 3 s olvida las sesiones (base borrada); el siguiente lote recibe 404, "
               "el firmware vuelve a crear la sesión y reenvía ese lote; después un golpe y su evento.")
     L.en(3000, "api", "reiniciar")

@@ -129,6 +129,7 @@ struct SerialSim {
   }
   void println(const char* t);
   void println() { println(""); }
+  void flush() {}
   int available();
   int read();
 };
