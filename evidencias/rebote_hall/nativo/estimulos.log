@@ -1,0 +1,55 @@
+  2200.678 ms  wait-serial 'CAL OK' OK
+  2200.678 ms  wait-serial 'SESION id=' OK
+  2220.222 ms  WIFI desconectado
+  2320.222 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
+  3200.678 ms  set-control hall_sim.pressed = 1
+  3201.278 ms  set-control hall_sim.pressed = 0
+  3201.858 ms  set-control hall_sim.pressed = 1
+  3220.678 ms  set-control hall_sim.pressed = 0
+  3450.678 ms  set-control hall_sim.pressed = 1
+  3451.278 ms  set-control hall_sim.pressed = 0
+  3451.858 ms  set-control hall_sim.pressed = 1
+  3470.678 ms  set-control hall_sim.pressed = 0
+  3700.678 ms  set-control hall_sim.pressed = 1
+  3701.278 ms  set-control hall_sim.pressed = 0
+  3701.858 ms  set-control hall_sim.pressed = 1
+  3720.678 ms  set-control hall_sim.pressed = 0
+  3950.678 ms  set-control hall_sim.pressed = 1
+  3951.278 ms  set-control hall_sim.pressed = 0
+  3951.858 ms  set-control hall_sim.pressed = 1
+  3970.678 ms  set-control hall_sim.pressed = 0
+  4200.678 ms  set-control hall_sim.pressed = 1
+  4201.278 ms  set-control hall_sim.pressed = 0
+  4201.858 ms  set-control hall_sim.pressed = 1
+  4220.678 ms  set-control hall_sim.pressed = 0
+  4450.678 ms  set-control hall_sim.pressed = 1
+  4451.278 ms  set-control hall_sim.pressed = 0
+  4451.858 ms  set-control hall_sim.pressed = 1
+  4470.678 ms  set-control hall_sim.pressed = 0
+  4700.678 ms  set-control hall_sim.pressed = 1
+  4701.278 ms  set-control hall_sim.pressed = 0
+  4701.858 ms  set-control hall_sim.pressed = 1
+  4720.678 ms  set-control hall_sim.pressed = 0
+  4950.678 ms  set-control hall_sim.pressed = 1
+  4951.278 ms  set-control hall_sim.pressed = 0
+  4951.858 ms  set-control hall_sim.pressed = 1
+  4970.678 ms  set-control hall_sim.pressed = 0
+  5200.678 ms  set-control hall_sim.pressed = 1
+  5201.278 ms  set-control hall_sim.pressed = 0
+  5201.858 ms  set-control hall_sim.pressed = 1
+  5220.678 ms  set-control hall_sim.pressed = 0
+  5450.678 ms  set-control hall_sim.pressed = 1
+  5451.278 ms  set-control hall_sim.pressed = 0
+  5451.858 ms  set-control hall_sim.pressed = 1
+  5470.678 ms  set-control hall_sim.pressed = 0
+  5700.678 ms  set-control hall_sim.pressed = 1
+  5701.278 ms  set-control hall_sim.pressed = 0
+  5701.858 ms  set-control hall_sim.pressed = 1
+  5720.678 ms  set-control hall_sim.pressed = 0
+  5950.678 ms  set-control hall_sim.pressed = 1
+  5951.278 ms  set-control hall_sim.pressed = 0
+  5951.858 ms  set-control hall_sim.pressed = 1
+  5970.678 ms  set-control hall_sim.pressed = 0
+  6820.222 ms  HTTP POST #1 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
+  7450.678 ms  MARCA fin rebote_hall
+  7450.678 ms  FIN escenario fallos=0

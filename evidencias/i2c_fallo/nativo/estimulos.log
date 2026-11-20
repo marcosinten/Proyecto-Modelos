@@ -1,0 +1,13 @@
+  2200.678 ms  wait-serial 'CAL OK' OK
+  2200.678 ms  wait-serial 'SESION id=' OK
+  2220.222 ms  WIFI desconectado
+  2320.222 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
+  4200.678 ms  set-control imu1.bus_colgado = 1
+  4400.055 ms  I2C bus liberado por Wire.begin()
+  6200.678 ms  set-control imu1.desconectado = 1
+  6820.222 ms  HTTP POST #1 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
+  7200.678 ms  set-control imu1.desconectado = 0
+  8700.678 ms  expect-pin led1:A = 0 -> leído 0 OK
+  8700.678 ms  expect-pin esp:D27 = 0 -> leído 0 OK
+  8700.678 ms  MARCA fin i2c_fallo
+  8700.678 ms  FIN escenario fallos=0

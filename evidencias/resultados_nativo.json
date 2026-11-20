@@ -231,9 +231,58 @@
     "evidencia": "evidencias/rearme_red/nativo/"
   },
   {
+    "prueba": "Hall · rebote filtrado",
+    "criterio": "12 pasadas con rebote a 1,18 ms: contador = 12 y giro máximo ≤ 4.4 vueltas/s",
+    "observado": "24 flancos de bajada en GPIO32; contador del firmware 12; máximo rueda_rps 4.00",
+    "estado": "OK",
+    "evidencia": "evidencias/rebote_hall/nativo/"
+  },
+  {
+    "prueba": "Botón · pulsación corta",
+    "criterio": "rearma la alarma y no reinicia",
+    "observado": "REARME [('3035', 'apagada'), ('7039', 'ya_inactiva')]; alertas 2; expect-pin fallos 0",
+    "estado": "OK",
+    "evidencia": "evidencias/reinicio_boton/nativo/"
+  },
+  {
+    "prueba": "Botón · pulsación larga",
+    "criterio": "≥ 3 s: LED, buzzer y servo en reposo, REINICIO con motivo y ESP.restart()",
+    "observado": "REINICIO motivo=pulsacion_larga boton=D33 t_ms=10039 sesion=RC-ABCDEF-77AE0BF3 eventos=2; desde que se pulsó 3034.7439999999997 ms; al final LED 0, buzzer 0, servo 500 µs; ESP.restart en el banco: True",
+    "estado": "OK",
+    "evidencia": "evidencias/reinicio_boton/nativo/"
+  },
+  {
+    "prueba": "I2C · bus colgado",
+    "criterio": "tras 50 lecturas fallidas seguidas se reinician Wire y el MPU y vuelven las lecturas",
+    "observado": "recuperaciones [(1, 2199, 50, 'OK'), (2, 4199, 50, 'ERROR'), (3, 4599, 150, 'ERROR')]",
+    "estado": "OK",
+    "evidencia": "evidencias/i2c_fallo/nativo/"
+  },
+  {
+    "prueba": "I2C · desconexión de 1 s",
+    "criterio": "reintentos espaciados (50, 100 lecturas…), lecturas válidas al reconectar, sin eventos falsos",
+    "observado": "2 intentos con el MPU desconectado (ERROR, ERROR); I2C OK de nuevo t_ms=5003 tras 250 lecturas fallidas seguidas; recuperaciones=3; az tras reconectar dentro de 9,81 ± 0,3: True; detecciones 0, eventos 0",
+    "estado": "OK",
+    "evidencia": "evidencias/i2c_fallo/nativo/"
+  },
+  {
+    "prueba": "Sesión perdida · 404 → recrear y reenviar",
+    "criterio": "404 en un lote: POST /sesiones de nuevo y el mismo lote (mismo hash) aceptado después",
+    "observado": "2 POST /sesiones; 1 respuestas 404; lote rechazado reenviado con el mismo hash: True; avisos '1' RED 404",
+    "estado": "OK",
+    "evidencia": "evidencias/sesion_perdida/nativo/"
+  },
+  {
+    "prueba": "Sesión perdida · sin pérdidas",
+    "criterio": "mediciones aceptadas 1..N sin huecos ni repetidas; evento aceptado",
+    "observado": "434 mediciones aceptadas (1–434), contiguas: True; eventos aceptados 1",
+    "estado": "OK",
+    "evidencia": "evidencias/sesion_perdida/nativo/"
+  },
+  {
     "prueba": "API · envío",
     "criterio": "sesión, lotes y evento aceptados por la API local (201/200)",
-    "observado": "17 POST; códigos [200, 201]; evento guardado: GET /eventos/RC-ABCDEF-A0B9C93E-EV001 → tipo golpe, gravedad alta, ubicacion None, 90 mediciones en la ventana",
+    "observado": "17 POST; códigos [200, 201]; evento guardado: GET /eventos/RC-ABCDEF-083ECFF2-EV001 → tipo golpe, gravedad alta, ubicacion None, 90 mediciones en la ventana",
     "estado": "OK",
     "evidencia": "evidencias/api/nativo/"
   },
@@ -254,7 +303,7 @@
   {
     "prueba": "API · reintento",
     "criterio": "respuesta perdida → reintento con el mismo JSON, ids y tiempos; la API responde 200",
-    "observado": "/sesiones/RC-ABCDEF-A0B9C93E/mediciones hash 67560B4D: API 201→200 (cuerpos idénticos); /eventos hash 80111D14: API 201→200 (cuerpos idénticos)",
+    "observado": "/sesiones/RC-ABCDEF-083ECFF2/mediciones hash 67560B4D: API 201→200 (cuerpos idénticos); /eventos hash 86F6F9C2: API 201→200 (cuerpos idénticos)",
     "estado": "OK",
     "evidencia": "evidencias/api/nativo/"
   },
