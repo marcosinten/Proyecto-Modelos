@@ -11,7 +11,7 @@ Esta carpeta ya combina: la primera versión de GitHub, la revisión v1.1 y las 
 
 4. Abre http://127.0.0.1:5173 en el navegador. Deja la terminal abierta; Ctrl+C lo detiene.
 
-Comprobaciones: `npm test` (22 pruebas), `npm run build` y `node scripts/check-viewer.mjs` (esta última necesita el modelo .glb).
+Comprobaciones: `npm test`, `npm run build`, `node scripts/check-viewer.mjs` y `npm run test:monitor` (requiere Chrome). Ver `docs/PRUEBA-MONITOR.md`.
 
 ## Subirlo a GitHub
 

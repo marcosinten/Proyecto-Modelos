@@ -36,7 +36,9 @@ El carro tiene **un solo sensor Hall (A3144), en la rueda trasera, con 1 imán**
 - Guardado del evento simulado y sus muestras en Express/SQLite.
 - Historial con búsqueda, filtros, paginación y detalle.
 - **Explicar** en cada evento del historial: lectura del registro con línea de tiempo, valores y gráficas de roll, pitch, variación de aceleración y giro de rueda cuando exista. También se puede abrir desde el detalle o con `#explicar/ID-DEL-EVENTO`.
-- Descarga real de Excel desde la web, también con datos locales. Los números provienen del escenario seleccionado.
+- Dos descargas de Excel, para la sesión completa (En vivo) o para un evento: **Resumen** (qué pasó en cada evento con una frase, tramos inclinados y la rueda con sensor; sin muestras sueltas) y **Datos técnicos** (todas las muestras con `rueda_pulsos`, eventos, parámetros del firmware, diccionario de columnas y Léeme). Las horas son aproximadas (±1 s), reconstruidas con el reloj de la API; sin ese dato aparecen como «sin medir». El mismo generador (`compartido/libro-excel.js`) lo usa `GET /api/v1/eventos/:id/excel?formato=resumen|tecnico`.
+- En vivo: aviso «Evento guardado» cuando llega un evento de la sesión conectada (Eventos recientes e Historial se actualizan solos) y aviso con «Cambiar a la nueva sesión» si otra sesión real empieza a enviar datos (p. ej. el ESP32 se reinició). «Buscar sesiones» muestra solo las que recibieron datos en los últimos 10 s.
+- En vivo el carro 3D se apoya en la carretera: plano sobre las ruedas, inclinado sobre su punto más bajo, volcado sobre el techo.
 - Interfaz adaptable a móvil, controles de teclado y diálogo de exportación.
 
 Las señales de simulación se generan matemáticamente y se evalúan con reglas experimentales. Deben calibrarse con el sensor. El tiempo de activación queda sin medir en nuevas corridas. EV-001 y EV-002 incluyen 20 ms como dato sintético de ejemplo.
