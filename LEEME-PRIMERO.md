@@ -13,6 +13,8 @@ Esta carpeta ya combina: la primera versión de GitHub, la revisión v1.1 y las 
 
 Comprobaciones: `npm test`, `npm run build`, `node scripts/check-viewer.mjs` y `npm run test:monitor` (requiere Chrome). Ver `docs/PRUEBA-MONITOR.md`.
 
+**Montaje en el carro (21/11):** seguir `docs/MANANA-CIRCUITO.md`.
+
 ## Subirlo a GitHub
 
 Desde la carpeta del repositorio clonado, en una rama nueva:
