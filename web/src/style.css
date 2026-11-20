@@ -94,3 +94,9 @@
  .explain-timeline li>div{padding-left:14px}
  .explain-timeline time{font-size:10px}
 }
+.session-list article.session-active { border:2px solid #15803d; border-radius:10px; padding:.9rem 1rem; background:#f0fdf4; }
+.session-active-label { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#166534; }
+.session-list code { font-size:1.15rem; font-weight:600; color:#0f172a; }
+.session-list small .badge { margin-left:.25rem; }
+.session-empty { display:grid; gap:.75rem; justify-items:start; padding:.5rem 0; }
+.session-empty p { font-size:13px; color:#334155; }

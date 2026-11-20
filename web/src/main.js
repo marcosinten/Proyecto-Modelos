@@ -75,7 +75,7 @@ function render() {
  if(!simulation&&!detail){
   $('#demo-mode').onclick=()=>{current=demo;position=0;render();};
    $('#live-mode').onclick=()=>{$('#demo-mode').classList.remove('selected');$('#live-mode').classList.add('selected');$('#live-form').hidden=false;if(!liveActive){$('#mode-help').textContent='Busca una sesión o escribe el ID del dispositivo.';$('#live-form input').focus();}};
-   $('#find-session').onclick=()=>buscarSesiones(get,connectLive,toast);
+   $('#find-session').onclick=()=>buscarSesiones(get,connectLive,toast,{modo:'vivo',verAnteriores:()=>buscarSesiones(get,historialSesion,toast,{modo:'historial'})});
   $('#live-form').onsubmit=e=>{e.preventDefault();connectLive(new FormData(e.target).get('session'));};
  }
 }
@@ -298,7 +298,7 @@ function renderHistory(){
  $('#prev').onclick=()=>{pageNumber--;draw();};$('#next').onclick=()=>{pageNumber++;draw();};
  $('#clear').onclick=()=>{for(const s of ['search','type','severity','filter-origin'])$('#'+s).value='';draw();};
  $('#reload').insertAdjacentHTML('beforebegin','<button class="secondary" id="history-sessions">Mediciones por sesión</button>');
- $('#history-sessions').onclick=()=>buscarSesiones(get,historialSesion,toast,'Ver mediciones');
+ $('#history-sessions').onclick=()=>buscarSesiones(get,historialSesion,toast,{modo:'historial'});
  $('#reload').onclick=async()=>{await loadEvents();if(page==='historial')renderHistory();};draw();
 }
 function simulationForm(){return `<form id="simulation-form" class="card simulation-form"><label>Escenario<select name="type"><option value="vuelco">Vuelco</option><option value="normal">Marcha normal</option><option value="frenada">Frenada brusca</option><option value="impacto">Impacto</option><option value="inclinacion">Inclinación</option></select></label><label>Umbral de aceleración (m/s²)<input name="acceleration" type="number" min="10" max="100" step="0.1" value="16" required></label><label>Ángulo mínimo (°)<input name="angle" type="number" min="5" max="180" value="60" required></label><label>Permanencia (ms)<input name="duration" type="number" min="0" max="5000" step="10" value="150" required></label><label>Permanencia de impacto (ms)<input name="impact-duration" type="number" min="0" max="5000" step="4" value="8" required></label><label>Rango del sensor<select name="range"><option value="">Ideal · sin límite</option><option value="2">±2 g · valor de fábrica</option><option value="4">±4 g</option><option value="8">±8 g</option><option value="16">±16 g</option></select></label><label>Duración del golpe (ms)<input name="impact-length" type="number" min="1" max="1000" step="1" value="100" required></label><label>Ruido del sensor (m/s²)<input name="noise" type="number" min="0" max="5" step="0.05" value="0" required></label><button class="primary">▷ Ejecutar simulación</button><button type="reset" class="secondary">Restablecer</button><p class="helper">Señales sintéticas · Reglas experimentales sobre aceleración total e inclinación · Muestreo 20 ms · Impacto: permanencia independiente</p></form><div id="simulation-actions"><button class="secondary" id="save-run">Guardar corrida en API</button><span class="helper" id="simulation-status">Ejecuta un escenario para obtener un resultado.</span></div><details class="card compare"><summary>Comparar corridas de esta sesión</summary><div id="comparisons"></div></details>`;}
