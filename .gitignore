@@ -8,3 +8,8 @@ coverage/
 dist/
 .env.*
 !.env.example
+
+/firmware/carro_rc/config_local.h
+/firmware/carro_rc/*.bak
+/firmware/carro_rc/py
+/servidor/.env
