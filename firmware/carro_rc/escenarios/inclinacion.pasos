@@ -5,9 +5,9 @@ delay 1000.0
 set imu1 accelX 0.0
 set imu1 accelY 0.9397
 set imu1 accelZ 0.342
-delay 300
+delay 200
 expect led1 A 1
-delay 1700
+delay 1800
 set imu1 accelX 0.0
 set imu1 accelY 0.0
 set imu1 accelZ 1.0

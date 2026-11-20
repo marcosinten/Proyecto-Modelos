@@ -117,6 +117,9 @@ inline String operator+(String a, int v) { a.s += std::to_string(v); return a; }
 struct SerialSim {
   void begin(unsigned long) {}
   void print(const char* t);
+  void printf(const char* fmt, ...) {
+    char out[256]; va_list a; va_start(a,fmt); vsnprintf(out,sizeof out,fmt,a); va_end(a); print(out);
+  }
   void println(const char* t);
   void println() { println(""); }
   int available();

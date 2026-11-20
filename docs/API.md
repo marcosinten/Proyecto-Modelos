@@ -11,7 +11,7 @@ Base local: `http://127.0.0.1:3000/api/v1`. Todas las escrituras requieren JSON 
 | GET | `/sesiones/:id` | `{version:1,sesion:{id,origen}}`. |
 | POST | `/sesiones/:id/mediciones` | `{version:1,mediciones:[...]}`. Hasta 1000 muestras y 512 KB. |
 | GET | `/sesiones/:id/mediciones` | Parámetros `despues_numero` (0), `limite` (200, máximo 1000). Devuelve `mediciones`, `hay_mas`, `siguiente_numero`, `version`, `sesion_id`. |
-| GET | `/sesiones/:id/ultima` | `{version:1,sesion_id,medicion}`. `medicion:null` si aún no hay muestras. |
+| GET | `/sesiones/:id/ultima` | Última `medicion` (o `null`), `ahora_ms` y `ultima_recepcion_ms`. Con `ventana=N` (1–1000) incluye hasta N muestras recientes ordenadas, `recortada`, `ultimo_evento` y `eventos` por instante de detección. `despues_numero` limita las novedades y `desde_ms` define el comienzo de las marcas de eventos en el reloj de sesión. |
 | POST | `/eventos` | `{version:1,evento:{...}}`. Guarda un evento final confirmado o cancelado. |
 | GET | `/eventos` | Listado por orden de inserción descendente. Filtro opcional `sesion_id`, `limite` (50, máximo 200), `offset` (0). Devuelve `eventos`, `hay_mas`, `siguiente_offset`, `version`. |
 | GET | `/eventos/:id` | `{version:1,sesion,evento,mediciones}` para reproducir y graficar. |
@@ -25,7 +25,8 @@ Si aparecen eventos nuevos mientras navegas el listado por offset, actualiza la 
 - `origen`: `real` o `simulado`. No mezclar los dos orígenes dentro de la misma sesión.
 - Una medición contiene `numero`, `t_ms`, `ax`, `ay`, `az`, `roll_deg`, `pitch_deg`. El `sesion_id` se toma de la ruta.
 - `rueda_rps` es opcional: vueltas de rueda por segundo, de 0 a 1000. Si no hay sensor Hall se omite el campo; omitirlo no significa rueda detenida.
-- `GET /api/v1/sesiones?limite=50&offset=0` lista todas las sesiones, con o sin evento, con su número de mediciones y eventos.
+- `rueda_pulsos` es opcional: contador acumulado de flancos Hall desde el arranque (entero de 32 bits sin signo, dos pulsos/vuelta). Una sesión nueva empieza una cuenta independiente.
+- `GET /api/v1/sesiones?limite=50&offset=0` lista todas las sesiones, con o sin evento, con sus conteos y `ultima_recepcion_ms`, las más recientes primero. Esta marca (Unix ms de la API) solo avanza al guardar muestras nuevas; es `null` para históricos sin fecha y sesiones vacías. Comparar con `ahora_ms` de la respuesta, nunca con `t_ms`. «Recibiendo» significa datos nuevos en los últimos tres segundos, no una garantía de conectividad permanente.
 - Signos: `roll_deg` positivo levanta el lado izquierdo; `pitch_deg` positivo levanta la trompa. Ver docs/CONEXION-ESP32.md.
 - `numero`: entero desde 1, único dentro de la sesión. `t_ms`: entero no negativo desde el comienzo de la sesión, no una fecha UTC.
 - `ax`, `ay`, `az`: números finitos en m/s². El emisor debe convertir las unidades del sensor si la biblioteca devuelve otra unidad. La aceleración puede incluir gravedad.

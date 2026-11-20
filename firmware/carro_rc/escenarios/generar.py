@@ -140,7 +140,7 @@ def escenarios():
 
     L = Linea("inclinacion", "Inclinación lateral roll = 70° durante 2 s y regreso a 0°; rearme.")
     L.angulos(1000, 70)
-    L.en(1300, "expect", "led1", "A", 1)
+    L.en(1200, "expect", "led1", "A", 1)  # Primera fase encendida tras 150 ms de permanencia.
     L.angulos(3000, 0)
     L.rearme(4500)
     L.en(4800, "expect", "led1", "A", 0)
@@ -195,7 +195,7 @@ def escenarios():
 
     L = Linea("rearme_red", "Wi-Fi apagado por orden serial; vuelco 1 s; rearme con rebote; segundo rearme sin alarma; Wi-Fi encendido.")
     L.en(3000, "write", "wifi off\\n")
-    L.angulos(4000, 90)
+    L.angulos(4000, 95)  # Rearme con ruido: superar el umbral durante la permanencia.
     L.en(4300, "expect", "led1", "A", 1)
     L.angulos(5000, 0)
     L.rearme(6000, 200)

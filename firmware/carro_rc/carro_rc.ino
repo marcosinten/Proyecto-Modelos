@@ -9,7 +9,11 @@
 
 // Carro RC · Grupo 11 · ESP32 DevKit WROOM-32
 
+#ifdef BANCO_NATIVO
+static const char ORIGEN_SESION[] = "simulado";
+#else
 static const char ORIGEN_SESION[] = "real";
+#endif
 static const char WIFI_SSID_SIMULADO[] = "Wokwi-GUEST";
 static const char WIFI_CLAVE_SIMULADO[] = "";
 static const char API_BASE_SIMULADO[] = "http://host.wokwi.internal:3000/api/v1";
@@ -68,6 +72,7 @@ struct Muestra {
   uint32_t numero;
   uint32_t t_ms;
   float ax, ay, az, roll, pitch, rps;
+  uint32_t pulsos;
 };
 
 enum TipoEvento : uint8_t {
@@ -196,6 +201,13 @@ static bool mpuAceleracion(float& ax, float& ay, float& az) {
   int16_t ry = (int16_t)((b[2] << 8) | b[3]);
   int16_t rz = (int16_t)((b[4] << 8) | b[5]);
 
+  if (enWokwi()) {
+    // El MPU virtual ya entrega las cuentas nominales de ±16 g.
+    ax = rx / LSB_POR_G * G_MS2;
+    ay = ry / LSB_POR_G * G_MS2;
+    az = rz / LSB_POR_G * G_MS2;
+    return true;
+  }
   // Corrección experimental medida para el MPU físico del equipo.
   ax = (rx / LSB_POR_G * G_MS2 - 2.985f) * 1.006f;
   ay = (ry / LSB_POR_G * G_MS2 + 6.850f) * 1.027f;
@@ -661,11 +673,12 @@ static void tareaAdquisicion(void*) {
     if (norma > picoNorma) {
       picoNorma = norma;
       picoIdx = enVentana;
-      pico = {0, t, ax, ay, az, roll, pitch, rps};
+      pico = {0, t, ax, ay, az, roll, pitch, rps, pulsos};
     }
     if (++enVentana == MUESTRAS_POR_TEL) {
       pico.numero = ++numeroTel;
       pico.rps = rps;
+      pico.pulsos = pulsos;
       anilloPoner(pico);
       cTel++;
       logq("TEL n=%lu t=%lu ax=%.3f ay=%.3f az=%.3f roll=%.2f pitch=%.2f rps=%.2f k=%d",
@@ -741,7 +754,7 @@ static String jsonSesion() {
 
 static String jsonLote(const Muestra* m, int n) {
   String s;
-  s.reserve(40 + n * 132);
+  s.reserve(40 + n * 164);
   s += "{\"version\":1,\"mediciones\":[";
   for (int i = 0; i < n; i++) {
     if (i) s += ',';
@@ -753,6 +766,7 @@ static String jsonLote(const Muestra* m, int n) {
     s += ",\"roll_deg\":";      s += jsonNumero(m[i].roll, 3);
     s += ",\"pitch_deg\":";     s += jsonNumero(m[i].pitch, 3);
     s += ",\"rueda_rps\":";     s += jsonNumero(fminf(fmaxf(m[i].rps, 0.0f), 1000.0f), 3);
+    s += ",\"rueda_pulsos\":";  s += m[i].pulsos;
     s += '}';
   }
   s += "]}";

@@ -8,7 +8,8 @@ export const medicionSchema = z.object({
   numero: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER),
   t_ms: ms, ax: finito, ay: finito, az: finito,
   roll_deg: finito.min(-180).max(180), pitch_deg: finito.min(-90).max(90),
-  rueda_rps: finito.min(0).max(1000).optional()
+  rueda_rps: finito.min(0).max(1000).optional(),
+  rueda_pulsos: z.number().int().min(0).max(0xffffffff).optional()
 }).strict();
 export const eventoBaseSchema = z.object({
   id, sesion_id: id,

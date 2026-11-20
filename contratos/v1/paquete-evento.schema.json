@@ -168,6 +168,11 @@
             "type": "number",
             "minimum": 0,
             "maximum": 1000
+          },
+          "rueda_pulsos": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4294967295
           }
         },
         "required": [

@@ -7,3 +7,12 @@
  font-size: .8rem;
  font-variant-numeric: tabular-nums;
 }
+#live-form { flex-wrap:wrap; }
+#live-form input:disabled { color:#475569; background:#e2e8f0; opacity:1; }
+.session-picker,.session-history { width:min(92vw,42rem); max-height:85vh; overflow:auto; }
+.session-history { width:min(96vw,68rem); }
+.session-history h2,.session-picker code { overflow-wrap:anywhere; }
+.session-list { margin:1rem 0; display:grid; gap:.75rem; }
+.session-list article { border-top:1px solid #dbe3eb; padding:.8rem 0; display:grid; gap:.4rem; }
+.session-list small { color:#475569; }
+.session-history .table-scroll { max-height:58vh; }

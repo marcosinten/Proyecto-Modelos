@@ -37,7 +37,7 @@ export function crearApp({ repositorio, apiKey = '', origins = ['http://localhos
     res.status(creado ? 201 : 200).json({ version: 1, creado, sesion });
   });
   // Todas las sesiones, con o sin evento, para revisar también las corridas sin accidente.
-  api.get('/sesiones', (req, res) => res.json({ version: 1, ...repositorio.listarSesiones(enteroQuery(req.query.limite, 50, 200, 1), enteroQuery(req.query.offset, 0, Number.MAX_SAFE_INTEGER)) }));
+  api.get('/sesiones', (req, res) => res.json({ version: 1, ahora_ms:Date.now(), ...repositorio.listarSesiones(enteroQuery(req.query.limite, 50, 200, 1), enteroQuery(req.query.offset, 0, Number.MAX_SAFE_INTEGER)) }));
   api.get('/sesiones/:id', (req, res) => res.json({ version: 1, sesion: repositorio.obtenerSesion(validarId(req.params.id)) }));
   api.post('/sesiones/:id/mediciones', (req, res) => {
     const { mediciones } = validar(loteSchema, req.body);
@@ -49,7 +49,9 @@ export function crearApp({ repositorio, apiKey = '', origins = ['http://localhos
     ...repositorio.listarMediciones(req.params.id, enteroQuery(req.query.despues_numero, 0, Number.MAX_SAFE_INTEGER), enteroQuery(req.query.limite, 200, 1000, 1))
   }));
   api.get('/sesiones/:id/ultima', (req, res) => res.json({
-    version: 1, sesion_id: validarId(req.params.id), medicion: repositorio.ultimaMedicion(req.params.id)
+    version: 1, sesion_id: validarId(req.params.id), ahora_ms:Date.now(),
+    ...repositorio.leerVivo(req.params.id, enteroQuery(req.query.ventana,0,1000,1),
+      enteroQuery(req.query.despues_numero,0,Number.MAX_SAFE_INTEGER), enteroQuery(req.query.desde_ms,undefined,Number.MAX_SAFE_INTEGER))
   }));
   api.post('/eventos', (req, res) => {
     const { evento } = validar(crearEventoSchema, req.body);

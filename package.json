@@ -10,9 +10,13 @@
     "dev": "node scripts/dev.js",
     "build": "npm run build -w web",
     "test": "npm test -w servidor",
+    "test:monitor": "node scripts/probar-monitor.mjs",
     "seed": "npm run db:seed -w servidor"
   },
   "engines": {
     "node": ">=24 <25"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.18.1"
   }
 }

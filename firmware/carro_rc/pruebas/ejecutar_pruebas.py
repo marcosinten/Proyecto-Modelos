@@ -30,7 +30,9 @@ EVID = RAIZ / "evidencias"
 SENSOR = ["--sesgo", "0.03,-0.02,0.04", "--ruido", "0.004"]
 CASOS = {
     "reposo": SENSOR, "marcha": SENSOR, "frenada": SENSOR, "golpe": SENSOR,
-    "inclinacion": SENSOR, "vuelco_costado": SENSOR, "vuelco_boca_abajo": SENSOR,
+    # Exactamente en el umbral: verificar >=90° sin ruido. Los otros escenarios
+    # conservan sesgo y ruido; un ángulo que fluctúa bajo 90° no cumple permanencia.
+    "inclinacion": SENSOR, "vuelco_costado": [], "vuelco_boca_abajo": SENSOR,
     "inclinacion_a_vuelco": SENSOR, "pico": SENSOR, "golpe_corto": SENSOR, "rearme_red": SENSOR, "api": SENSOR,
 }
 
@@ -42,7 +44,7 @@ def compilar():
     salida = build / ("banco.exe" if os.name == "nt" else "banco")
     # Windows: zig c++ (pip install ziglang). Linux/macOS: g++ o clang++ del sistema.
     cxx = [sys.executable, "-m", "ziglang", "c++"] if os.name == "nt" else [shutil.which("g++") or shutil.which("clang++") or "c++", "-pthread"]
-    cmd = [*cxx, "-std=c++17", "-O1", f"-I{NATIVO / 'stubs'}",
+    cmd = [*cxx, "-std=c++17", "-O1", "-DBANCO_NATIVO", f"-I{NATIVO / 'stubs'}",
            "-include", str(NATIVO / "stubs" / "Arduino.h"), str(build / "carro_rc.cpp"),
            str(NATIVO / "sim.cpp"), "-o", str(salida)]
     r = subprocess.run(cmd, capture_output=True, text=True)
@@ -122,7 +124,7 @@ def graficar(caso, d, vcd, destino):
     ax[0].set_ylabel("m/s²"); ax[0].legend(loc="upper right", fontsize=8)
     ax[1].plot(t, [m["roll"] for m in tel], label="roll", lw=1)
     ax[1].plot(t, [m["pitch"] for m in tel], label="pitch", lw=1)
-    for y in (60, -60, 90, -90):
+    for y in (20, -20, 90, -90):
         ax[1].axhline(y, ls="--", color="grey", lw=.6)
     ax[1].set_ylabel("grados"); ax[1].legend(loc="upper right", fontsize=8)
     ax[2].plot(t, [m["rps"] for m in tel], color="#9467bd", lw=1)
@@ -230,10 +232,10 @@ def evaluar(caso, d, vcd, ev, extra):
         for nombre, a, b in (("4/s", 2500, 4000), ("2/s", 5000, 6000), ("1,5/s", 6700, 7400)):
             v = [m["rps"] for m in tel if a <= m["t"] <= b]
             fases[nombre] = f"{min(v):.2f}–{max(v):.2f}" if v else "?"
-        res.append(r("Frenada normal", "Desaceleración hasta -7 m/s² y menos pulsos: sin detección ni alerta",
-                     f"ax mínima {minax:.2f} m/s², |a| máx {maxn:.2f} m/s² (< 16), |pitch| máx {maxp:.1f}° (< 60); "
+        res.append(r("Frenada · inclinación aparente", "A -7 m/s² el ángulo acelerométrico supera 20°: inclinación, sin golpe ni vuelco",
+                     f"ax mínima {minax:.2f} m/s², |a| máx {maxn:.2f} m/s², |pitch| máx {maxp:.1f}°; "
                      f"rueda_rps 4/s→{fases['4/s']}, 2/s→{fases['2/s']}, 1,5/s→{fases["1,5/s"]}; detecciones {len(dets)}",
-                     not dets and not d["alerta"] and minax < -6.5, ev))
+                     len(eventos)==1 and eventos[0][1]=="inclinacion" and maxn<16 and maxp>=20 and minax < -6.5, ev))
     elif caso in ("golpe", "golpe_corto", "inclinacion", "vuelco_costado", "vuelco_boca_abajo", "inclinacion_a_vuelco"):
         esperado = {"golpe": "golpe", "golpe_corto": "golpe", "inclinacion": "inclinacion"}.get(caso, "vuelco")
         grav = "media" if esperado == "inclinacion" else "alta"
@@ -249,16 +251,23 @@ def evaluar(caso, d, vcd, ev, extra):
                       f"t_act={ev0[5]} t_fin={ev0[6]} cierre={ev0[7]}" if ev0 else f"detecciones {len(dets)}, eventos 0") + extra_txt,
                      ok, ev))
         res += latencias(d, vcd, ev)
-        # Buzzer activo: nivel digital intermitente de 200 ms, sin tono PWM, y apagado tras el rearme.
+        # Patrones del prototipo: rápido, lento o fijo hasta el rearme.
         bz = [(t, v) for t, v in vcd["buzzer_gpio27_activo"] if t >= d["t0"]]
         cambios = [bz[i][0] for i in range(len(bz)) if i == 0 or bz[i][1] != bz[i - 1][1]]
         tramos = [(b - a) / 1000 for a, b in zip(cambios, cambios[1:])]
         internos = tramos[1:-1] if len(tramos) > 2 else tramos
+        periodo = 500 if esperado=="golpe" else 120
+        if caso=="inclinacion_a_vuelco":
+            patron = any(abs(x-120)<=5 for x in tramos) and max(tramos)>3000
+        elif esperado=="vuelco":
+            patron = len(cambios)==2 and len(tramos)==1 and tramos[0]>1000
+        else:
+            patron = len(internos)>=2 and all(abs(x-periodo)<=5 for x in internos)
         res.append(r(f"{caso.replace('_', ' ').capitalize()} · buzzer activo",
-                     "nivel alto/bajo cada 200 ms durante la alarma (sin PWM de audio) y bajo al final",
+                     "120 ms en inclinación, 500 ms en golpe, continuo en vuelco, apagado al rearmar",
                      f"{len(cambios)} cambios de nivel; tramos intermedios {min(internos):.0f}–{max(internos):.0f} ms; "
                      f"nivel final {bz[-1][1] if bz else '?'}" if internos else f"{len(cambios)} cambios de nivel",
-                     bool(internos) and all(190 <= x <= 210 for x in internos) and bz[-1][1] == 0, ev))
+                     patron and bz and bz[-1][1] == 0, ev))
         rea = d["rearme"]
         res.append(r(f"{caso.replace('_', ' ').capitalize()} · rearme", "el pulsador apaga LED, buzzer y servo",
                      "; ".join(f"t={x[0]} alarma={x[1]}" for x in rea) + f"; expect-pin fallos {extra['fallos']}",
@@ -304,6 +313,13 @@ def evaluar(caso, d, vcd, ev, extra):
             if p["url"].endswith("/mediciones"):
                 rps += [float(x) for x in re.findall(r'"rueda_rps":([0-9.]+)', p["cuerpo_txt"])]
         n_med = sum(p["cuerpo_txt"].count('"numero"') for p in posts if p["url"].endswith("/mediciones"))
+        muestras = {m["numero"]: m for p in posts for m in p["cuerpo"].get("mediciones",[])}
+        cuenta = [muestras[n].get("rueda_pulsos",-1) for n in sorted(muestras)]
+        flancos = sum(1 for t,v in vcd["hall_gpio32"] if t>=d["t0"] and v==0)
+        res.append(r("API · contador Hall", "primer pulso visible aun con rps=0; total igual a los flancos",
+                     f"{flancos} flancos; contador final {cuenta[-1] if cuenta else '?'}",
+                     cuenta and cuenta[0]==0 and cuenta==sorted(cuenta) and cuenta[-1]==flancos and
+                     any(m.get("rueda_pulsos")==1 and m["rueda_rps"]==0 for m in muestras.values()), ev))
         res.append(r("API · rueda_rps en el lote", "cada medición enviada lleva rueda_rps; 4 pulsos/s dan 2,0 ±10 % y luego 0",
                      f"{len(rps)} valores en {n_med} mediciones enviadas; máximo {max(rps) if rps else '?'}; "
                      f"último {rps[-1] if rps else '?'}",

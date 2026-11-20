@@ -2,12 +2,12 @@ import * as T from 'three';
 import { prepareWheels } from './scene-assets.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-// Visual scale of the Hall data: scene units the 3D car advances per real wheel turn.
-// A real RC wheel (r ≈ 3 cm) turning 10,6 times per second at 2 m/s would make the model
-// cross the road in about half a second and its spokes alias into a stroboscopic flicker.
-// At 0,17 units per turn that speed shows as ~1,8 units/s, the same pace as the simulated replay.
-// The real value stays in the telemetry and in the readout; only the drawing is scaled.
-const AVANCE_POR_VUELTA = .17;
+// Unwrap before applying a 0.25° visual deadband. Large changes take effect in this frame.
+function liveAngle(previous, degrees) {
+  if (previous == null) return degrees;
+  const d = T.MathUtils.euclideanModulo(degrees - previous + 180, 360) - 180;
+  return Math.abs(d) < .25 ? previous : previous + d;
+}
 
 export function crearVisor(element) {
   let renderer;
@@ -30,7 +30,7 @@ export function crearVisor(element) {
           <path d="M-74 9H78L70 15H-65Z" fill="#142239"/>
           <g fill="#101824" stroke="#53657e" stroke-width="1.5"><circle cx="-49" cy="11" r="15"/><circle cx="50" cy="11" r="15"/></g>
           <g fill="#dbe7f4" stroke="#8a9bb1" stroke-width="1.5"><circle cx="-49" cy="11" r="8"/><circle cx="50" cy="11" r="8"/></g>
-          <path d="M-49 5V17M-55 11H-43M50 5V17M44 11H56" stroke="#657891" stroke-width="2"/>
+          <g stroke="#657891" stroke-width="2"><path data-spoke="-49" d="M-49 4V17M-55 11H-43"/><path data-spoke="50" d="M50 4V17M44 11H56"/></g>
         </g>
         <g data-front visibility="hidden">
           <rect x="-50" y="-19" width="100" height="35" rx="9" fill="#2584f5" stroke="#93c5fd"/>
@@ -60,7 +60,11 @@ export function crearVisor(element) {
     draw();
     return {
       mode: '2d',
-      update(m, avance, impact = 0, turns, loop = false) { sample = m; progress = loop && turns != null ? ((turns * AVANCE_POR_VUELTA) % 11.3) / 11.3 : avance; jolt = impact; draw(); },
+      update(m, avance, impact = 0, turns, live = false) {
+        sample = m; progress = live ? undefined : avance; jolt = impact;
+        for (const spoke of car.querySelectorAll('[data-spoke]')) spoke.setAttribute('transform',`rotate(${(turns ?? 0)*360} ${spoke.dataset.spoke} 11)`);
+        draw();
+      },
       camera(next) { view = next; draw(); },
       destroy() { element.replaceChildren(); }
     };
@@ -85,12 +89,8 @@ export function crearVisor(element) {
   scene.add(verge);
   let wheels = [];
   let wheelRadius = .25;
-  let lastDistance = -1;
   let wheelTurns;
-  // Rolled distance shown on screen, in scene units. The wheels always turn by
-  // rolled / radius, so they roll without slipping and never spin faster than the car moves.
-  let rolled;
-  let looping = false;
+  let live = false;
   const roadThickness = .08;
   const road = new T.Mesh(new T.BoxGeometry(104, roadThickness, 6.4), new T.MeshStandardMaterial({color:0x273449}));
   road.name = 'straight-road';
@@ -112,6 +112,7 @@ export function crearVisor(element) {
   }
   const vehicle = new T.Group(); scene.add(vehicle);
   const car = new T.Group(); vehicle.add(car);
+  car.name = 'car-body'; vehicle.name = 'vehicle';
   const blue = new T.MeshStandardMaterial({color:0x2563eb,metalness:.6,roughness:.25});
   const glass = new T.MeshStandardMaterial({color:0x163346,metalness:.65,roughness:.15});
   const black = new T.MeshStandardMaterial({color:0x10151c,roughness:.85});
@@ -209,6 +210,9 @@ export function crearVisor(element) {
     }
     car.position.y = roadTop - lowest + .008;
   }
+  // Live is an attitude display. Keep its centered pivot fixed, clear of the
+  // surface even at extreme pitch; replay still uses actual mesh/road contact.
+  const liveHeight = roadTop + 2.1;
   fitToRoad();
 
   const render = () => renderer.render(scene, view === 'seguimiento' ? chaseCamera : camera);
@@ -227,7 +231,7 @@ export function crearVisor(element) {
     const w = element.clientWidth;
     const h = element.clientHeight;
     if (!w || !h) return;
-    const halfWidth = view === 'lateral' ? 8 : 4.1;
+    const halfWidth = view === 'lateral' && !live ? 8 : 4.1;
     camera.left = -halfWidth;
     camera.right = halfWidth;
     camera.top = halfWidth * h / w;
@@ -244,13 +248,13 @@ export function crearVisor(element) {
     const fraction = progress == null ? 0 : T.MathUtils.clamp(progress, 0, 1);
     const distance = 11.3 * fraction;
     vehicle.position.set(progress == null ? 0 : -5.65 + distance, 0, 0);
-    const target = vehicle.position.clone(); target.y = .15;
+    const target = vehicle.position.clone(); target.y = live ? liveHeight : .15;
     if (view === 'libre') {
       camera.position.add(target.clone().sub(previousTarget));
       controls.target.copy(target);
     } else if (view !== 'seguimiento') {
       camera.position.copy(target).addScaledVector(view === 'frontal' ? forward : lateral, 12);
-      camera.position.y = 2.7;
+      camera.position.y = live ? liveHeight : 2.7;
       camera.lookAt(target);
       controls.target.copy(target);
     }
@@ -260,18 +264,18 @@ export function crearVisor(element) {
     shadow.rotation.z = vehicle.rotation.y;
     if (view === 'seguimiento') {
       chaseCamera.position.copy(vehicle.position).addScaledVector(forward, -6.8);
-      chaseCamera.position.y = roadTop + 3.7;
+      chaseCamera.position.y = roadTop + 3.7 + (live ? liveHeight : 0);
       const look = vehicle.position.clone().addScaledVector(forward, 5);
-      look.y = roadTop + .4;
+      look.y = roadTop + .4 + (live ? liveHeight : 0);
       chaseCamera.lookAt(look);
     }
-    // Illustrative playback distance: never written into telemetry.
-    // Playback on the road: the wheels follow the distance travelled on screen.
-    // Car standing still (real replay) or live loop: they follow the Hall turns at the visual scale.
-    const roll = progress != null && !looping ? distance : rolled ?? 0;
-    if (wheels.length && roll !== lastDistance) {
-      wheels.forEach(wheel => { wheel.rotation.x = -roll / (wheel.userData.radius ?? wheelRadius); });
-      lastDistance = roll;
+    let moved = false;
+    for (const wheel of wheels) {
+      const angle = progress != null ? -distance / (wheel.userData.radius ?? wheelRadius) : -(wheelTurns ?? 0) * Math.PI * 2;
+      moved ||= wheel.rotation.x !== angle;
+      wheel.rotation.x = angle;
+    }
+    if (moved && !live) {
       collectContactPoints();
       fitToRoad();
     }
@@ -341,28 +345,28 @@ export function crearVisor(element) {
       });
       wheelRadius = wheels[0].userData.radius;
     }
-    lastDistance = -1;
     advanceOnRoad();
     collectContactPoints();
-    fitToRoad();
+    if (!live) fitToRoad();
     render();
   }).catch(error => console.warn('Se conserva el carro de respaldo:', error));
 
   return {
-    update(sample, advance, impact = 0, turns, loop = false) {
+    update(sample, advance, impact = 0, turns, enVivo = false) {
+      const changedMode = live !== enVivo;
+      live = enVivo;
+      if (changedMode) resizeCamera();
       wheelTurns = turns;
-      rolled = turns == null ? undefined : turns * AVANCE_POR_VUELTA;
-      looping = loop && rolled != null;
-      // Live sessions: the car travels what its wheel has rolled and re-enters the road at the end.
-      progress = looping ? (rolled % 11.3) / 11.3 : advance;
-      car.position.x = impact;
+      progress = live ? undefined : advance;
+      car.position.x = live ? 0 : impact;
       advanceOnRoad();
-      if (sample.roll_deg !== lastRoll || sample.pitch_deg !== lastPitch) {
-        lastRoll = sample.roll_deg;
-        lastPitch = sample.pitch_deg;
+      if (changedMode || sample.roll_deg !== lastRoll || sample.pitch_deg !== lastPitch) {
+        lastRoll = live ? liveAngle(changedMode ? null : lastRoll, sample.roll_deg) : sample.roll_deg;
+        lastPitch = live ? liveAngle(changedMode ? null : lastPitch, sample.pitch_deg) : sample.pitch_deg;
         // Roll first, then pitch about the level lateral axis: the same order the telemetry model uses.
         car.rotation.set(T.MathUtils.degToRad(lastRoll), 0, T.MathUtils.degToRad(lastPitch), 'YZX');
-        fitToRoad();
+        if (live) car.position.y = liveHeight;
+        else fitToRoad();
       }
       render();
     },

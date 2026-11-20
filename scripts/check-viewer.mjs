@@ -50,22 +50,30 @@ try {
  const center=wheel.position.clone();
  viewer.update(flat,undefined,0,1.25);
  assert(wheel.position.equals(center),'Wheel axle must not translate when spinning');
- assert(Math.abs(wheel.rotation.x+1.25*.17/r)<1e-9);
+ assert(Math.abs(wheel.rotation.x+1.25*2*Math.PI)<1e-9);
  const stopped=wheel.rotation.x;
  viewer.update(flat,undefined,0,1.25);
  assert.equal(wheel.rotation.x,stopped,'Stationary Hall signal must keep wheel pose');
  // Simulated replay on the road: the wheel follows the distance travelled, whatever the Hall turns say.
  viewer.update(flat,.5,0,40);
  assert(Math.abs(wheel.rotation.x+11.3*.5/r)<1e-9,'Wheel must roll with the car, without slipping');
- // Live loop: travel and wheel angle come from the same rolled distance and stay continuous at the wrap.
- let previous;
+ // Exceed the old track length twice without moving the chassis in any axis.
+ const scene=globalThis.captured.scene, body=scene.getObjectByName('car-body');
+ viewer.update(flat,undefined,0,0,true);
+ const pivot=body.getWorldPosition(new T.Vector3());
  for(let turns=0;turns<=140;turns+=.25){
-  viewer.update(flat,undefined,0,turns,true);
-  if(previous!==undefined)assert(Math.abs(wheel.rotation.x-previous)<=.25*.17/r+1e-9,'Wheel must not jump when the car re-enters the road');
-  previous=wheel.rotation.x;
+  viewer.update({roll_deg:90,pitch_deg:20},undefined,0,turns,true);
+  assert(body.getWorldPosition(new T.Vector3()).distanceTo(pivot)<1e-9);
+  assert(Math.abs(wheel.rotation.x+turns*2*Math.PI)<1e-9);
  }
- // At the simulated top speed (10,6 turns/s) a 60 fps frame turns the wheel well under a quarter turn.
- assert(10.6/60*.17/r<Math.PI/4,'Wheel speed must stay below the stroboscopic limit');
+ for(const [roll,pitch] of [[0,20],[0,0],[179,0],[-179,0],[-180,0],[0,0]]){
+   const before=body.rotation.x;
+   viewer.update({roll_deg:roll,pitch_deg:pitch},undefined,0,0,true);
+   if(roll===-179)assert(Math.abs((body.rotation.x-before)*180/Math.PI-2)<1e-8);
+   const front=new T.Vector3(1,0,0).applyQuaternion(body.quaternion);
+   assert(Math.abs(Math.asin(front.y)*180/Math.PI-pitch)<1e-8);
+   assert(Math.abs(new T.Vector3(0,1,0).applyQuaternion(body.quaternion).y-Math.cos(roll*Math.PI/180)*Math.cos(pitch*Math.PI/180))<1e-8);
+ }
  viewer.destroy();
- console.log('PASS: viewer loads the Oldsmobile and straight road; contact at 20 camera/roll combinations; pause, rewind, real-data stationary mode; Hall turns spin in place at the visual scale, wheels roll with the car, no jump at the live wrap; frozen telemetry untouched.');
+ console.log('PASS: Oldsmobile, contacto en reproducción, giro físico Hall, pivote fijo, 20°, horizontal, inversión y cruce corto +179° → −179°.');
 } finally {await fs.unlink('scripts/.viewer-harness.mjs');}

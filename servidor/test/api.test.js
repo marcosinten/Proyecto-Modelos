@@ -4,6 +4,7 @@ import { readFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { once } from 'node:events';
+import { DatabaseSync } from 'node:sqlite';
 import ExcelJS from 'exceljs';
 import { crearApp } from '../src/adaptadores/http/app.js';
 import { crearRepositorio } from '../src/adaptadores/sqlite/repositorio.js';
@@ -37,6 +38,26 @@ test('flujo HTTP completo: sesión → mediciones → evento → JSON exacto par
   assert.deepEqual((await request('/eventos/EV-001')).data, fixture);
   assert.equal((await request('/sesiones/SES-001/ultima')).data.medicion.roll_deg, 180);
   assert.equal((await request('/eventos?sesion_id=SES-001')).data.eventos.length, 1);
+});
+test('migra una sesión anterior sin inventar fecha o pulsos; un reintento no reactiva la sesión', async t=>{
+  const dir=mkdtempSync(join(tmpdir(),'monitor-migracion-')),path=join(dir,'antes.sqlite');
+  t.after(()=>rmSync(dir,{recursive:true,force:true}));
+  const old=new DatabaseSync(path);
+  old.exec(readFileSync(new URL('../db/migraciones/001_crear_tablas.sql',import.meta.url),'utf8'));
+  old.exec("INSERT INTO sesiones VALUES ('ANTIGUA','real'); INSERT INTO mediciones VALUES ('ANTIGUA',1,500,0,0,9.81,0,0)");
+  old.close();
+  const repo=crearRepositorio(path);t.after(()=>repo.cerrar());
+  assert.equal(repo.listarSesiones(10,0).sesiones[0].ultima_recepcion_ms,null);
+  const m=repo.ultimaMedicion('ANTIGUA');
+  assert.equal('rueda_pulsos' in m,false);
+  repo.guardarMediciones('ANTIGUA',[m]);
+  assert.equal(repo.leerVivo('ANTIGUA',0).ultima_recepcion_ms,null);
+  const nueva={...m,numero:2,t_ms:520,rueda_rps:0,rueda_pulsos:1};
+  repo.guardarMediciones('ANTIGUA',[nueva]);
+  const vivo=repo.leerVivo('ANTIGUA',1,0);
+  assert.deepEqual(vivo.mediciones,[nueva]);assert.equal(vivo.recortada,true);
+  assert.ok(vivo.ultima_recepcion_ms>nueva.t_ms);
+  assert.deepEqual(repo.listarMediciones('ANTIGUA',0,10).mediciones,[m,nueva]);
 });
 test('reintentos idénticos no duplican, cambios con el mismo id generan conflicto', async t => {
   const { request, seed } = await entorno(t); await seed();

@@ -12,7 +12,7 @@ export async function crearExcel(paquete) {
     h.views = [{ state: 'frozen', ySplit: 1 }];
     h.autoFilter = { from: { row: 1, column: 1 }, to: { row: Math.max(1, h.rowCount), column: columnas.length } };
   };
-  hoja('Datos', ['numero', 't_ms', 'ax', 'ay', 'az', 'roll_deg', 'pitch_deg', 'rueda_rps'], paquete.mediciones);
+  hoja('Datos', ['numero', 't_ms', 'ax', 'ay', 'az', 'roll_deg', 'pitch_deg', 'rueda_rps', 'rueda_pulsos'], paquete.mediciones);
   if (paquete.evento) {
     const { ubicacion, ...e } = paquete.evento;
     hoja('Evento', [...Object.keys(e), 'latitud', 'longitud', 'respuesta_ms'], [{

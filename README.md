@@ -13,6 +13,9 @@ npm run dev
 
 Abre la dirección local que imprime Vite, normalmente http://127.0.0.1:5173. Mantén la terminal abierta. Ctrl+C detiene ambos servicios.
 
+**Prototipo real:** Monitor → En vivo → Buscar sesiones. Elige el ID marcado «Recibiendo».
+Consulta la [prueba en Chrome y la lista de comprobación para la mesa de Piero](docs/PRUEBA-MONITOR.md).
+
 La primera ejecución crea `servidor/data/accidentes.sqlite` y carga EV-001 y EV-002. Las ejecuciones siguientes reconocen esos datos sin duplicarlos. Para usar una base anterior, realiza una copia de seguridad y revisa su esquema antes de cambiar DB_PATH. El SQLite antiguo del compañero usa columnas diferentes.
 
 ## Qué puedes usar

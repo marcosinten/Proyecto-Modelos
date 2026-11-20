@@ -5,6 +5,8 @@ import '@fontsource/inter/latin-700.css';
 import './style.css';
 import Chart from 'chart.js/auto';
 import {crearVisor} from './car.js';
+import {buscarSesiones} from './selector.js';
+import {vueltasEntre, VENTANA, PAUSA_MS, recepcion, paginasSesion} from './telemetria.js';
 import {generarEscenario} from './simulation.js';
 import ev1 from '../../ejemplos/vuelco.json';
 import ev2 from '../../ejemplos/vuelco-002.json';
@@ -15,13 +17,13 @@ const escape = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 const label = {golpe:'Impacto',vuelco:'Vuelco',inclinacion:'Inclinación',alta:'Alta',media:'Media',baja:'Baja'};
 const demo = generarEscenario('vuelco', 16, 90, 100);
 let current=demo, page='monitor', running=false, position=0, speed=1, lastFrame=0;
-let viewer, charts=[], events=[ev2,ev1], apiAvailable=false, liveTimer, liveSession='', cursor=0;
-let liveSamples=[], liveActive=false, pageNumber=0, previousRuns=[];
-let liveBusy=false, liveGeneration=0;
+let viewer, charts=[], events=[ev2,ev1], apiAvailable=false, liveTimer;
+let liveActive=false, pageNumber=0, previousRuns=[];
+let liveGeneration=0;
 let impactTime;
 let wheelTurnsBySample = [];
-// Live wheel motion: last rueda_rps received, when it arrived and the turns accumulated on screen.
-let liveRps = null, liveStamp = 0, liveTurns = 0, lastLiveFrame = 0;
+let liveTurns=0, wheelFrom=0, wheelTo=0, wheelStart=0, wheelDuration=0, stale=false;
+const get=async path=>(await request(path)).json();
 const seconds = ms => (ms / 1000).toLocaleString('es-EC', {maximumFractionDigits:3});
 async function request(path,body) {
  const response=await fetch('/api/v1'+path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(6000)});
@@ -35,7 +37,7 @@ function layout() {
 function heading(title,description,action='') {return `<div class="page-heading"><div><div class="eyebrow">OBSERVAR · ANALIZAR · COMPRENDER</div><h1>${title}</h1><p>${description}</p></div>${action}</div>`;}
 function metric(name,id,unit,color='') {return `<div class="metric"><span><i style="background:${color||'#64748b'}"></i>${name}</span><strong id="${id}">—</strong><small>${unit}</small></div>`;}
 function dashboard() {
- return `<div class="metrics">${metric('Aceleración X','ax','m/s²','#1d4ed8')}${metric('Aceleración Y','ay','m/s²','#0f766e')}${metric('Aceleración Z','az','m/s²','#7e22ce')}${metric('Inclinación lateral','roll','Roll · grados')}${metric('Inclinación frontal','pitch','Pitch · grados')}</div><div class="visual-grid"><section class="card stage-card"><div class="card-title"><div><h2>Postura del carro</h2><p>Orientación según datos · recorrido y ruedas ilustrativos en simulación</p><p style="font-size:10px">Modelo: <a href="https://sketchfab.com/3d-models/oldsmobile-cutlass-supreme-sedan-71-78f76d386a4341b0b71745bdc50fd5ab" target="_blank" rel="noopener noreferrer">Barbo</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · Adaptado al visor</p></div><span class="badge purple" id="origin">Datos simulados</span></div><div class="stage"><div class="scene-label"><span class="status-dot"></span> VISTA 3D <small id="sample-time">1 500 ms</small></div><div id="car"></div><div class="camera-controls"><button data-camera="seguimiento" class="selected">Seguimiento</button><button data-camera="lateral">Lateral</button><button data-camera="frontal">Frontal</button><button data-camera="libre" title="Arrastra para girar y usa la rueda o pellizca para acercar">Libre 3D</button></div><span class="axis-guide">X → &nbsp; Y ↗ &nbsp; Z ↑</span></div><div class="player"><div class="player-top"><button id="play" class="primary small">▶ Reproducir</button><button id="reset" class="secondary small" title="Volver al inicio">↺ Reiniciar</button><label class="speed"><span>Ritmo de reproducción</span><select id="speed"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label><span class="mono" id="clock"></span></div><input id="timeline" type="range" aria-label="Tiempo de la sesión en milisegundos" step="1"><div class="timeline-labels"><span id="range-start"></span><span>Tiempo desde inicio de sesión</span><span id="range-end"></span></div></div></section><div class="chart-stack"><section class="card"><div class="card-title"><h2>Aceleración por eje</h2><span class="unit">m/s²</span></div><div class="chart-wrap"><canvas id="accel"></canvas></div></section><section class="card"><div class="card-title"><h2>Inclinación</h2><span class="unit">grados</span></div><div class="chart-wrap"><canvas id="angles"></canvas></div></section><section class="card"><div class="card-title"><h2>Intensidad de la señal</h2><span class="unit">m/s² · incluye gravedad</span></div><div class="chart-wrap"><canvas id="magnitude"></canvas></div></section><output id="graph-reading" class="card graph-reading" aria-label="Lectura seleccionada"></output></div></div><div class="result-strip" id="result"></div><p class="helper" id="protocol" role="status"></p><details class="card data-table"><summary>Ver tabla de mediciones <span id="sample-count"></span></summary><div class="table-scroll" id="samples"></div></details>`;
+ return `<div class="metrics">${metric('Aceleración X','ax','m/s²','#1d4ed8')}${metric('Aceleración Y','ay','m/s²','#0f766e')}${metric('Aceleración Z','az','m/s²','#7e22ce')}${metric('Inclinación lateral','roll','Roll · grados')}${metric('Inclinación frontal','pitch','Pitch · grados')}</div><div class="visual-grid"><section class="card stage-card"><div class="card-title"><div><h2>Postura del carro</h2><p>Orientación según datos · recorrido y ruedas ilustrativos en simulación</p><p style="font-size:10px">Modelo: <a href="https://sketchfab.com/3d-models/oldsmobile-cutlass-supreme-sedan-71-78f76d386a4341b0b71745bdc50fd5ab" target="_blank" rel="noopener noreferrer">Barbo</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · Adaptado al visor</p></div><span class="badge purple" id="origin">Datos simulados</span></div><div class="stage"><div class="scene-label"><span class="status-dot"></span> VISTA 3D <small id="sample-time">1 500 ms</small></div><div id="car"></div><div class="camera-controls"><button data-camera="seguimiento" class="selected">Seguimiento</button><button data-camera="lateral">Lateral</button><button data-camera="frontal">Frontal</button><button data-camera="libre" title="Arrastra para girar y usa la rueda o pellizca para acercar">Libre 3D</button></div><span class="axis-guide">X → &nbsp; Y ↗ &nbsp; Z ↑</span></div><div class="player"><div class="player-top"><button id="play" class="primary small">▶ Reproducir</button><button id="reset" class="secondary small" title="Volver al inicio">↺ Reiniciar</button><label class="speed"><span>Ritmo de reproducción</span><select id="speed"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label><span class="mono" id="clock"></span></div><input id="timeline" type="range" aria-label="Tiempo de la sesión en milisegundos" step="1"><div class="timeline-labels"><span id="range-start"></span><span>Tiempo desde inicio de sesión</span><span id="range-end"></span></div></div></section><div class="chart-stack"><section class="card"><div class="card-title"><h2>Aceleración por eje</h2><span class="unit">m/s²</span></div><div class="chart-wrap"><canvas id="accel"></canvas></div></section><section class="card"><div class="card-title"><h2>Inclinación</h2><span class="unit">grados</span></div><div class="chart-wrap"><canvas id="angles"></canvas></div></section><section class="card"><div class="card-title"><h2>Aceleración total</h2><span class="unit">m/s² · incluye gravedad</span></div><div class="chart-wrap"><canvas id="magnitude"></canvas></div></section><section class="card"><div class="card-title"><h2>Giro de la rueda</h2><span class="unit">vueltas/s</span></div><div class="chart-wrap"><canvas id="wheel"></canvas></div></section><p class="card graph-reading" id="graph-summary"></p><output id="graph-reading" class="card graph-reading" aria-label="Lectura seleccionada"></output></div></div><div class="result-strip" id="result"></div><p class="helper" id="protocol" role="status"></p><details class="card data-table"><summary>Ver tabla de mediciones <span id="sample-count"></span></summary><div class="table-scroll" id="samples"></div></details>`;
 }
 function render() {
  running=false; clearInterval(liveTimer); liveGeneration++; liveActive=false;
@@ -46,7 +48,7 @@ function render() {
  const simulation=page==='simulacion';
  let title=detail?`${label[current.evento.tipo]||current.evento.tipo} · ${current.evento.id}`:simulation?'Simulación de incidentes':'Monitor de telemetría';
  const desc=detail?`Sesión ${current.sesion.id} · Reproducción de las mediciones registradas`:simulation?'Explora escenarios y observa cómo responden las reglas de detección.':'Una vista completa del movimiento, la orientación y los incidentes del carro.';
- $('#main').innerHTML=(detail?'<a class="back" href="#historial">← Volver al historial</a>':'')+heading(title,desc,`<button class="secondary" id="export">↓ Exportar Excel</button>`)+(simulation?simulationForm():detail?'':`<div class="mode-row"><div class="tabs"><button id="demo-mode" class="selected">Demostración</button><button id="live-mode">En vivo</button></div><span class="helper" id="mode-help">Escenario local · puedes explorarlo sin conectar el circuito</span></div><form id="live-form" hidden><label>Identificador de sesión <input name="session" placeholder="SES-001 o ID del ESP32" required pattern="[A-Za-z0-9_\\-]{1,64}"></label><button class="primary">Conectar sesión</button></form>`)+dashboard()+(!simulation&&!detail?`<section class="card recent"><div class="card-title"><div><h2>Eventos recientes</h2><p>El registro de tus últimas pruebas</p></div><a href="#historial">Ver historial →</a></div>${eventTable(events.slice(0,3))}</section>`:'');
+ $('#main').innerHTML=(detail?'<a class="back" href="#historial">← Volver al historial</a>':'')+heading(title,desc,`<button class="secondary" id="export">↓ Exportar Excel</button>`)+(simulation?simulationForm():detail?'':`<div class="mode-row"><div class="tabs"><button id="demo-mode" class="selected">Demostración</button><button id="live-mode">En vivo</button></div><span class="helper" id="mode-help">Escenario local · puedes explorarlo sin conectar el circuito</span></div><form id="live-form" hidden><label>Identificador de sesión <input name="session" placeholder="SES-001 o ID del ESP32" required pattern="[A-Za-z0-9_\\-]{1,64}"></label><button class="primary" id="connect-session">Conectar sesión</button><button type="button" class="secondary" id="find-session">Buscar sesiones</button></form>`)+dashboard()+(!simulation&&!detail?`<section class="card recent"><div class="card-title"><div><h2>Eventos recientes</h2><p>El registro de tus últimas pruebas</p></div><a href="#historial">Ver historial →</a></div>${eventTable(events.slice(0,3))}</section>`:'');
  $('#export').onclick=openExport;
  viewer=crearVisor($('#car'));
  if(viewer.mode==='2d'){
@@ -60,24 +62,35 @@ function render() {
  $('#reset').onclick=()=>{running=false;position=start();update();};
  $('#speed').onchange=e=>speed=Number(e.target.value);
  $('#timeline').oninput=e=>{running=false;position=Number(e.target.value);update();};
- charts=[makeChart('accel',['ax','ay','az'],['X · adelante/atrás','Y · lado a lado','Z · arriba/abajo'],['#1d4ed8','#0f766e','#7e22ce']),makeChart('angles',['roll_deg','pitch_deg'],['Lateral','Frontal'],['#1d4ed8','#d97706']),makeChart('magnitude',['total'],['Aceleración total'],['#be123c'])];
+  charts=[makeChart('accel',['ax','ay','az'],['X · adelante/atrás','Y · lado a lado','Z · arriba/abajo'],['#1d4ed8','#0f766e','#7e22ce']),makeChart('angles',['roll_deg','pitch_deg'],['Lateral','Frontal'],['#1d4ed8','#d97706']),makeChart('magnitude',['total'],['Aceleración total'],['#be123c']),makeChart('wheel',['rueda_rps'],['Velocidad de la rueda'],['#0f766e'])];
  bindRows(); refreshData();
  $('.data-table').ontoggle=()=>{if(liveActive&&$('.data-table').open)refreshData();};
  if(simulation)bindSimulation();
  if(!simulation&&!detail){
   $('#demo-mode').onclick=()=>{current=demo;position=0;render();};
-  $('#live-mode').onclick=()=>{$('#demo-mode').classList.remove('selected');$('#live-mode').classList.add('selected');$('#live-form').hidden=false;$('#mode-help').textContent='Escribe la sesión creada por el dispositivo o el emisor de pruebas.';$('#live-form input').focus();};
+   $('#live-mode').onclick=()=>{$('#demo-mode').classList.remove('selected');$('#live-mode').classList.add('selected');$('#live-form').hidden=false;if(!liveActive){$('#mode-help').textContent='Busca una sesión o escribe el ID del dispositivo.';$('#live-form input').focus();}};
+   $('#find-session').onclick=()=>buscarSesiones(get,connectLive,toast);
   $('#live-form').onsubmit=e=>{e.preventDefault();connectLive(new FormData(e.target).get('session'));};
  }
 }
 const start=()=>liveActive ? current.mediciones[0]?.t_ms??0 : current.evento?.t_inicio_ms??current.mediciones[0]?.t_ms??0;
 const end=()=>liveActive ? current.mediciones.at(-1)?.t_ms??1000 : current.evento?.t_fin_ms??current.mediciones.at(-1)?.t_ms??1000;
 function makeChart(id, keys, names, colors) {
- const unit = id === 'angles' ? '°' : ' m/s²';
+ const unit = id === 'angles' ? '°' : id==='wheel' ? ' vueltas/s' : ' m/s²';
  const cursor = {
   id:'timeCursor',
   afterDraw(chart) {
-   const {ctx, chartArea, scales} = chart;
+    const {ctx, chartArea, scales} = chart;
+    if(id==='angles'){
+      for(const event of current.eventos ?? (current.evento?[current.evento]:[])){
+        const px=scales.x.getPixelForValue(event.t_deteccion_ms);
+        if(px<chartArea.left || px>chartArea.right)continue;
+        ctx.save();ctx.strokeStyle='#9333a1';ctx.fillStyle='#6b287d';ctx.setLineDash([3,2]);
+        ctx.beginPath();ctx.moveTo(px,chartArea.top);ctx.lineTo(px,chartArea.bottom);ctx.stroke();
+        const lane={golpe:0,inclinacion:1,vuelco:2}[event.tipo];
+        ctx.textAlign=px>chartArea.right-55?'right':'left';ctx.fillText(label[event.tipo],px,chartArea.top+11+lane*12);ctx.restore();
+      }
+    }
    const x = scales.x.getPixelForValue(position);
    if (x < chartArea.left || x > chartArea.right) return;
    ctx.save();
@@ -143,7 +156,7 @@ function refreshData() {
  $('#timeline').min=start();$('#timeline').max=end();
  $('#range-start').textContent=start()+' ms';$('#range-end').textContent=end()+' ms';
  $('#sample-count').textContent=current.mediciones.length+' muestras';
- if(!liveActive||$('.data-table').open)$('#samples').innerHTML='<table><thead><tr>'+['Muestra','Tiempo (ms)','X (m/s²)','Y (m/s²)','Z (m/s²)','Roll (°)','Pitch (°)'].map(s=>'<th>'+s+'</th>').join('')+'</tr></thead><tbody>'+current.mediciones.slice(-1000).map(m=>'<tr>'+[m.numero,m.t_ms,m.ax,m.ay,m.az,m.roll_deg,m.pitch_deg].map(v=>'<td>'+number(v)+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
+ if(!liveActive||$('.data-table').open)$('#samples').innerHTML=tablaMediciones(current.mediciones.slice(-1000));
  const e=current.evento;
  impactTime = undefined;
  if (current.parametros?.escenario === 'impacto' || e?.tipo === 'golpe') {
@@ -158,24 +171,23 @@ function refreshData() {
  let turns = 0;
  current.mediciones.forEach((m,i) => {
   const previous = current.mediciones[i-1];
-  const dt = previous ? (m.t_ms-previous.t_ms)/1000 : 0;
-  if (previous?.rueda_rps != null && m.rueda_rps != null && dt > 0 && dt <= .5) {
-    turns += (previous.rueda_rps + m.rueda_rps) * dt / 2;
-  }
+  turns += vueltasEntre(previous,m);
   wheelTurnsBySample.push(turns);
  });
  charts.forEach((chart,i) => {
-  const keys = i===0 ? ['ax','ay','az'] : i===1 ? ['roll_deg','pitch_deg'] : ['total'];
-  chart.data.datasets.forEach((dataset,j) => {
+  const keys = [['ax','ay','az'],['roll_deg','pitch_deg'],['total'],['rueda_rps']][i];
+   chart.data.datasets.forEach((dataset,j) => {
    dataset.data = current.mediciones.map(m => ({
-    x:m.t_ms, y:keys[j]==='total' ? Math.hypot(m.ax,m.ay,m.az) : m[keys[j]]
+     x:m.t_ms, y:keys[j]==='total' ? Math.hypot(m.ax,m.ay,m.az) : m[keys[j]] ?? null
    }));
   });
   chart.options.scales.x.min=start();
   chart.options.scales.x.max=end();
   chart.update();
  });
- update();
+  const max=current.mediciones.reduce((v,m)=>Math.max(v,Math.abs(m.roll_deg)),0);
+  $('#graph-summary').textContent=current.mediciones.length?`Inclinación lateral máxima de ${max.toLocaleString('es-EC',{maximumFractionDigits:1})}° ${liveActive?'en la ventana reciente':'en estas mediciones'}.`:'Sin mediciones.';
+  update();
 }
 function update(){
  const m=current.mediciones.findLast(m=>m.t_ms<=position)??current.mediciones[0];if(!m)return;
@@ -197,7 +209,7 @@ function update(){
  const impact = avance != null && elapsed >= 0 && elapsed < 500
    ? -.48 * Math.sin(elapsed * Math.PI / 150) * (1 - elapsed / 500) ** 2
    : 0;
- viewer.update(m, avance, impact, liveActive ? (liveRps == null ? undefined : liveTurns) : turns, liveActive);
+  viewer.update(m, avance, impact, liveActive ? liveTurns : turns, liveActive);
  const detected = current.evento && position >= current.evento.t_deteccion_ms;
  $('#protocol').textContent = detected
    ? current.sesion.origen === 'simulado'
@@ -212,17 +224,50 @@ function update(){
 
  $('#graph-reading').innerHTML = `<strong>Lectura a ${seconds(m.t_ms)} s</strong>
   <span>X ${number(m.ax)} · Y ${number(m.ay)} · Z ${number(m.az)} m/s²</span>
-  <span>Lateral ${number(m.roll_deg)}° · Frontal ${number(m.pitch_deg)}°</span><span>Rueda: ${m.rueda_rps == null ? "sin dato" : m.rueda_rps > .01 ? "girando" : "detenida"}</span>`;
+   <span>Lateral ${number(m.roll_deg)}° · Frontal ${number(m.pitch_deg)}°</span><span>Rueda: ${liveActive&&stale?'último dato desactualizado':m.rueda_rps == null ? "sin dato" : m.rueda_rps > 0 ? "girando" : "detenida"}${m.rueda_pulsos!=null?' · '+m.rueda_pulsos+' pulsos':''}</span>`;
 
  charts.forEach(c=>c.draw());
 }
 function frame(time){
- // En vivo: the car keeps rolling at the last reported wheel speed and stops when it reports zero or data goes stale.
- if(liveActive&&liveRps>.01&&time-liveStamp<1500&&lastLiveFrame){liveTurns+=liveRps*Math.min(.1,(time-lastLiveFrame)/1000);update();}
- lastLiveFrame=time;
+  if(liveActive && liveTurns!==wheelTo && current.mediciones.length){
+    const f=Math.max(0,Math.min(1,(time-wheelStart)/wheelDuration));
+    liveTurns=f===1?wheelTo:wheelFrom+(wheelTo-wheelFrom)*f;
+    viewer.update(current.mediciones.at(-1),undefined,0,liveTurns,true);
+  }
  if(running){if(lastFrame)position=Math.min(end(),position+(time-lastFrame)*speed);lastFrame=time;if(position>=end())running=false;update();}requestAnimationFrame(frame);}
 function eventTable(list){return `<div class="table-scroll"><table><thead><tr><th>Evento / sesión</th><th>Tipo</th><th>Gravedad</th><th>Origen</th><th>Respuesta</th><th></th></tr></thead><tbody>${list.map(p=>`<tr><td><strong>${escape(p.evento.id)}</strong><small>${escape(p.sesion.id)}</small></td><td>${escape(label[p.evento.tipo]||p.evento.tipo)}</td><td><span class="badge ${p.evento.gravedad==='alta'?'danger':'warning'}">${escape(label[p.evento.gravedad]||p.evento.gravedad)}</span></td><td><span class="badge ${p.sesion.origen==='real'?'neutral':'purple'}">${p.sesion.origen==='real'?'Real':'Simulado'}</span></td><td class="mono">${p.evento.t_activacion_ms===null?'—':p.evento.t_activacion_ms-p.evento.t_deteccion_ms+' ms'}</td><td><button class="text-button" data-event="${escape(p.evento.id)}">Ver detalle →</button></td></tr>`).join('')||'<tr><td colspan="6">No hay eventos con estos filtros.</td></tr>'}</tbody></table></div>`;}
-function bindRows(){document.querySelectorAll('[data-event]').forEach(b=>b.onclick=()=>{current=events.find(p=>p.evento.id===b.dataset.event);position=current.evento.t_deteccion_ms;location.hash='detalle';});}
+function tablaMediciones(rows){
+ const headers=['Muestra','Tiempo (ms)','X (m/s²)','Y (m/s²)','Z (m/s²)','Lateral (°)','Frontal (°)','Rueda (vueltas/s)','Pulsos'];
+ return '<table><thead><tr>'+headers.map(s=>`<th>${s}</th>`).join('')+'</tr></thead><tbody>'+rows.map(m=>'<tr>'+[m.numero,m.t_ms,...[m.ax,m.ay,m.az,m.roll_deg,m.pitch_deg,m.rueda_rps].map(v=>v==null?'—':number(v)),m.rueda_pulsos??'—'].map(v=>`<td>${v}</td>`).join('')+'</tr>').join('')+'</tbody></table>';
+}
+function historialSesion(id){
+ const d=document.createElement('dialog');d.className='session-history';
+ d.innerHTML=`<form method="dialog"><button class="close" aria-label="Cerrar">×</button></form><h2>Mediciones de ${escape(id)}</h2><div class="table-scroll"></div><div class="pagination"><button class="secondary">Anterior</button><small></small><button class="secondary">Siguiente</button></div>`;
+ document.body.append(d);d.showModal();d.onclose=()=>d.remove();
+ const cursores=[0], [prev,next]=d.querySelectorAll('.secondary');
+ async function mostrar(){
+   prev.disabled=next.disabled=true;
+   try{
+     const r=await get(`/sesiones/${id}/mediciones?limite=100&despues_numero=${cursores.at(-1)}`);
+     if(!d.open)return;
+     d.querySelector('.table-scroll').innerHTML=tablaMediciones(r.mediciones);
+     d.querySelector('small').textContent=`Página ${cursores.length} · ${r.mediciones.length} muestras`;
+     prev.disabled=cursores.length===1;next.disabled=!r.hay_mas;
+     next.onclick=()=>{cursores.push(r.siguiente_numero);mostrar();};
+     prev.onclick=()=>{cursores.pop();mostrar();};
+   }catch(e){d.querySelector('small').textContent=e.message;}
+ }
+ mostrar();
+}
+function bindRows(){document.querySelectorAll('[data-event]').forEach(b=>b.onclick=async()=>{
+ const generation=liveGeneration;
+ try{
+   const p=events.find(p=>p.evento.id===b.dataset.event);
+   const detalle=p.mediciones?p:await get('/eventos/'+p.evento.id);
+   if(!b.isConnected||generation!==liveGeneration)return;
+   current=detalle;position=detalle.evento.t_deteccion_ms;location.hash='detalle';
+ }catch(e){toast(e.message);}
+});}
 function renderHistory(){
  $('#main').innerHTML=heading('Historial de eventos','Consulta, reproduce y exporta los registros de tus pruebas.',`<button id="reload" class="secondary">↻ Actualizar</button>`)+`<div class="filters card"><label>Buscar<input id="search" placeholder="Evento o sesión"></label><label>Tipo<select id="type"><option value="">Todos los tipos</option><option value="vuelco">Vuelco</option><option value="golpe">Impacto</option><option value="inclinacion">Inclinación</option></select></label><label>Gravedad<select id="severity"><option value="">Todas</option><option value="alta">Alta</option><option value="media">Media</option><option value="baja">Baja</option></select></label><label>Origen<select id="filter-origin"><option value="">Todos</option><option value="simulado">Simulado</option><option value="real">Real</option></select></label><button class="text-button" id="clear">Limpiar filtros</button></div><section class="card" id="history-list"></section><div class="pagination"><button class="secondary" id="prev">← Anterior</button><span id="page-count"></span><button class="secondary" id="next">Siguiente →</button></div><p class="helper">${apiAvailable?'Registros consultados en la API local.':'Ejemplos locales disponibles mientras la API está desconectada.'}</p>`;
  const filtered=()=>events.filter(p=>(p.evento.id+' '+p.sesion.id).toLowerCase().includes($('#search').value.toLowerCase())&&(!$('#type').value||p.evento.tipo===$('#type').value)&&(!$('#severity').value||p.evento.gravedad===$('#severity').value)&&(!$('#filter-origin').value||p.sesion.origen===$('#filter-origin').value));
@@ -230,7 +275,9 @@ function renderHistory(){
  for(const s of ['search','type','severity','filter-origin'])$('#'+s).oninput=()=>{pageNumber=0;draw();};
  $('#prev').onclick=()=>{pageNumber--;draw();};$('#next').onclick=()=>{pageNumber++;draw();};
  $('#clear').onclick=()=>{for(const s of ['search','type','severity','filter-origin'])$('#'+s).value='';draw();};
- $('#reload').onclick=async()=>{await loadEvents();renderHistory();};draw();
+ $('#reload').insertAdjacentHTML('beforebegin','<button class="secondary" id="history-sessions">Mediciones por sesión</button>');
+ $('#history-sessions').onclick=()=>buscarSesiones(get,historialSesion,toast,'Ver mediciones');
+ $('#reload').onclick=async()=>{await loadEvents();if(page==='historial')renderHistory();};draw();
 }
 function simulationForm(){return `<form id="simulation-form" class="card simulation-form"><label>Escenario<select name="type"><option value="vuelco">Vuelco</option><option value="normal">Marcha normal</option><option value="frenada">Frenada brusca</option><option value="impacto">Impacto</option><option value="inclinacion">Inclinación</option></select></label><label>Umbral de aceleración (m/s²)<input name="acceleration" type="number" min="10" max="100" step="0.1" value="16" required></label><label>Ángulo mínimo (°)<input name="angle" type="number" min="5" max="180" value="60" required></label><label>Permanencia (ms)<input name="duration" type="number" min="0" max="5000" step="10" value="150" required></label><label>Permanencia de impacto (ms)<input name="impact-duration" type="number" min="0" max="5000" step="4" value="8" required></label><label>Rango del sensor<select name="range"><option value="">Ideal · sin límite</option><option value="2">±2 g · valor de fábrica</option><option value="4">±4 g</option><option value="8">±8 g</option><option value="16">±16 g</option></select></label><label>Duración del golpe (ms)<input name="impact-length" type="number" min="1" max="1000" step="1" value="100" required></label><label>Ruido del sensor (m/s²)<input name="noise" type="number" min="0" max="5" step="0.05" value="0" required></label><button class="primary">▷ Ejecutar simulación</button><button type="reset" class="secondary">Restablecer</button><p class="helper">Señales sintéticas · Reglas experimentales sobre aceleración total e inclinación · Muestreo 20 ms · Impacto: permanencia independiente</p></form><div id="simulation-actions"><button class="secondary" id="save-run">Guardar corrida en API</button><span class="helper" id="simulation-status">Ejecuta un escenario para obtener un resultado.</span></div><details class="card compare"><summary>Comparar corridas de esta sesión</summary><div id="comparisons"></div></details>`;}
 function bindSimulation(){
@@ -239,27 +286,108 @@ function bindSimulation(){
  $('#save-run').onclick=async()=>{const button=$('#save-run');button.disabled=true;const p=current;try{await request('/sesiones',{version:1,sesion:p.sesion});await request('/sesiones/'+p.sesion.id+'/mediciones',{version:1,mediciones:p.mediciones});if(p.evento)await request('/eventos',{version:1,evento:p.evento});toast('Corrida guardada: '+p.sesion.id);await loadEvents();}catch(e){toast(e.message);button.disabled=false;}};
 }
 async function connectLive(id){
- const generation=++liveGeneration;clearInterval(liveTimer);running=false;cursor=0;liveSamples=[];liveSession=id;liveRps=null;liveTurns=0;
- try {const session=(await (await request('/sesiones/'+id)).json()).sesion;if(generation!==liveGeneration)return;current={version:1,sesion:session,evento:null,mediciones:[]};liveActive=true;$('#origin').textContent=session.origen==='real'?'Mediciones reales':'Emisor simulado';$('#mode-help').textContent='Consultando sesión '+id;$('#play').disabled=true;$('#timeline').disabled=true;
- async function poll(){if(liveBusy||generation!==liveGeneration)return;liveBusy=true;try{const r=await (await request('/sesiones/'+id+'/mediciones?despues_numero='+cursor+'&limite=1000')).json();if(generation!==liveGeneration)return;const responseEvents=await (await request('/eventos?sesion_id='+id+'&limite=1')).json();
- if(generation!==liveGeneration)return;
- current.evento=responseEvents.eventos[0]??null;
- cursor=r.siguiente_numero;liveSamples.push(...r.mediciones);if(r.mediciones.length){liveRps=r.mediciones.at(-1).rueda_rps??null;liveStamp=performance.now();}current.mediciones=liveSamples;$('#mode-help').textContent=r.mediciones.length?'Lecturas recibidas · '+liveSamples.length+' muestras':'Esperando nuevas mediciones · '+liveSamples.length+' recibidas';if(current.mediciones.length){position=current.mediciones.at(-1).t_ms;refreshData();}}catch(e){if(generation===liveGeneration)$('#mode-help').textContent='Conexión interrumpida. Reintentando…';}finally{liveBusy=false;}}
- await poll();liveTimer=setInterval(poll,500);
- }catch(e){toast(e.message);}
+ const generation=++liveGeneration, valid=()=>generation===liveGeneration;
+ clearTimeout(liveTimer);running=false;liveActive=false;
+ const input=$('#live-form input'),btn=$('#connect-session');
+ input.value=id;input.disabled=true;btn.disabled=true;
+ $('#mode-help').textContent='Conectando a '+id+'…';
+ let session;
+ try{({sesion:session}=await get('/sesiones/'+id));}
+ catch(e){if(valid()){toast(e.message);$('#mode-help').textContent=e.message;input.disabled=false;btn.disabled=false;}return;}
+ if(!valid())return;
+ current={version:1,sesion:session,evento:null,eventos:[],mediciones:[]};
+ liveActive=true;wheelTo=wheelFrom=liveTurns=0;position=0;
+ $('#origin').textContent=session.origen==='real'?'Mediciones reales':'Emisor simulado';
+ for(const s of ['play','reset','timeline','speed'])$('#'+s).disabled=true;
+ btn.hidden=true;$('#find-session').textContent='Cambiar sesión';
+ for(const s of ['ax','ay','az','roll','pitch','clock','sample-time','graph-reading','protocol','samples'])$('#'+s).textContent='—';
+ $('#car').style.visibility='hidden';refreshData();
+ let reset=true, lastRecepcion=null, markerKey='';
+ async function poll(){
+   try{
+     const prev=current.mediciones.at(-1);
+     const since=!reset && prev?`&despues_numero=${prev.numero}&desde_ms=${start()}`:'';
+     const r=await get(`/sesiones/${id}/ultima?ventana=${VENTANA}${since}`);
+     if(!valid())return;
+     const data=r.mediciones;
+     lastRecepcion=r.ultima_recepcion_ms;
+     const oldStale=stale;
+     stale=lastRecepcion==null || r.ahora_ms-lastRecepcion>PAUSA_MS;
+     $('#mode-help').textContent=recepcion(lastRecepcion,r.ahora_ms,!!r.medicion);
+     if(!reset && !r.recortada && data.length && !stale){
+       let a=prev, delta=0;
+       for(const b of data){delta+=vueltasEntre(a,b);a=b;}
+       if(delta>0){
+         wheelFrom=liveTurns;wheelTo+=delta;wheelStart=performance.now();
+         wheelDuration=Math.max(100,Math.min(240,a.t_ms-(prev??data[0]).t_ms));
+       }
+     }
+     current.mediciones=reset||r.recortada?data:[...current.mediciones,...data].slice(-VENTANA);
+     reset=false;
+     const events=r.eventos.filter(e=>e.t_deteccion_ms>=start());
+     const key=JSON.stringify([r.ultimo_evento?.id,events.map(e=>e.id)]);
+     current.eventos=events;current.evento=r.ultimo_evento;
+     if(r.medicion){
+       position=r.medicion.t_ms;$('#car').style.visibility='';
+       if(data.length||key!==markerKey)refreshData();
+       else if(oldStale!==stale)update();
+     }
+     markerKey=key;
+   } catch(e){
+     if(!valid())return;
+     reset=true;stale=true;wheelTo=liveTurns;
+     $('#mode-help').textContent='Conexión interrumpida. Reintentando…'+(lastRecepcion?' Última recepción: '+new Date(lastRecepcion).toLocaleString('es-EC'):'');
+     if(current.mediciones.length)update();
+   }
+   if(valid())liveTimer=setTimeout(poll,200);
+ }
+ poll();
 }
-async function loadEvents(){try{let list=[],offset=0;while(true){const r=await (await request('/eventos?limite=200&offset='+offset)).json();list.push(...r.eventos);if(!r.hay_mas)break;offset=r.siguiente_offset;}const loaded=[];for(const e of list){loaded.push(await (await request('/eventos/'+e.id)).json());}events=loaded;apiAvailable=true;}catch{apiAvailable=false;}$('#connection').textContent=apiAvailable?'● API conectada':'○ Modo local';$('#connection').className='badge '+(apiAvailable?'success':'neutral');}
+async function loadEvents(){
+ try{
+   let list=[],offset=0;
+   while(true){const r=await get('/eventos?limite=200&offset='+offset);list.push(...r.eventos);if(!r.hay_mas)break;offset=r.siguiente_offset;}
+   const sessions=new Map();
+   for(const e of list)if(!sessions.has(e.sesion_id))sessions.set(e.sesion_id,(await get('/sesiones/'+e.sesion_id)).sesion);
+   events=list.map(evento=>({evento,sesion:sessions.get(evento.sesion_id)}));apiAvailable=true;
+ }catch{apiAvailable=false;}
+ $('#connection').textContent=apiAvailable?'● API conectada':'○ Modo local';$('#connection').className='badge '+(apiAvailable?'success':'neutral');
+}
 function openExport(){
  const p=structuredClone(current);
+ const completa=liveActive, ultimo=p.mediciones.at(-1)?.numero??0;
  $('#export-body').innerHTML=`<div class="export-icon">↓</div><h2>Exportar ${p.evento?'evento':'corrida'}</h2><p>Las mediciones del escenario seleccionado, listas para analizar.</p><div class="export-info"><strong>${escape(p.evento?.id||p.sesion.id)}.xlsx</strong><span>${p.mediciones.length} mediciones · ${p.sesion.origen==='real'?'Datos reales':'Datos simulados'}</span><small>Hojas Datos, ${p.evento?'Evento, ':''}Metadatos${p.parametros?', Parámetros':''}</small></div><div id="export-error" role="alert"></div><div class="dialog-actions"><button id="cancel-export" class="secondary">Cancelar</button><button id="download" class="primary">↓ Descargar .xlsx</button></div>`;
+ if(completa){
+   $('#export-body h2').textContent='Exportar sesión completa';
+   $('#export-body .export-info strong').textContent=p.sesion.id+'.xlsx';
+   $('#export-body .export-info span').textContent='Desde el inicio hasta la muestra '+ultimo;
+   $('#export-body .export-info small').textContent='Hojas Datos, Eventos y Metadatos';
+ }
  $('#export-dialog').showModal();$('#cancel-export').onclick=()=>$('#export-dialog').close();
  $('#download').onclick=async()=>{const b=$('#download');b.disabled=true;b.textContent='Preparando archivo…';try{
- const {default:ExcelJS}=await import('exceljs');const book=new ExcelJS.Workbook();
- const sheet=(name,rows)=>{const h=book.addWorksheet(name);if(rows.length){h.columns=Object.keys(rows[0]).map(k=>({header:k,key:k,width:22}));h.addRows(rows);h.getRow(1).font={bold:true};h.views=[{state:'frozen',ySplit:1}];}};
- sheet('Datos',p.mediciones);if(p.evento){const {ubicacion,...e}=p.evento;sheet('Evento',[{...e,latitud:ubicacion?.latitud??null,longitud:ubicacion?.longitud??null,respuesta_ms:e.t_activacion_ms===null?null:e.t_activacion_ms-e.t_deteccion_ms}]);}
+  if(completa){
+    p.mediciones=[];
+    for await(const rows of paginasSesion(get,p.sesion.id,ultimo))p.mediciones.push(...rows);
+    const eventos=new Map();let offset=0;
+    for(;;){
+      const r=await get(`/eventos?sesion_id=${p.sesion.id}&limite=200&offset=${offset}`);
+      for(const ev of r.eventos)if(ev.t_deteccion_ms<=p.mediciones.at(-1)?.t_ms)eventos.set(ev.id,ev);
+      if(!r.hay_mas)break;
+      offset=r.siguiente_offset;
+    }
+    p.eventos=[...eventos.values()];
+  }
+  const {default:ExcelJS}=await import('exceljs');const book=new ExcelJS.Workbook();
+  const sheet=(name,rows)=>{const h=book.addWorksheet(name);if(rows.length){h.columns=[...new Set(rows.flatMap(Object.keys))].map(k=>({header:k,key:k,width:22}));h.addRows(rows);h.getRow(1).font={bold:true};h.views=[{state:'frozen',ySplit:1}];}};
+ sheet('Datos',p.mediciones);
+ const filaEvento=({ubicacion,...e})=>({...e,latitud:ubicacion?.latitud??null,longitud:ubicacion?.longitud??null,respuesta_ms:e.t_activacion_ms===null?null:e.t_activacion_ms-e.t_deteccion_ms});
+ if(completa)sheet('Eventos',p.eventos.map(filaEvento));else if(p.evento)sheet('Evento',[filaEvento(p.evento)]);
  sheet('Metadatos',[{sesion:p.sesion.id,origen:p.sesion.origen,aceleracion:'m/s²',angulos:'grados',tiempo:'ms desde inicio de sesión'}]);if(p.parametros)sheet('Parámetros',[p.parametros]);
- const url=URL.createObjectURL(new Blob([await book.xlsx.writeBuffer()],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));const a=document.createElement('a');a.href=url;a.download=(p.evento?.id||p.sesion.id)+'.xlsx';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);$('#export-dialog').close();toast('Descarga iniciada');
+  const url=URL.createObjectURL(new Blob([await book.xlsx.writeBuffer()],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));const a=document.createElement('a');a.href=url;a.download=(completa?p.sesion.id:p.evento?.id||p.sesion.id)+'.xlsx';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);$('#export-dialog').close();toast('Descarga iniciada');
  }catch(e){$('#export-error').textContent='No se pudo preparar el archivo. '+e.message;}finally{b.disabled=false;b.textContent='↓ Descargar .xlsx';}};
 }
 function route(){const hash=location.hash.slice(1);page=['simulacion','historial','detalle'].includes(hash)?hash:'monitor';if(page==='detalle'&&!current.evento){current=ev2;}if(page==='monitor'){current=demo;position=0;}if(page==='simulacion'){current=generarEscenario('vuelco');position=0;}render();}
-layout();route();requestAnimationFrame(frame);window.addEventListener('hashchange',route);loadEvents().then(()=>{if(page==='monitor'||page==='historial')render();});
+layout();route();requestAnimationFrame(frame);window.addEventListener('hashchange',route);loadEvents().then(()=>{
+ if(page==='historial')renderHistory();
+ else if(page==='monitor'){$('.recent .table-scroll').outerHTML=eventTable(events.slice(0,3));bindRows();}
+});
