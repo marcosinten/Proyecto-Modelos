@@ -6,7 +6,8 @@ import './style.css';
 import Chart from 'chart.js/auto';
 import {crearVisor} from './car.js';
 import {buscarSesiones} from './selector.js';
-import {vueltasEntre, VENTANA, PAUSA_MS, recepcion, paginasSesion} from './telemetria.js';
+import {vueltasEntre, VENTANA, PAUSA_MS, recepcion, paginasSesion, sesionMasReciente} from './telemetria.js';
+import {horaAproximadaMs, textoHora, NOTA_HORA} from '../../compartido/hora.js';
 import {PULSOS_POR_VUELTA, POSICION_RUEDA_SENSOR, NOMBRE_RUEDA, distanciaM} from '../../compartido/parametros-firmware.js';
 import {generarEscenario} from './simulation.js';
 import {mostrarExplicacion} from './explanation-view.js';
@@ -27,7 +28,8 @@ let impactTime;
 let wheelTurnsBySample = [];
 let liveTurns=0, wheelFrom=0, wheelTo=0, wheelStart=0, wheelDuration=0, stale=false;
 const get=async path=>(await request(path)).json();
-let cerrarExplicacion;
+let cerrarExplicacion, historyTimer;
+const tipoAviso={golpe:'Golpe',inclinacion:'Inclinación',vuelco:'Vuelco'};
 const seconds = ms => (ms / 1000).toLocaleString('es-EC', {maximumFractionDigits:3});
 async function request(path,body) {
  const response=await fetch('/api/v1'+path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(6000)});
@@ -44,7 +46,7 @@ function dashboard() {
  return `<div class="metrics">${metric('Aceleración X','ax','m/s²','#1d4ed8')}${metric('Aceleración Y','ay','m/s²','#0f766e')}${metric('Aceleración Z','az','m/s²','#7e22ce')}${metric('Inclinación lateral','roll','Roll · grados')}${metric('Inclinación frontal','pitch','Pitch · grados')}</div><div class="visual-grid"><section class="card stage-card"><div class="card-title"><div><h2>Postura del carro</h2><p>Orientación según datos · recorrido y ruedas ilustrativos en simulación</p><p style="font-size:10px">Modelo: <a href="https://sketchfab.com/3d-models/oldsmobile-cutlass-supreme-sedan-71-78f76d386a4341b0b71745bdc50fd5ab" target="_blank" rel="noopener noreferrer">Barbo</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · Adaptado al visor</p></div><span class="badge purple" id="origin">Datos simulados</span></div><div class="stage"><div class="scene-label"><span class="status-dot"></span> VISTA 3D <small id="sample-time">1 500 ms</small></div><div id="car"></div><div class="camera-controls"><button data-camera="seguimiento" class="selected">Seguimiento</button><button data-camera="lateral">Lateral</button><button data-camera="frontal">Frontal</button><button data-camera="libre" title="Arrastra para girar y usa la rueda o pellizca para acercar">Libre 3D</button></div><span class="axis-guide">X → &nbsp; Y ↗ &nbsp; Z ↑</span></div><div class="player"><div class="player-top"><button id="play" class="primary small">▶ Reproducir</button><button id="reset" class="secondary small" title="Volver al inicio">↺ Reiniciar</button><label class="speed"><span>Ritmo de reproducción</span><select id="speed"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label><span class="mono" id="clock"></span></div><input id="timeline" type="range" aria-label="Tiempo de la sesión en milisegundos" step="1"><div class="timeline-labels"><span id="range-start"></span><span>Tiempo desde inicio de sesión</span><span id="range-end"></span></div></div></section><div class="chart-stack"><section class="card"><div class="card-title"><h2>Aceleración por eje</h2><span class="unit">m/s²</span></div><div class="chart-wrap"><canvas id="accel"></canvas></div></section><section class="card"><div class="card-title"><h2>Inclinación</h2><span class="unit">grados</span></div><div class="chart-wrap"><canvas id="angles"></canvas></div></section><section class="card"><div class="card-title"><h2>Aceleración total</h2><span class="unit">m/s² · incluye gravedad</span></div><div class="chart-wrap"><canvas id="magnitude"></canvas></div></section><section class="card"><div class="card-title"><div><h2>${NOMBRE_RUEDA} (${POSICION_RUEDA_SENSOR})</h2><p id="wheel-info" title="El movimiento se estima solo con esta rueda; las cuatro ruedas del modelo giran igual">Contador: — · estimación con una sola rueda</p></div><span class="unit">vueltas/s</span></div><div class="chart-wrap"><canvas id="wheel"></canvas></div></section><p class="card graph-reading" id="graph-summary"></p><output id="graph-reading" class="card graph-reading" aria-label="Lectura seleccionada"></output></div></div><div class="result-strip" id="result"></div><p class="helper" id="protocol" role="status"></p><details class="card data-table"><summary>Ver tabla de mediciones <span id="sample-count"></span></summary><div class="table-scroll" id="samples"></div></details>`;
 }
 function render() {
-  running=false; clearInterval(liveTimer); liveGeneration++; liveActive=false;
+  running=false; clearInterval(liveTimer); clearTimeout(historyTimer); liveGeneration++; liveActive=false;
   viewer?.destroy(); viewer=undefined; charts.forEach(c=>c.destroy());charts=[];
   cerrarExplicacion?.(); cerrarExplicacion=undefined;
   document.querySelectorAll('[data-nav]').forEach(a=>a.classList.toggle('active',a.dataset.nav===(page==='explicar'?'historial':page)));
@@ -54,7 +56,7 @@ function render() {
  const simulation=page==='simulacion';
  let title=detail?`${label[current.evento.tipo]||current.evento.tipo} · ${current.evento.id}`:simulation?'Simulación de incidentes':'Monitor de telemetría';
  const desc=detail?`Sesión ${current.sesion.id} · Reproducción de las mediciones registradas`:simulation?'Explora escenarios y observa cómo responden las reglas de detección.':'Una vista completa del movimiento, la orientación y los incidentes del carro.';
- $('#main').innerHTML=(detail?'<a class="back" href="#historial">← Volver al historial</a>':'')+heading(title,desc,`${detail?`<a class="secondary explain-detail-link" href="#explicar/${escape(current.evento.id)}">Explicar evento →</a>`:''}<button class="secondary" id="export">↓ Exportar Excel</button>`)+(simulation?simulationForm():detail?'':`<div class="mode-row"><div class="tabs"><button id="demo-mode" class="selected">Demostración</button><button id="live-mode">En vivo</button></div><span class="helper" id="mode-help">Escenario local · puedes explorarlo sin conectar el circuito</span></div><form id="live-form" hidden><label>Identificador de sesión <input name="session" placeholder="SES-001 o ID del ESP32" required pattern="[A-Za-z0-9_\\-]{1,64}"></label><button class="primary" id="connect-session">Conectar sesión</button><button type="button" class="secondary" id="find-session">Buscar sesiones</button></form>`)+dashboard()+(!simulation&&!detail?`<section class="card recent"><div class="card-title"><div><h2>Eventos recientes</h2><p>El registro de tus últimas pruebas</p></div><a href="#historial">Ver historial →</a></div>${eventTable(events.slice(0,3))}</section>`:'');
+ $('#main').innerHTML=(detail?'<a class="back" href="#historial">← Volver al historial</a>':'')+heading(title,desc,`${detail?`<a class="secondary explain-detail-link" href="#explicar/${escape(current.evento.id)}">Explicar evento →</a>`:''}<button class="secondary" id="export">↓ Exportar Excel</button>`)+(simulation?simulationForm():detail?'':`<div class="mode-row"><div class="tabs"><button id="demo-mode" class="selected">Demostración</button><button id="live-mode">En vivo</button></div><span class="helper" id="mode-help">Escenario local · puedes explorarlo sin conectar el circuito</span></div><form id="live-form" hidden><label>Identificador de sesión <input name="session" placeholder="SES-001 o ID del ESP32" required pattern="[A-Za-z0-9_\\-]{1,64}"></label><button class="primary" id="connect-session">Conectar sesión</button><button type="button" class="secondary" id="find-session">Buscar sesiones</button></form><div id="live-notices"></div>`)+dashboard()+(!simulation&&!detail?`<section class="card recent"><div class="card-title"><div><h2>Eventos recientes</h2><p>El registro de tus últimas pruebas</p></div><a href="#historial">Ver historial →</a></div>${eventTable(events.slice(0,3))}</section>`:'');
  $('#export').onclick=openExport;
  if(detail)$('#origin').textContent=current.sesion.origen==='real'?'Mediciones reales · historial':'Datos simulados · historial';
  viewer=crearVisor($('#car'));
@@ -306,6 +308,16 @@ function renderHistory(){
  $('#reload').insertAdjacentHTML('beforebegin','<button class="secondary" id="history-sessions">Mediciones por sesión</button>');
  $('#history-sessions').onclick=()=>buscarSesiones(get,historialSesion,toast,{modo:'historial'});
  $('#reload').onclick=async()=>{await loadEvents();if(page==='historial')renderHistory();};draw();
+ // Los eventos nuevos aparecen solos (cada 5 s) sin perder filtros ni página.
+ const generation=liveGeneration;
+ const refrescar=async()=>{
+   const antes=events.map(p=>p.evento.id).join();
+   await loadEvents();
+   if(generation!==liveGeneration||page!=='historial')return;
+   if(events.map(p=>p.evento.id).join()!==antes)draw();
+   historyTimer=setTimeout(refrescar,5000);
+ };
+ historyTimer=setTimeout(refrescar,apiAvailable?5000:0);
 }
 function simulationForm(){return `<form id="simulation-form" class="card simulation-form"><label>Escenario<select name="type"><option value="vuelco">Vuelco</option><option value="normal">Marcha normal</option><option value="frenada">Frenada brusca</option><option value="impacto">Impacto</option><option value="inclinacion">Inclinación</option></select></label><label>Umbral de aceleración (m/s²)<input name="acceleration" type="number" min="10" max="100" step="0.1" value="16" required></label><label>Ángulo mínimo (°)<input name="angle" type="number" min="5" max="180" value="60" required></label><label>Permanencia (ms)<input name="duration" type="number" min="0" max="5000" step="10" value="150" required></label><label>Permanencia de impacto (ms)<input name="impact-duration" type="number" min="0" max="5000" step="4" value="8" required></label><label>Rango del sensor<select name="range"><option value="">Ideal · sin límite</option><option value="2">±2 g · valor de fábrica</option><option value="4">±4 g</option><option value="8">±8 g</option><option value="16">±16 g</option></select></label><label>Duración del golpe (ms)<input name="impact-length" type="number" min="1" max="1000" step="1" value="100" required></label><label>Ruido del sensor (m/s²)<input name="noise" type="number" min="0" max="5" step="0.05" value="0" required></label><button class="primary">▷ Ejecutar simulación</button><button type="reset" class="secondary">Restablecer</button><p class="helper">Señales sintéticas · Reglas experimentales sobre aceleración total e inclinación · Muestreo 20 ms · Impacto: permanencia independiente</p></form><div id="simulation-actions"><button class="secondary" id="save-run">Guardar corrida en API</button><span class="helper" id="simulation-status">Ejecuta un escenario para obtener un resultado.</span></div><details class="card compare"><summary>Comparar corridas de esta sesión</summary><div id="comparisons"></div></details>`;}
 function bindSimulation(){
@@ -330,7 +342,21 @@ async function connectLive(id){
  btn.hidden=true;$('#find-session').textContent='Cambiar sesión';
  for(const s of ['ax','ay','az','roll','pitch','clock','sample-time','graph-reading','protocol','samples'])$('#'+s).textContent='—';
  $('#car').style.visibility='hidden';refreshData();
- let reset=true, lastRecepcion=null, markerKey='';
+ let reset=true, lastRecepcion=null, markerKey='', eventoVisto;
+ $('#live-notices').replaceChildren();
+ const descartadas=new Set();
+ // 1b: otra sesión real «Recibiendo» más reciente (p. ej. el ESP32 se reinició). Solo avisa; no cambia sola.
+ async function vigilar(){
+   if(!valid())return;
+   try{
+     const r=await get('/sesiones?limite=20&offset=0');
+     if(!valid())return;
+     const nueva=sesionMasReciente(r.sesiones,r.ahora_ms,id,lastRecepcion,descartadas);
+     if(nueva&&!$('#new-session'))avisarSesionNueva(nueva,r.ahora_ms,()=>descartadas.add(nueva.id));
+   }catch{}
+   if(valid())setTimeout(vigilar,2500);
+ }
+ setTimeout(vigilar,2500);
  async function poll(){
    try{
      const prev=current.mediciones.at(-1);
@@ -355,6 +381,14 @@ async function connectLive(id){
      const events=r.eventos.filter(e=>e.t_deteccion_ms>=start());
      const key=JSON.stringify([r.ultimo_evento?.id,events.map(e=>e.id)]);
      current.eventos=events;current.evento=r.ultimo_evento;
+     // 1a: un evento nuevo de esta sesión (el primero visto al conectar es la referencia).
+     const ultimoId=r.ultimo_evento?.id??null;
+     if(eventoVisto===undefined)eventoVisto=ultimoId;
+     else if(ultimoId!==eventoVisto){
+       eventoVisto=ultimoId;
+       avisarEvento(r.ultimo_evento,horaAproximadaMs(r.ultima_recepcion_ms,r.medicion?.t_ms,r.ultimo_evento.t_deteccion_ms));
+       loadEvents().then(()=>{if(valid())refrescarRecientes();});
+     }
      if(r.medicion){
        position=r.medicion.t_ms;$('#car').style.visibility='';
        if(data.length||key!==markerKey)refreshData();
@@ -370,6 +404,25 @@ async function connectLive(id){
    if(valid())liveTimer=setTimeout(poll,200);
  }
  poll();
+}
+function refrescarRecientes(){
+ if(page==='monitor'&&$('.recent .table-scroll')){$('.recent .table-scroll').outerHTML=eventTable(events.slice(0,3));bindRows();}
+}
+function avisarEvento(ev,horaMs){
+ const hora=textoHora(horaMs);
+ let aviso=$('#event-saved');
+ if(!aviso){aviso=document.createElement('div');aviso.id='event-saved';aviso.className='live-notice event-saved';aviso.setAttribute('role','status');$('#live-notices').prepend(aviso);}
+ aviso.innerHTML=`<strong>Evento guardado: ${escape(tipoAviso[ev.tipo]||ev.tipo)} · ${hora?`${hora}</strong> <small>(${NOTA_HORA})</small>`:`${seconds(ev.t_deteccion_ms)} s de sesión</strong> <small>(hora sin medir)</small>`} <a href="#explicar/${escape(ev.id)}">Explicar →</a>`;
+ aviso.classList.remove('flash');void aviso.offsetWidth;aviso.classList.add('flash');
+}
+function avisarSesionNueva(s,ahora,ignorar){
+ const aviso=document.createElement('div');
+ aviso.id='new-session';aviso.className='live-notice new-session';aviso.setAttribute('role','alert');
+ aviso.innerHTML=`<span>Otra sesión real está recibiendo datos: <code></code> · hace ${Math.floor(Math.max(0,ahora-s.ultima_recepcion_ms)/1000)} s. ¿Se reinició el ESP32?</span><button type="button" class="primary small">Cambiar a la nueva sesión</button><button type="button" class="text-button">Ignorar</button>`;
+ aviso.querySelector('code').textContent=s.id;
+ aviso.querySelector('.primary').onclick=()=>{aviso.remove();connectLive(s.id);};
+ aviso.querySelector('.text-button').onclick=()=>{ignorar();aviso.remove();};
+ $('#live-notices').append(aviso);
 }
 async function loadEvents(){
  try{
@@ -391,7 +444,8 @@ async function showExplanation(){
  let paquete, aviso='';
  try{paquete=await (await request('/eventos/'+id)).json();}
  catch(e){
-  paquete=events.find(p=>p.evento.id===id);
+  // Sin API solo sirven los paquetes con mediciones (los ejemplos locales).
+  paquete=events.find(p=>p.evento.id===id&&p.mediciones);
   if(!paquete){
    if(generation===liveGeneration&&page==='explicar')
     $('#main').innerHTML=`<a class="back" href="#historial">← Volver al historial</a><div class="card explain-empty" role="alert">No se pudo abrir el evento. ${escape(e.message)} <a href="#historial">Revisa el historial</a> y vuelve a intentarlo.</div>`;
@@ -443,5 +497,5 @@ function openExport(){
 function route(){const hash=location.hash.slice(1);page=hash.startsWith('explicar/')?'explicar':['simulacion','historial','detalle'].includes(hash)?hash:'monitor';if(page==='detalle'&&!current.evento){current=ev2;}if(page==='monitor'){current=demo;position=0;}if(page==='simulacion'){current=generarEscenario('vuelco');position=0;}render();}
 layout();route();requestAnimationFrame(frame);window.addEventListener('hashchange',route);loadEvents().then(()=>{
  if(page==='historial')renderHistory();
- else if(page==='monitor'){$('.recent .table-scroll').outerHTML=eventTable(events.slice(0,3));bindRows();}
+ else refrescarRecientes();
 });

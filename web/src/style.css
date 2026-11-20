@@ -100,3 +100,12 @@
 .session-list small .badge { margin-left:.25rem; }
 .session-empty { display:grid; gap:.75rem; justify-items:start; padding:.5rem 0; }
 .session-empty p { font-size:13px; color:#334155; }
+#live-notices { display:grid; gap:8px; margin:-8px 0 16px; }
+#live-notices:empty { display:none; }
+.live-notice { display:flex; flex-wrap:wrap; align-items:center; gap:10px; border:1px solid #cbd5e1; border-left:4px solid #1d4ed8; border-radius:8px; background:#fff; padding:10px 14px; font-size:13px; color:#0f172a; }
+.live-notice small { color:#475569; }
+.live-notice code { font-weight:600; overflow-wrap:anywhere; }
+.new-session { border-left-color:#b45309; background:#fffbeb; }
+.event-saved.flash { animation:aviso-evento 1.2s ease-out; }
+@keyframes aviso-evento { from { background:#dbeafe; transform:translateY(-3px); } to { background:#fff; transform:none; } }
+@media (prefers-reduced-motion: reduce) { .event-saved.flash { animation:none; } }

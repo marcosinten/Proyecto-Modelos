@@ -147,6 +147,11 @@ try {
      assert.deepEqual(await fotoRueda('hall-detenida'),ruedaFinal,'La rueda detenida debe conservar su imagen');
    }
    if(tipo){
+     // 1a: aviso del evento recién guardado y Eventos recientes sin pulsar Actualizar.
+     const aviso={golpe:'Golpe',vuelco:'Vuelco',inclinacion:'Inclinación'}[tipo];
+     await waitText('#event-saved','Evento guardado: '+aviso+' · ');
+     assert.match(await tab.$eval('#event-saved',e=>e.textContent),/\d\d:\d\d:\d\d.*±1 s/);
+     await waitText('.recent','EV-'+tipo);
      const label={golpe:'Impacto',vuelco:'Vuelco',inclinacion:'Inclinación'}[tipo];
      await tab.waitForFunction((name,t)=>markers.some(([label,x])=>label===name&&Math.abs(x-testChart.getChart('angles').scales.x.getPixelForValue(t))<.1),{},label,rows[6].t_ms);
    }
@@ -195,6 +200,11 @@ try {
  const other='SEGUNDA-SESION';
  await post('/sesiones',{sesion:{id:other,origen:'real'}});
  await post('/sesiones/'+other+'/mediciones',{mediciones:[{...sample(28),numero:1,t_ms:12}]});
+ // 1b: otra sesión real «Recibiendo» más reciente: aviso con botón, sin cambiar sola.
+ await tab.waitForSelector('#new-session',{timeout:10000});
+ assert.ok((await tab.$eval('#new-session',e=>e.textContent)).includes(other));
+ assert.ok(await tab.$eval('#new-session button.primary',b=>b.textContent==='Cambiar a la nueva sesión'));
+ assert.equal(await tab.$eval('#live-form input',e=>e.value),id,'no cambia de sesión sola');
  hold=true;
  await tab.click('#find-session');await tab.type('.session-picker input',other);
  await tab.waitForSelector('.session-list article button.primary');
@@ -211,7 +221,11 @@ try {
  await tab.$eval('[href="#historial"]',e=>e.click());await tab.click('#history-sessions');
  await tab.type('.session-picker input',id);await tab.waitForSelector('.session-list button.primary');await tab.click('.session-list button.primary');
  await waitText('.session-history tbody','600');assert.equal(await tab.$eval('.session-history td',e=>e.textContent),'1');
- console.log('PASS: ventana, tres marcas de evento, giro dentro del lote, pulso aislado, pausa, reconexión, cambio con petición pendiente e historial desde la primera muestra.');
+ // Historial: un evento nuevo aparece solo, sin pulsar Actualizar.
+ await tab.keyboard.press('Escape');
+ await post('/eventos',{evento:{id:'EV-HISTORIAL-AUTO',sesion_id:other,tipo:'golpe',gravedad:'media',estado:'confirmado',t_inicio_ms:0,t_deteccion_ms:12,t_fin_ms:12,t_activacion_ms:null,ubicacion:null}});
+ await tab.waitForFunction(()=>document.querySelector('#history-list')?.textContent.includes('EV-HISTORIAL-AUTO'),{timeout:12000});
+ console.log('PASS: ventana, tres marcas de evento, giro dentro del lote, pulso aislado, aviso de evento guardado, aviso de sesión nueva, historial que se actualiza solo, pausa, reconexión, cambio con petición pendiente e historial desde la primera muestra.');
  assert.deepEqual(errors,[]);
 } finally {
  await browser?.close(); await web.close(); api.close(); await once(api,'close'); repo.cerrar(); await rm(dir,{recursive:true,force:true});
