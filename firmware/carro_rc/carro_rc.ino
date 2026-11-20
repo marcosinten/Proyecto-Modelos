@@ -60,6 +60,15 @@ static const float UMBRAL_INCLINACION_DEG = 20.0f;
 static const float UMBRAL_VUELCO_DEG = 90.0f;
 static const uint32_t PERMANENCIA_MS = 150;
 static const int LECTURAS_GOLPE = 2;
+// Opcional, DESACTIVADO por defecto. Con el carro rodando, la aceleración se suma a la gravedad
+// y el ángulo acelerométrico deja de ser la inclinación: una curva con 0,38 g lateral se lee
+// como 20,8° de roll. Con 1, la decisión de inclinación ignora el ángulo cuando
+// |norma − g| > MOVIMIENTO_DESVIO_MS2 (esa curva: norma 10,5 m/s², desvío 0,7). No afecta al
+// golpe ni al vuelco. Se activa en config_local.h con #define MODO_CARRO_EN_MOVIMIENTO 1.
+#ifndef MODO_CARRO_EN_MOVIMIENTO
+#define MODO_CARRO_EN_MOVIMIENTO 0
+#endif
+static const float MOVIMIENTO_DESVIO_MS2 = 0.5f;
 
 static const uint32_t PREVENTANA_MS = 1000;
 static const uint32_t CIERRE_SIN_CONDICION_MS = 500;
@@ -487,6 +496,9 @@ static void decidir(uint32_t t, int64_t t_us, float norma, float roll, float pit
   bool golpe = norma >= UMBRAL_GOLPE_MS2;
   bool inclinado = fabsf(roll) >= UMBRAL_INCLINACION_DEG
                 || fabsf(pitch) >= UMBRAL_INCLINACION_DEG;
+#if MODO_CARRO_EN_MOVIMIENTO
+  if (fabsf(norma - G_MS2) > MOVIMIENTO_DESVIO_MS2) inclinado = false;
+#endif
   bool vuelcoInstantaneo = fabsf(roll) >= UMBRAL_VUELCO_DEG;
   static bool contandoVuelco = false;
   static uint32_t inicioVuelco = 0;
@@ -1040,8 +1052,8 @@ void setup() {
     delay(1000);
   }
 
-  logq("INICIO carro_rc Grupo 11 version=%s origen=%s mpu_correccion=%d ppr=%d umbral_golpe=%.1f m/s2 inclinacion=%.0f deg vuelco=%.0f deg permanencia=%lu ms lecturas_golpe=%d",
-       VERSION_FIRMWARE, ORIGEN_SESION, CORRECCION_MPU_EQUIPO, PULSOS_POR_VUELTA, UMBRAL_GOLPE_MS2,
+  logq("INICIO carro_rc Grupo 11 version=%s origen=%s mpu_correccion=%d modo_movimiento=%d ppr=%d umbral_golpe=%.1f m/s2 inclinacion=%.0f deg vuelco=%.0f deg permanencia=%lu ms lecturas_golpe=%d",
+       VERSION_FIRMWARE, ORIGEN_SESION, CORRECCION_MPU_EQUIPO, MODO_CARRO_EN_MOVIMIENTO, PULSOS_POR_VUELTA, UMBRAL_GOLPE_MS2,
        UMBRAL_INCLINACION_DEG, UMBRAL_VUELCO_DEG, (unsigned long)PERMANENCIA_MS,
        LECTURAS_GOLPE);
 

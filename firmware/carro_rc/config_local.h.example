@@ -13,3 +13,7 @@ static const char API_KEY[] = "CLAVE_API_DEL_SERVIDOR";
 // equipo (factor ×9,038 en Z). 0 = lecturas nominales, para otro módulo. Prueba rápida tras
 // cargar: horizontal ≈ (0, 0, 9,8) m/s², de costado roll ≈ ±90°, boca abajo roll ≈ ±180°.
 // #define CORRECCION_MPU_EQUIPO 0
+
+// Opcional, desactivado: con 1, la inclinación ignora el ángulo cuando el carro acelera o gira
+// (|norma − 9,81| > 0,5 m/s²). Evita que una curva se lea como inclinación de 20°.
+// #define MODO_CARRO_EN_MOVIMIENTO 1
