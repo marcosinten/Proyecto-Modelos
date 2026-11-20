@@ -44,7 +44,7 @@ try {
    window.__THREE_DEVTOOLS__=new EventTarget();
    __THREE_DEVTOOLS__.addEventListener('observe',({detail})=>{if(detail.isWebGLRenderer){
      const render=detail.render.bind(detail);
-     detail.render=(scene,camera)=>{render(scene,camera); window.testScene=scene;
+      detail.render=(scene,camera)=>{render(scene,camera); window.testScene=scene;window.testCamera=camera;
        const body=scene.getObjectByName('car-body'), wheel=scene.getObjectByName('animated-wheel');
        if(body&&wheel)window.framesRC.push({ms:parseInt(document.querySelector('#sample-time')?.textContent),at:Date.now(),
          roll:body.rotation.x*180/Math.PI,pitch:body.rotation.z*180/Math.PI,angle:wheel.rotation.x,x:body.parent.position.x,y:body.position.y});
@@ -55,11 +55,33 @@ try {
  await tab.waitForFunction(()=>window.testScene?.getObjectByName('animated-wheel'));
  await tab.click('#live-mode');
  await tab.type('#live-form input',id);
- await tab.$eval('#live-form',f=>f.requestSubmit());
- await tab.waitForFunction(()=>document.querySelector('#origin').textContent==='Emisor simulado' && parseInt(document.querySelector('#sample-time').textContent)>5000);
- const first=await tab.$eval('#sample-time',e=>e.textContent);
- console.log('Primera postura observada (última disponible: 600000 ms):',first);
- assert.equal(first,'600000 ms');
+ // No congelar el emisor para comparar con una «última» que ya habría cambiado:
+ // la referencia es la muestra que SQLite devolvió en la primera consulta /ultima.
+ let emitting=true, pitchNow=-12;
+ const enviados=[];
+ async function emitir(){
+   const pitch=pitchNow, rows=Array.from({length:5},()=>sample(0,pitch));
+   enviados.push({pitch,ultimo:rows.at(-1).t_ms,post:Date.now()});
+   await batch(rows);
+ }
+ await emitir();
+ const flujo=(async()=>{while(emitting){await pause(100);if(emitting)await emitir();}})();
+ try {
+   const snapshot=tab.waitForResponse(r=>r.url().includes('/'+id+'/ultima?'));
+   const submit=await tab.$eval('#live-form',f=>{const now=Date.now();f.requestSubmit();return now;});
+   const head=(await (await snapshot).json()).medicion;
+   await tab.waitForFunction(ms=>framesRC.some(f=>f.ms===ms),{},head.t_ms);
+   const first=await tab.evaluate(()=>framesRC.find(f=>f.ms>=600000));
+   assert.equal(first.ms,head.t_ms);assert.equal(head.pitch_deg,-12);assert.ok(Math.abs(first.pitch+12)<1e-6);
+   console.log(`Conectar → primer render: ${first.at-submit} ms; muestra ${head.numero} (cola consultada), pitch ${first.pitch.toFixed(2)}°`);
+   pitchNow=20;
+   await tab.waitForFunction(()=>framesRC.some(f=>f.ms>600000&&Math.abs(f.pitch-20)<1e-6));
+   const cambio=await tab.evaluate(()=>framesRC.find(f=>f.ms>600000&&Math.abs(f.pitch-20)<1e-6));
+   const cambioPost=enviados.find(l=>l.pitch===20);
+   assert.ok(cambio.ms>=cambioPost.ultimo);
+   console.log(`Emisión continua, primer POST de 20° → render de 20°: ${cambio.at-cambioPost.post} ms (muestra ${cambio.ms/20})`);
+ } finally {emitting=false;await flujo;}
+ await tab.waitForFunction(ms=>framesRC.at(-1)?.ms===ms,{},n*20);
  assert.equal(await tab.$eval('#sample-count',e=>e.textContent),'300 muestras');
  const waitText=async(sel,value)=>tab.waitForFunction((s,v)=>document.querySelector(s)?.textContent.includes(v),{},sel,value);
  const state=()=>tab.evaluate(()=>framesRC.at(-1));
@@ -67,9 +89,25 @@ try {
  const chartModule=await tab.evaluate(()=>performance.getEntriesByType('resource').map(r=>r.name).find(url=>url.includes('/chart__js_auto.js')||url.includes('/chart_js_auto.js')));
  assert.ok(chartModule,'Módulo de Chart.js');
  await tab.evaluate(async url=>{window.testChart=(await import(url)).default;},chartModule);
- const origin=await state(),latencias=[];
- await tab.$eval('[data-camera=lateral]',b=>b.click());
- for(const [roll,pitch,tipo] of [[0,0,null],[0,20,'inclinacion'],[90,0,null],[180,0,'vuelco'],[0,0,'golpe']]){
+  const origin=await state(),latencias=[];
+  await tab.$eval('[data-camera=lateral]',b=>b.click());
+ // Comparar imágenes de la misma rueda, sin texto, reloj, cámara ni postura en movimiento.
+ async function fotoRueda(nombre) {
+   const clip=await tab.evaluate(()=>{
+     const cam=window.testCamera;
+     const wheels=window.testScene.getObjectsByProperty('name','animated-wheel');
+     const centros=wheels.map(w=>w.getWorldPosition(w.position.clone()).project(cam)).sort((a,b)=>a.z-b.z);
+     const p=centros[0],r=document.querySelector('#car canvas').getBoundingClientRect();
+     const lado=Math.round(r.width*.065);
+     return {x:Math.round(scrollX+r.left+(p.x+1)*r.width/2-lado/2),y:Math.round(scrollY+r.top+(1-p.y)*r.height/2-lado/2),width:lado,height:lado};
+   });
+   if(process.env.CAPTURAS)await mkdir(process.env.CAPTURAS,{recursive:true});
+   return Buffer.from(await tab.screenshot({clip,path:process.env.CAPTURAS?join(process.env.CAPTURAS,nombre+'.png'):undefined}));
+ }
+ await batch([sample()]);await waitText('#sample-time',`${n*20} ms`);
+ const ruedaInicial=await fotoRueda('hall-antes');
+  for(const [roll,pitch,tipo] of [[0,0,null],[0,20,'inclinacion'],[90,0,null],[180,0,'vuelco'],[0,0,'golpe']]){
+   if(roll===90)await tab.$eval('[data-camera=frontal]',b=>b.click());
    const rows=Array.from({length:10},(_,i)=>sample(roll,pitch,i===4?5:0));
    if(tipo==='golpe')rows[6].az=18;
    const end=rows.at(-1), before=await state();
@@ -89,13 +127,21 @@ try {
    assert.equal(charts[2][2][6].y,rows[6].az);
    // 5 vueltas/s durante el pulso triangular de 20 ms: +0,1 vuelta, aunque termine en cero.
    await tab.waitForFunction(angle=>Math.abs(framesRC.at(-1).angle-angle)<1e-7,{},before.angle-.2*Math.PI);
+   const ruedaFinal=tipo===null&&roll===0?await fotoRueda('hall-despues'):null;
    await pause(500);
    assert.ok(Math.abs((await state()).angle-before.angle+.2*Math.PI)<1e-7);
+   if(ruedaFinal){
+     assert.notDeepEqual(ruedaFinal,ruedaInicial,'Los píxeles de la rueda deben cambiar');
+     assert.deepEqual(await fotoRueda('hall-detenida'),ruedaFinal,'La rueda detenida debe conservar su imagen');
+   }
    if(tipo){
      const label={golpe:'Impacto',vuelco:'Vuelco',inclinacion:'Inclinación'}[tipo];
      await tab.waitForFunction((name,t)=>markers.some(([label,x])=>label===name&&Math.abs(x-testChart.getChart('angles').scales.x.getPixelForValue(t))<.1),{},label,rows[6].t_ms);
    }
-   if(roll===180)await snap('boca-abajo');
+   if(pitch===20||roll===90||roll===180||tipo==='golpe'){
+     await tab.$eval('#car canvas',c=>c.scrollIntoView({block:'center'}));
+     await snap(pitch===20?'frontal-20':roll===90?'costado-90':roll===180?'boca-abajo':'horizontal');
+   }
  }
  console.log('POST → primer render WebGL observado (ms), horizontal / 20° / lado / invertido / horizontal:',latencias);
  await waitText('#graph-summary','180°');

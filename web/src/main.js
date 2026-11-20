@@ -175,6 +175,9 @@ function refreshData() {
   turns += vueltasEntre(previous,m);
   wheelTurnsBySample.push(turns);
  });
+ // La postura y los números tienen prioridad sobre preparar las cuatro series.
+ // chart.update() ya pinta su cursor; no redibujar todos los gráficos dos veces.
+ update(false);
  charts.forEach((chart,i) => {
   const keys = [['ax','ay','az'],['roll_deg','pitch_deg'],['total'],['rueda_rps']][i];
    chart.data.datasets.forEach((dataset,j) => {
@@ -188,9 +191,8 @@ function refreshData() {
  });
   const max=current.mediciones.reduce((v,m)=>Math.max(v,Math.abs(m.roll_deg)),0);
   $('#graph-summary').textContent=current.mediciones.length?`Inclinación lateral máxima de ${max.toLocaleString('es-EC',{maximumFractionDigits:1})}° ${liveActive?'en la ventana reciente':'en estas mediciones'}.`:'Sin mediciones.';
-  update();
 }
-function update(){
+function update(drawCharts=true){
  const m=current.mediciones.findLast(m=>m.t_ms<=position)??current.mediciones[0];if(!m)return;
  for(const key of ['ax','ay','az'])$('#'+key).textContent=number(m[key]);
  $('#roll').textContent=number(m.roll_deg)+'°';$('#pitch').textContent=number(m.pitch_deg)+'°';
@@ -227,7 +229,7 @@ function update(){
   <span>X ${number(m.ax)} · Y ${number(m.ay)} · Z ${number(m.az)} m/s²</span>
    <span>Lateral ${number(m.roll_deg)}° · Frontal ${number(m.pitch_deg)}°</span><span>Rueda: ${liveActive&&stale?'último dato desactualizado':m.rueda_rps == null ? "sin dato" : m.rueda_rps > 0 ? "girando" : "detenida"}${m.rueda_rps!=null?' · '+m.rueda_rps.toLocaleString('es-EC',{maximumFractionDigits:3})+' vueltas/s (estimación Hall)':''}${m.rueda_pulsos!=null?' · '+m.rueda_pulsos+' pulsos':''}</span>`;
 
- charts.forEach(c=>c.draw());
+ if(drawCharts)charts.forEach(c=>c.draw());
 }
 function frame(time){
   if(liveActive && liveTurns!==wheelTo && current.mediciones.length){
