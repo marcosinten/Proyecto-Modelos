@@ -44,6 +44,12 @@ static const int MUESTRAS_POR_TEL = 5;
 static const uint8_t MPU_DIR = 0x68;
 static const float LSB_POR_G = 2048.0f;
 static const float G_MS2 = 9.80665f;
+// 1 = corrección experimental medida para el MPU6050 del equipo (desplazamientos y el factor
+// ×9,038 en Z son de ese módulo). 0 = lecturas nominales del sensor (±16 g, 2048 LSB/g), para
+// otro módulo. Se cambia en config_local.h. Prueba rápida en docs/MANANA-CIRCUITO.md.
+#ifndef CORRECCION_MPU_EQUIPO
+#define CORRECCION_MPU_EQUIPO 1
+#endif
 
 static const float UMBRAL_GOLPE_MS2 = 16.0f;
 static const float UMBRAL_INCLINACION_DEG = 20.0f;
@@ -235,10 +241,16 @@ static bool mpuAceleracion(float& ax, float& ay, float& az) {
     az = rz / LSB_POR_G * G_MS2;
     return true;
   }
+#if CORRECCION_MPU_EQUIPO
   // Corrección experimental medida para el MPU físico del equipo.
   ax = (rx / LSB_POR_G * G_MS2 - 2.985f) * 1.006f;
   ay = (ry / LSB_POR_G * G_MS2 + 6.850f) * 1.027f;
   az = (rz / LSB_POR_G * G_MS2 - 4.635f) * 9.038f;
+#else
+  ax = rx / LSB_POR_G * G_MS2;
+  ay = ry / LSB_POR_G * G_MS2;
+  az = rz / LSB_POR_G * G_MS2;
+#endif
   return true;
 }
 
@@ -990,8 +1002,8 @@ void setup() {
     delay(1000);
   }
 
-  logq("INICIO carro_rc Grupo 11 version=%s origen=%s ppr=%d umbral_golpe=%.1f m/s2 inclinacion=%.0f deg vuelco=%.0f deg permanencia=%lu ms lecturas_golpe=%d",
-       VERSION_FIRMWARE, ORIGEN_SESION, PULSOS_POR_VUELTA, UMBRAL_GOLPE_MS2,
+  logq("INICIO carro_rc Grupo 11 version=%s origen=%s mpu_correccion=%d ppr=%d umbral_golpe=%.1f m/s2 inclinacion=%.0f deg vuelco=%.0f deg permanencia=%lu ms lecturas_golpe=%d",
+       VERSION_FIRMWARE, ORIGEN_SESION, CORRECCION_MPU_EQUIPO, PULSOS_POR_VUELTA, UMBRAL_GOLPE_MS2,
        UMBRAL_INCLINACION_DEG, UMBRAL_VUELCO_DEG, (unsigned long)PERMANENCIA_MS,
        LECTURAS_GOLPE);
 
