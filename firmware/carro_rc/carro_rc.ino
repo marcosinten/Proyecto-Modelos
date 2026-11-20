@@ -56,7 +56,13 @@ static const uint32_t CIERRE_SIN_CONDICION_MS = 500;
 static const uint32_t DURACION_MAX_EPISODIO_MS = 5000;
 static const uint32_t REARME_DETECTOR_MS = 1000;
 
-static const int PULSOS_POR_VUELTA = 1;  // imanes en la rueda con sensor (el carro tiene 1); igual que compartido/parametros-firmware.js
+// Imanes en la rueda con sensor (el carro tiene 1). Se puede cambiar en config_local.h con
+// «#define PULSOS_POR_VUELTA n». Si cambia, cambia también compartido/parametros-firmware.js:
+// la web divide rueda_pulsos entre ese valor. La línea INICIO muestra el valor en uso (ppr=).
+#ifndef PULSOS_POR_VUELTA
+#define PULSOS_POR_VUELTA 1
+#endif
+static_assert(PULSOS_POR_VUELTA >= 1, "PULSOS_POR_VUELTA debe ser 1 o más");
 static const uint32_t HALL_FILTRO_US = 1000;
 static const uint32_t HALL_TIMEOUT_CERO_MS = 750;
 

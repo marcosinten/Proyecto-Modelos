@@ -4,3 +4,7 @@ static const char WIFI_SSID_REAL[] = "NOMBRE_WIFI";
 static const char WIFI_CLAVE_REAL[] = "CLAVE_WIFI";
 static const char API_BASE_REAL[] = "http://192.168.1.100:3000/api/v1";
 static const char API_KEY[] = "CLAVE_API_DEL_SERVIDOR";
+
+// Opcional: pulsos por vuelta de la rueda con sensor (imanes). Por defecto 1.
+// Si lo cambias, cambia también PULSOS_POR_VUELTA en compartido/parametros-firmware.js.
+// #define PULSOS_POR_VUELTA 2
