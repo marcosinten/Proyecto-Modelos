@@ -18,6 +18,12 @@ Consulta la [prueba en Chrome y la lista de comprobación para la mesa de Piero]
 
 La primera ejecución crea `servidor/data/accidentes.sqlite` y carga EV-001 y EV-002. Las ejecuciones siguientes reconocen esos datos sin duplicarlos. Para usar una base anterior, realiza una copia de seguridad y revisa su esquema antes de cambiar DB_PATH. El SQLite antiguo del compañero usa columnas diferentes.
 
+## Rueda con sensor: una estimación
+
+El carro tiene **un solo sensor Hall (A3144), en la rueda trasera, con 1 imán** (1 pulso por vuelta). Todo lo que la web dice del movimiento sale de esa rueda: «Rueda con sensor», vueltas = `rueda_pulsos` / `PULSOS_POR_VUELTA`, tiempo girando y detenida. En el modelo 3D las cuatro ruedas giran igual a partir de esa medición. Es una **estimación**: en curvas, con esa rueda patinando o en el aire, no representa al carro completo. El diámetro de la rueda no se ha medido (`DIAMETRO_RUEDA_M = null`), así que distancia y velocidad lineal aparecen como «sin medir»; al conocerlo se calculan como vueltas × π × diámetro.
+
+`PULSOS_POR_VUELTA`, `DIAMETRO_RUEDA_M` y los parámetros del firmware están en `compartido/parametros-firmware.js`; `npm test` comprueba que coinciden con `firmware/carro_rc/carro_rc.ino`.
+
 ## Qué puedes usar
 
 - Monitor con datos de demostración y consulta de una sesión de la API.
