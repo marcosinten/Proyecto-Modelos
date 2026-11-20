@@ -82,6 +82,11 @@ static const uint32_t ESPERA_LOTE_MS = 500;
 // se vuelve a crear la sesión y se reenvía lo pendiente. Tope de recreaciones seguidas sin un
 // envío correcto entre medio, para no entrar en un bucle si la ruta está mal configurada.
 static const uint32_t MAX_RECREACIONES_SESION = 3;
+// Hipótesis: con el ahorro de energía del Wi-Fi (modem sleep, activo por defecto) la radio
+// duerme entre balizas y cada POST espera a despertarla. Entre un lote de 50 muestras y el
+// siguiente pasaron 384 ms en promedio. false = radio siempre despierta (más consumo).
+// Medición: firmware/carro_rc/pruebas/medir_red.py sobre el monitor serie, antes y después.
+static const bool WIFI_AHORRO = false;
 // Muestras guardadas mientras no hay red: 1000 × 36 B ≈ 36 KB = 20 s a 50 Hz.
 // Con 3000 (≈108 KB) el montón del ESP32 quedaba sin un bloque libre suficiente para el Wi-Fi,
 // HTTPClient y el String del lote: los JSON salían cortados (HTTP 400) y luego no se podía
@@ -829,6 +834,7 @@ static void tareaRed(void*) {
 
     if (wifiHabilitado && !wifiEncendido) {
       WiFi.mode(WIFI_STA);
+      WiFi.setSleep(WIFI_AHORRO);
       wifiEncendido = true;
       ultimoInicioWifi = 0;
     }
@@ -1009,6 +1015,7 @@ void setup() {
 
   WiFi.persistent(false);
   WiFi.mode(WIFI_STA);
+  WiFi.setSleep(WIFI_AHORRO);
   int redes = WiFi.scanNetworks();
   Serial.printf("RED escaneo: %d redes\n", redes);
   for (int i = 0; i < redes; i++) {

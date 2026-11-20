@@ -6,6 +6,7 @@ enum WiFiEvent_t { ARDUINO_EVENT_WIFI_STA_DISCONNECTED };
 struct WiFiEventInfo_t { struct { unsigned reason; } wifi_sta_disconnected; };
 struct WiFiSim {
   void persistent(bool) {}
+  bool setSleep(bool) { return true; }
   bool mode(wifi_mode_t m);
   void begin(const char* ssid, const char* clave, int canal = 0);
   bool disconnect(bool apagar = false);
