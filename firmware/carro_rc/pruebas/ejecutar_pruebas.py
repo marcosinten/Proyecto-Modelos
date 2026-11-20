@@ -35,7 +35,7 @@ CASOS = {
     # Exactamente en el umbral: verificar >=90° sin ruido. Los otros escenarios
     # conservan sesgo y ruido; un ángulo que fluctúa bajo 90° no cumple permanencia.
     "inclinacion": SENSOR, "vuelco_costado": [], "vuelco_boca_abajo": SENSOR,
-    "inclinacion_a_vuelco": SENSOR, "pico": SENSOR, "golpe_corto": SENSOR, "rearme_red": SENSOR, "api": SENSOR,
+    "inclinacion_a_vuelco": SENSOR, "pico": SENSOR, "golpe_corto": SENSOR, "rearme_red": SENSOR, "sesion_perdida": [*SENSOR, "--api", "falsa"], "api": SENSOR,
 }
 
 
@@ -296,6 +296,23 @@ def evaluar(caso, d, vcd, ev, extra):
                      f"expect-pin fallos {extra['fallos']}",
                      len(rea) == 2 and rea[0][1] == "apagada" and rea[1][1] == "ya_inactiva" and len(dets) == 1
                      and not extra["fallos"], ev))
+    elif caso == "sesion_perdida":
+        posts = extra.get("posts", [])
+        L = d["lineas"]
+        sesiones = [p for p in posts if p["url"].endswith("/sesiones")]
+        rechazados = [p for p in posts if p["codigo_api"] == 404]
+        reenviado = rechazados and any(p["hash"] == rechazados[0]["hash"] and p["codigo_api"] == 201 and p["n"] > rechazados[0]["n"] for p in posts)
+        orden_ok = rechazados and any(rechazados[0]["n"] < s["n"] < next((p["n"] for p in posts if p["hash"] == rechazados[0]["hash"] and p["codigo_api"] == 201), 0) for s in sesiones)
+        numeros = sorted(m["numero"] for p in posts if p["url"].endswith("/mediciones") and p["codigo_api"] == 201 for m in p["cuerpo"]["mediciones"])
+        contiguos = numeros == list(range(1, len(numeros) + 1))
+        ev_ok = [p for p in posts if p["url"].endswith("/eventos") and p["codigo_api"] == 201]
+        res.append(r("Sesión perdida · 404 → recrear y reenviar", "404 en un lote: POST /sesiones de nuevo y el mismo lote (mismo hash) aceptado después",
+                     f"{len(sesiones)} POST /sesiones; {len(rechazados)} respuestas 404; lote rechazado reenviado con el mismo hash: {bool(reenviado)}; "
+                     f"avisos '{sum(1 for l in L if l.startswith('RED 404'))}' RED 404",
+                     len(sesiones) == 2 and len(rechazados) == 1 and reenviado and orden_ok, ev))
+        res.append(r("Sesión perdida · sin pérdidas", "mediciones aceptadas 1..N sin huecos ni repetidas; evento aceptado",
+                     f"{len(numeros)} mediciones aceptadas ({numeros[0] if numeros else '?'}–{numeros[-1] if numeros else '?'}), contiguas: {contiguos}; eventos aceptados {len(ev_ok)}",
+                     contiguos and len(numeros) > 100 and len(ev_ok) == 1, ev))
     elif caso == "api":
         posts = extra.get("posts", [])
         por_hash = {}
@@ -372,7 +389,7 @@ def main():
         vcd = leer_vcd(dest / "senales.vcd")
         fallos = sum(1 for l in (dest / "estimulos.log").read_text(encoding="utf-8").splitlines() if "FALLO" in l)
         extra = {"fallos": fallos + (p.returncode not in (0, 1)) * 100}
-        if caso == "api":
+        if caso in ("api", "sesion_perdida"):
             posts = []
             for l in (dest / "posts.jsonl").read_text(encoding="utf-8").splitlines():
                 j = json.loads(l)
@@ -380,7 +397,7 @@ def main():
                 posts.append(j)
             extra["posts"] = posts
             evs = [p for p in posts if p["url"].endswith("/eventos")]
-            if evs:
+            if evs and caso == "api":
                 eid = evs[-1]["cuerpo"]["evento"]["id"]
                 g = subprocess.run(["curl.exe" if os.name == "nt" else "curl", "-s", f"{a.api}/api/v1/eventos/{eid}"], capture_output=True, text=True)
                 (dest / "evento_desde_api.json").write_text(g.stdout, encoding="utf-8")

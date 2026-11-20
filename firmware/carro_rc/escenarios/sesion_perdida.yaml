@@ -1,0 +1,48 @@
+name: 'sesion_perdida'
+version: 1
+author: 'Grupo 11'
+# API falsa: a los 3 s olvida las sesiones (base borrada); el siguiente lote recibe 404, el firmware vuelve a crear la sesión y reenvía ese lote; después un golpe y su evento.
+steps:
+  - wait-serial: 'CAL OK'
+  - wait-serial: 'SESION id='
+  - delay: 3000ms
+  # (solo banco nativo) api falsa reiniciar
+  - delay: 2000ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 2.5
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 300ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 1
+  - delay: 1200ms
+  - set-control:
+      part-id: btn_rearme
+      control: pressed
+      value: 1
+  - delay: 150ms
+  - set-control:
+      part-id: btn_rearme
+      control: pressed
+      value: 0
+  - delay: 350ms
+  - wait-serial: '/eventos evento'
+  - delay: 2000ms

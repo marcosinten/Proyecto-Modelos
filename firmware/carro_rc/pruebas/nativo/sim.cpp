@@ -13,6 +13,9 @@
 // - HTTP: "ninguna" (fallo de conexión tras el tiempo de conexión) o reenvío real
 //   a la API local con curl (curl.exe en Windows). --perder-respuesta N hace que el POST N llegue a
 //   la API pero el firmware no reciba la respuesta (fuerza un reintento).
+//   "falsa": API en memoria que solo recuerda las sesiones creadas; un lote o evento de una
+//   sesión desconocida recibe 404. La orden "api reiniciar" del escenario olvida las sesiones
+//   (como si se hubiera borrado la base de datos).
 #include "stubs/Arduino.h"
 #include "stubs/Wire.h"
 #include "stubs/WiFi.h"
@@ -348,6 +351,13 @@ static std::set<int> perderRespuesta;
 static std::set<std::string> perderRutas;  // --perder-ruta eventos,mediciones: se pierde la 1.ª respuesta de cada una
 static int numeroPost = 0;
 static std::string dirTemporal = ".";
+static std::set<std::string> sesionesFalsas;  // --api falsa
+static std::string campoJson(const std::string& cuerpo, const std::string& campo) {
+  size_t i = cuerpo.find("\"" + campo + "\":\"");
+  if (i == std::string::npos) return "";
+  i += campo.size() + 4;
+  return cuerpo.substr(i, cuerpo.find('"', i) - i);
+}
 WiFiSim WiFi;
 bool WiFiSim::mode(wifi_mode_t m) { modoSta = m == WIFI_STA; if (!modoSta) conectadoDesde = 0; return true; }
 void WiFiSim::begin(const char* ssid, const char*, int) {
@@ -374,6 +384,18 @@ int HTTPClient::POST(const String& cuerpo) {
   if (apiReal == "ninguna") {
     sim::dormir_hasta(reloj + (int64_t)conectar_ms * 1000);
     codigo = -1;  // HTTPC_ERROR_CONNECTION_REFUSED
+  } else if (apiReal == "falsa") {
+    const std::string ruta = destino.substr(destino.find("/api/v1") + 7);
+    if (ruta == "/sesiones") {
+      std::string id = campoJson(cuerpo.s, "id");
+      codigo = sesionesFalsas.insert(id).second ? 201 : 200;
+    } else {
+      std::string id = ruta == "/eventos" ? campoJson(cuerpo.s, "sesion_id")
+                                          : ruta.substr(10, ruta.find('/', 10) - 10);  // /sesiones/<id>/mediciones
+      codigo = sesionesFalsas.count(id) ? 201 : 404;
+    }
+    respuesta = codigo == 404 ? "{\"error\":{\"codigo\":\"SESION_NO_ENCONTRADA\"}}" : "{}";
+    sim::dormir_hasta(reloj + 15000);  // latencia de red modelada: 15 ms
   } else {
     if (destino.rfind(base, 0) == 0) destino = apiReal + destino.substr(base.size());
     std::string fb = dirTemporal + "/post_cuerpo.json", fr = dirTemporal + "/post_respuesta.json";
@@ -490,6 +512,10 @@ static void tareaEscenario(void*) {
       redDisponible = estado == "on";
       if (!redDisponible) conectadoDesde = 0;
       diario("red externa %s", estado.c_str());
+    } else if (op == "api") {
+      std::string orden; is >> orden;
+      if (orden == "reiniciar") sesionesFalsas.clear();
+      diario("api falsa %s", orden.c_str());
     } else if (op == "shot") {
       diario("take-screenshot (no disponible en el banco nativo)");
     } else if (op == "mark") {

@@ -66,6 +66,10 @@ static const uint32_t REARME_ANTIRREBOTE_MS = 30;
 
 static const int MAX_MUESTRAS_LOTE = 50;
 static const uint32_t ESPERA_LOTE_MS = 500;
+// Si la API responde 404 a un lote o evento (no conoce la sesión: base borrada o API distinta),
+// se vuelve a crear la sesión y se reenvía lo pendiente. Tope de recreaciones seguidas sin un
+// envío correcto entre medio, para no entrar en un bucle si la ruta está mal configurada.
+static const uint32_t MAX_RECREACIONES_SESION = 3;
 // Muestras guardadas mientras no hay red: 1000 × 36 B ≈ 36 KB = 20 s a 50 Hz.
 // Con 3000 (≈108 KB) el montón del ESP32 quedaba sin un bloque libre suficiente para el Wi-Fi,
 // HTTPClient y el String del lote: los JSON salían cortados (HTTP 400) y luego no se podía
@@ -796,6 +800,8 @@ static void tareaRed(void*) {
 
   bool sesionCreada = false;
   String pendiente, ruta, descripcion;
+  String aplazado, rutaAplazada, descAplazada;  // lote o evento que recibió 404, se reenvía tras crear la sesión
+  uint32_t recreaciones = 0;
   uint32_t intentos = 0, proximoIntento = 0;
   uint32_t ultimoAvisoRed = 0, ultimoInicioWifi = 0;
   bool wifiEncendido = false, ultimoLoteMostrado = false;
@@ -888,14 +894,43 @@ static void tareaRed(void*) {
          ruta.c_str(), descripcion.c_str(), (unsigned long)intentos, pendiente.length(),
          (unsigned long)hashTexto(pendiente), codigo, (unsigned long)ahoraMs());
 
-    if (codigo >= 200 && codigo < 300) {
-      if (descripcion == "sesion") sesionCreada = true;
+    const bool esSesion = descripcion == "sesion";
+    if (codigo == 404 && !esSesion && recreaciones < MAX_RECREACIONES_SESION) {
+      recreaciones++;
+      logq("RED 404 para %s: la API no conoce la sesion %s; se vuelve a crear (%lu de %lu) y se reenvia",
+           descripcion.c_str(), sesionId, (unsigned long)recreaciones,
+           (unsigned long)MAX_RECREACIONES_SESION);
+      sesionCreada = false;
+      aplazado = pendiente;
+      rutaAplazada = ruta;
+      descAplazada = descripcion;
+      pendiente = jsonSesion();
+      ruta = "/sesiones";
+      descripcion = "sesion";
+      intentos = 0;
+      proximoIntento = ahoraMs();
+      continue;
+    }
+    if ((codigo >= 200 && codigo < 300) || (codigo >= 400 && codigo < 500)) {
+      if (codigo >= 400) {
+        logq("RED rechazo definitivo %d para %s; se descarta para no bloquear la cola",
+             codigo, descripcion.c_str());
+      } else if (!esSesion) {
+        recreaciones = 0;
+      }
       pendiente = "";
-    } else if (codigo >= 400 && codigo < 500) {
-      logq("RED rechazo definitivo %d para %s; se descarta para no bloquear la cola",
-           codigo, descripcion.c_str());
-      if (descripcion == "sesion") sesionCreada = true;
-      pendiente = "";
+      if (esSesion) {
+        sesionCreada = true;
+        if (aplazado.length()) {
+          logq("RED sesion %s creada de nuevo; se reenvia %s", sesionId, descAplazada.c_str());
+          pendiente = aplazado;
+          ruta = rutaAplazada;
+          descripcion = descAplazada;
+          aplazado = "";
+          intentos = 0;
+          proximoIntento = ahoraMs();
+        }
+      }
     } else {
       uint32_t espera = min<uint32_t>(500u << min<uint32_t>(intentos - 1, 4), 8000);
       proximoIntento = ahoraMs() + espera;

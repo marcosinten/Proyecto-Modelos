@@ -92,6 +92,9 @@ class Linea:
             elif op == "red":
                 nat.append(f"red {p[1]}")
                 yml.append(f"  # (solo banco nativo) red externa {p[1]}")
+            elif op == "api":
+                nat.append(f"api {p[1]}")
+                yml.append(f"  # (solo banco nativo) api falsa {p[1]}")
         (AQUI / f"{self.nombre}.pasos").write_text("\n".join(nat) + "\n", encoding="utf-8")
         (AQUI / f"{self.nombre}.yaml").write_text("\n".join(yml) + "\n", encoding="utf-8")
 
@@ -214,6 +217,15 @@ def escenarios():
     L.en(4000, "wait", "JSON evento ")
     L.en(4000, "wait", "/eventos evento")
     L.en(4000, "delay", 3000)
+    res.append(L)
+    L = Linea("sesion_perdida", "API falsa: a los 3 s olvida las sesiones (base borrada); el siguiente lote recibe 404, "
+              "el firmware vuelve a crear la sesión y reenvía ese lote; después un golpe y su evento.")
+    L.en(3000, "api", "reiniciar")
+    L.imu(5000, 2.5, 0, 1)
+    L.imu(5300, 0, 0, 1)
+    L.rearme(6500)
+    L.en(7000, "wait", "/eventos evento")
+    L.en(7000, "delay", 2000)
     res.append(L)
     # Extremo a extremo con la web (modo En vivo): marcha, parada por timeout del Hall,
     # vuelco de costado sostenido, regreso y rearme. Datos SIMULADOS (origen "simulado").
