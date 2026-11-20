@@ -41,12 +41,14 @@ test('flujo HTTP completo: sesión → mediciones → evento → JSON exacto par
 });
 test('migra una sesión anterior sin inventar fecha o pulsos; un reintento no reactiva la sesión', async t=>{
   const dir=mkdtempSync(join(tmpdir(),'monitor-migracion-')),path=join(dir,'antes.sqlite');
-  t.after(()=>rmSync(dir,{recursive:true,force:true}));
+  // Un solo cierre ordenado: en Windows no se puede borrar la carpeta con la base aún abierta (EPERM).
+  let repo;
+  t.after(()=>{repo?.cerrar();rmSync(dir,{recursive:true,force:true});});
   const old=new DatabaseSync(path);
   old.exec(readFileSync(new URL('../db/migraciones/001_crear_tablas.sql',import.meta.url),'utf8'));
   old.exec("INSERT INTO sesiones VALUES ('ANTIGUA','real'); INSERT INTO mediciones VALUES ('ANTIGUA',1,500,0,0,9.81,0,0)");
   old.close();
-  const repo=crearRepositorio(path);t.after(()=>repo.cerrar());
+  repo=crearRepositorio(path);
   assert.equal(repo.listarSesiones(10,0).sesiones[0].ultima_recepcion_ms,null);
   const m=repo.ultimaMedicion('ANTIGUA');
   assert.equal('rueda_pulsos' in m,false);
