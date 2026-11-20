@@ -16,6 +16,7 @@ import ev1 from '../../ejemplos/vuelco.json';
 import ev2 from '../../ejemplos/vuelco-002.json';
 import {app, $, number, escape, label, seconds, request, get, toast, heading} from './app.js';
 import {eventTable, tablaMediciones, historialSesion, bindRows, renderHistory, loadEvents, refrescarRecientes} from './pantallas/historial.js';
+import {showExplanation} from './pantallas/explicar.js';
 
 const demo = generarEscenario('vuelco', 16, 90, 100);
 app.current=demo;app.page='monitor';app.running=false;app.position=0;app.speed=1;app.lastFrame=0;
@@ -341,28 +342,6 @@ function avisarSesionNueva(s,ahora,ignorar){
  aviso.querySelector('.primary').onclick=()=>{aviso.remove();connectLive(s.id);};
  aviso.querySelector('.text-button').onclick=()=>{ignorar();aviso.remove();};
  $('#live-notices').append(aviso);
-}
-async function showExplanation(){
- const id=location.hash.slice('#explicar/'.length);
- const generation=app.liveGeneration;
- $('#main').innerHTML='<a class="back" href="#historial">← Volver al historial</a><div class="card explain-empty" role="status">Cargando lecturas del evento…</div>';
- if(!/^[A-Za-z0-9_-]{1,64}$/.test(id)){
-  $('#main').innerHTML='<a class="back" href="#historial">← Volver al historial</a><div class="card explain-empty" role="alert">El identificador del evento no es válido.</div>';return;
- }
- let paquete, aviso='';
- try{paquete=await (await request('/eventos/'+id)).json();}
- catch(e){
-  // Sin API solo sirven los paquetes con mediciones (los ejemplos locales).
-  paquete=app.events.find(p=>p.evento.id===id&&p.mediciones);
-  if(!paquete){
-   if(generation===app.liveGeneration&&app.page==='explicar')
-    $('#main').innerHTML=`<a class="back" href="#historial">← Volver al historial</a><div class="card explain-empty" role="alert">No se pudo abrir el evento. ${escape(e.message)} <a href="#historial">Revisa el historial</a> y vuelve a intentarlo.</div>`;
-   return;
-  }
-  aviso='No se pudo actualizar el evento: se muestran las lecturas guardadas en esta página. Si llegaron más datos, vuelve a cargar el historial.';
- }
- if(generation!==app.liveGeneration||app.page!=='explicar'||location.hash!=='#explicar/'+id)return;
- app.cerrarExplicacion=mostrarExplicacion($('#main'),paquete,aviso);
 }
 function openExport(){
  const p=structuredClone(app.current);
