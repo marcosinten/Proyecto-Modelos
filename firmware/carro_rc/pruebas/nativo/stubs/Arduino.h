@@ -76,7 +76,14 @@ void attachInterrupt(int pin, void (*isr)(), int modo);
 bool ledcAttach(int pin, uint32_t freq, uint8_t res);
 bool ledcWrite(int pin, uint32_t duty);
 uint32_t esp_random();
-struct EspSim { uint64_t getEfuseMac(); };
+struct EspSim {
+  uint64_t getEfuseMac();
+  // Valores fijos de referencia: el banco no modela el montón del ESP32.
+  uint32_t getFreeHeap() { return 200000; }
+  uint32_t getMaxAllocHeap() { return 110000; }
+  uint32_t getMinFreeHeap() { return 180000; }
+  void restart();
+};
 extern EspSim ESP;
 
 // ---- String ----

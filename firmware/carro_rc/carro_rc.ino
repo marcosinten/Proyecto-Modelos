@@ -9,6 +9,9 @@
 
 // Carro RC · Grupo 11 · ESP32 DevKit WROOM-32
 
+// Aparece en la línea INICIO del monitor serie: permite saber qué firmware tiene la placa.
+static const char VERSION_FIRMWARE[] = "2026.11.20-circuito-real";
+
 #ifdef BANCO_NATIVO
 static const char ORIGEN_SESION[] = "simulado";
 #else
@@ -93,8 +96,10 @@ struct Evento {
   uint32_t t_inicio, t_fin, t_det, t_act;
 };
 
+// 240 caracteres para que la línea EST con el diagnóstico de memoria quepa entera.
+// Cola de 80 líneas: misma memoria que antes (96 × 200 B = 80 × 240 B = 19 200 B).
 struct LineaLog {
-  char txt[200];
+  char txt[240];
 };
 
 static const char* nombreTipo(uint8_t t) {
@@ -700,12 +705,14 @@ static void tareaAdquisicion(void*) {
     cicloMax = max(cicloMax, (uint32_t)(fin - t_us));
     if (fin - ventanaIni >= 1000000) {
       double s = (fin - ventanaIni) / 1e6;
-      logq("EST t=%lu f_adq=%.1f f_dec=%.1f f_tel=%.1f dt_min_us=%lu dt_max_us=%lu ciclo_max_us=%lu err_i2c=%lu anillo=%d perdidas=%lu log_perdidas=%lu wifi=%d estado=%s",
+      // heap_libre / heap_bloque_max: si el bloque máximo baja de ~10 KB, el lote JSON puede no caber.
+      logq("EST t=%lu f_adq=%.1f f_dec=%.1f f_tel=%.1f dt_min_us=%lu dt_max_us=%lu ciclo_max_us=%lu err_i2c=%lu anillo=%d perdidas=%lu log_perdidas=%lu wifi=%d estado=%s heap_libre=%lu heap_bloque_max=%lu heap_min=%lu",
            (unsigned long)t, cAdq / s, cDec / s, cTel / s,
            (unsigned long)dtMin, (unsigned long)dtMax, (unsigned long)cicloMax,
            (unsigned long)errI2c, anilloCantidad(), (unsigned long)anilloPerdidas,
            (unsigned long)logPerdidas, WiFi.status() == WL_CONNECTED,
-           nombresEstado[estadoDet]);
+           nombresEstado[estadoDet], (unsigned long)ESP.getFreeHeap(),
+           (unsigned long)ESP.getMaxAllocHeap(), (unsigned long)ESP.getMinFreeHeap());
       ventanaIni = fin;
       cAdq = cDec = cTel = 0;
       dtMin = UINT32_MAX;
@@ -958,7 +965,7 @@ void setup() {
 
   delay(200);
   mutexSerial = xSemaphoreCreateMutex();
-  colaLog = xQueueCreate(96, sizeof(LineaLog));
+  colaLog = xQueueCreate(80, sizeof(LineaLog));
   colaEventos = xQueueCreate(8, sizeof(Evento));
   xTaskCreatePinnedToCore(tareaRegistro, "registro", 4096, nullptr, 2, nullptr, 0);
 
@@ -968,8 +975,8 @@ void setup() {
     delay(1000);
   }
 
-  logq("INICIO carro_rc Grupo 11 origen=%s ppr=%d umbral_golpe=%.1f m/s2 inclinacion=%.0f deg vuelco=%.0f deg permanencia=%lu ms lecturas_golpe=%d",
-       ORIGEN_SESION, PULSOS_POR_VUELTA, UMBRAL_GOLPE_MS2,
+  logq("INICIO carro_rc Grupo 11 version=%s origen=%s ppr=%d umbral_golpe=%.1f m/s2 inclinacion=%.0f deg vuelco=%.0f deg permanencia=%lu ms lecturas_golpe=%d",
+       VERSION_FIRMWARE, ORIGEN_SESION, PULSOS_POR_VUELTA, UMBRAL_GOLPE_MS2,
        UMBRAL_INCLINACION_DEG, UMBRAL_VUELCO_DEG, (unsigned long)PERMANENCIA_MS,
        LECTURAS_GOLPE);
 

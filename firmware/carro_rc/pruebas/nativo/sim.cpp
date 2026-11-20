@@ -282,6 +282,13 @@ uint32_t esp_random() {
 }
 EspSim ESP;
 uint64_t EspSim::getEfuseMac() { return 0x24A160ABCDEFull; }
+// ESP.restart(): en el banco termina la ejecución (el escenario ya no puede continuar).
+void EspSim::restart() {
+  diario("ESP.restart()");
+  Serial.println("BANCO ESP.restart()");
+  { std::lock_guard<std::mutex> lk(M); terminar = true; }
+  sim::dormir_hasta(INT64_MAX);
+}
 
 // ============================================================================
 // I2C + MPU6050
