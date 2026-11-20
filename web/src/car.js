@@ -311,6 +311,7 @@ export function crearVisor(element) {
 
   let destroyed = false;
   let lastRoll, lastPitch;
+  let contactTurns, contactAt = -Infinity;
   const modelUrl = new URL('./assets/oldsmobile_cutlass_supreme_sedan_71.glb', import.meta.url).href;
   new GLTFLoader().loadAsync(modelUrl).then(({scene: model}) => {
     if (destroyed) {
@@ -364,8 +365,13 @@ export function crearVisor(element) {
         lastPitch = live ? liveAngle(changedMode ? null : lastPitch, sample.pitch_deg) : sample.pitch_deg;
         // Roll first, then pitch about the level lateral axis: the same order the telemetry model uses.
         car.rotation.set(T.MathUtils.degToRad(lastRoll), 0, T.MathUtils.degToRad(lastPitch), 'YZX');
-        // Contact points are refreshed when switching mode (connecting), not for each live wheel turn.
-        if (changedMode) collectContactPoints();
+        // Contact points are refreshed when connecting, and in live only when the posture changes after
+        // the wheel has turned (at most every 500 ms), never for each wheel turn on its own.
+        const now = performance.now();
+        if (changedMode || (live && wheelTurns !== contactTurns && now - contactAt > 500)) {
+          collectContactPoints();
+          contactTurns = wheelTurns; contactAt = now;
+        }
         fitToRoad();
       }
       render();
