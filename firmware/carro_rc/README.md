@@ -8,7 +8,7 @@ pulsador de rearme. La guía de montaje está en [`docs/CONEXION-ESP32.md`](../.
 `carro_rc.ino` se escribió con los requisitos de la entrega y se ajustó el 16 de noviembre a los materiales comprados:
 
 - **Reglas y umbrales del equipo** (`web/src/simulation.js`) sin cambios: golpe si |a| ≥ 16 m/s²;
-  inclinación si |roll| o |pitch| ≥ 60°; vuelco si |roll| ≥ 90°. La inclinación y el vuelco deben durar 150 ms.
+  inclinación si |roll| o |pitch| ≥ 20°; vuelco si |roll| ≥ 90°. La inclinación y el vuelco deben durar 150 ms.
   El golpe se confirma con `LECTURAS_GOLPE = 2` lecturas seguidas de 250 Hz por encima del umbral (entre 4 y 8 ms
   de señal), porque un choque dura pocos milisegundos; una sola lectura alta se descarta como ruido. Gravedad
   alta para golpe y vuelco, media para inclinación. En la detección se aplica la misma prioridad que en la
@@ -33,14 +33,17 @@ pulsador de rearme. La guía de montaje está en [`docs/CONEXION-ESP32.md`](../.
   y evento, y el evento solo se envía cuando ya salieron las muestras hasta su `t_fin_ms`. Cada envío se
   serializa **una sola vez**: los reintentos (500 ms a 8 s) usan el mismo texto, con los mismos ids y tiempos.
   En el log aparece su hash FNV-1a. Las respuestas 2xx y 4xx terminan el envío; los errores de red y los 5xx
-  se reintentan. Sin Wi-Fi, las muestras quedan en un anillo de 60 s en RAM y las alertas siguen funcionando.
+  se reintentan. Un 404 en un lote o evento (la API no conoce la sesión) vuelve a crear la sesión y reenvía el
+  mismo JSON, hasta 3 veces seguidas. Sin Wi-Fi, las muestras quedan en un anillo de 1000 muestras (20 s) en RAM
+  y las alertas siguen funcionando.
 - **`ORIGEN_SESION`**: única constante para el origen, `"simulado"` en esta entrega y `"real"` en el carro.
   También elige la red y la URL de la API.
 - **`ubicacion: null`** siempre (no hay GPS).
-- **Hall:** interrupción en el flanco de bajada (un flanco por imán), con un filtro de 1 ms.
-  `PULSOS_POR_VUELTA = 2` y se puede configurar. `rueda_rps` se calcula con el tiempo de la última vuelta
-  completa. Si deja de haber pulsos, el valor decae y pasa a 0 a los 750 ms. **Velocidad mínima medible:**
-  1/(2 × 0,75 s) ≈ 0,67 vueltas/s.
+- **Hall:** interrupción en el flanco de bajada (un flanco por imán), con un filtro de 3 ms (ruido del motor y
+  rebotes). `PULSOS_POR_VUELTA = 1` (un imán en la rueda trasera); se cambia en `config_local.h` y también en
+  `compartido/parametros-firmware.js`. `rueda_rps` se calcula con el tiempo de la última vuelta completa. Si deja
+  de haber pulsos, el valor decae y pasa a 0 a los 750 ms. **Velocidad mínima medible:** con 1 imán,
+  1/0,75 s ≈ 1,33 vueltas/s; más despacio, `rueda_pulsos` sigue contando cada pasada.
 - **`rueda_rps` se envía a la API** en cada medición, como campo opcional del contrato v1 (0 a 1000). La web
   lo usa para girar las ruedas y, en modo En vivo, para avanzar y detener el carro.
 - **Salidas:** LED; buzzer activo con pitido intermitente de 200 ms (nivel digital en GPIO 27, sin PWM, así
@@ -54,6 +57,26 @@ estático) y se usa la API LEDC de Arduino-ESP32 3.x, sin perder compatibilidad 
 Corrección tras probar en Wokwi: `WiFi.persistent(false)`. Sin esa línea, `WiFi.begin` escribía la
 configuración en la flash (NVS) y detenía la caché de los dos núcleos, y la tarea de 250 Hz llegaba a
 tener periodos de 7–8 ms al conectar. Con la corrección, el periodo queda entre 3977 y 4022 µs.
+
+## Cambios para el circuito real (20 de noviembre, rama `firmware-circuito-real`)
+
+Un commit por cambio, para poder revertir cada uno (`git revert <hash>`); detalle en `docs/MANANA-CIRCUITO.md`.
+
+1. `CAPACIDAD_ANILLO = 1000` (antes 3000): con 3000 el montón se quedaba sin bloque para el Wi-Fi y el lote.
+2. 404 → recrear la sesión y reenviar lo pendiente (máximo 3 seguidas).
+3. `EST` con `heap_libre`, `heap_bloque_max` y `heap_min`; `INICIO` con `version=`.
+4. `platformio.ini`: `monitor_dtr = 0`, `monitor_rts = 0` (abrir el monitor no reinicia la placa).
+5. `PULSOS_POR_VUELTA` configurable en `config_local.h` (por defecto 1).
+6. `HALL_FILTRO_US` de 1000 a 3000 µs.
+7. `WiFi.setSleep(false)` (hipótesis del retraso entre lotes; medir con `pruebas/medir_red.py`).
+8. `CORRECCION_MPU_EQUIPO` (1 por defecto = corrección del módulo del equipo; 0 = lecturas nominales).
+9. Mantener el botón de rearme ≥ 3 s: actuadores en reposo, `REINICIO motivo=pulsacion_larga` y `ESP.restart()`.
+10. Recuperación I2C: tras 50 lecturas fallidas seguidas se reinician `Wire` y el MPU (`I2C recuperacion`).
+11. `MODO_CARRO_EN_MOVIMIENTO` (0 por defecto, sin cambios en el banco): ignora el ángulo de inclinación
+    cuando |norma − g| > 0,5 m/s².
+
+Pendiente: armar el JSON de los lotes sin `String` (el banco no puede comprobar que el formato de números
+de la placa coincide byte a byte).
 
 ## Compilar (Windows)
 
@@ -139,6 +162,9 @@ LEDC, Wi-Fi y HTTP:
 - Puede reenviar los POST a la API local real con `curl` (`curl.exe` en Windows). Compila en Windows y en Linux.
 - `--tiempo-real 1` sincroniza el reloj virtual con el de pared, para ver los datos llegar a la web.
 - El escenario `api_vuelco` es la prueba de extremo a extremo con la API y la web (ver `docs/WOKWI-API.md`).
+- `--api falsa`: API en memoria que solo recuerda las sesiones; la orden `api reiniciar` las olvida (caso
+  `sesion_perdida`). El MPU modelado admite `bus_colgado` y `desconectado` (caso `i2c_fallo`); el Hall admite
+  rebotes (caso `rebote_hall`) y `ESP.restart()` termina la simulación (caso `reinicio_boton`).
 - En Linux o macOS se compila con el `g++` del sistema; en Windows, con `zig c++` (`pip install ziglang`).
 
 ```powershell
