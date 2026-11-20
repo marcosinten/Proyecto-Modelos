@@ -459,15 +459,16 @@ async function showExplanation(){
 function openExport(){
  const p=structuredClone(current);
  const completa=liveActive, ultimo=p.mediciones.at(-1)?.numero??0;
- $('#export-body').innerHTML=`<div class="export-icon">↓</div><h2>Exportar ${p.evento?'evento':'corrida'}</h2><p>Las mediciones del escenario seleccionado, listas para analizar.</p><div class="export-info"><strong>${escape(p.evento?.id||p.sesion.id)}.xlsx</strong><span>${p.mediciones.length} mediciones · ${p.sesion.origen==='real'?'Datos reales':'Datos simulados'}</span><small>Hojas Resumen, ${p.evento?'Evento, ':''}Datos, ${p.parametros?'Parámetros, ':''}Columnas y Metadatos</small></div><div id="export-error" role="alert"></div><div class="dialog-actions"><button id="cancel-export" class="secondary">Cancelar</button><button id="download" class="primary">↓ Descargar .xlsx</button></div>`;
- if(completa){
-   $('#export-body h2').textContent='Exportar sesión completa';
-   $('#export-body .export-info strong').textContent=p.sesion.id+'.xlsx';
-   $('#export-body .export-info span').textContent='Desde el inicio hasta la muestra '+ultimo;
-   $('#export-body .export-info small').textContent='Hojas Datos, Eventos y Metadatos';
- }
+ const nombre=completa||!p.evento?p.sesion.id:p.evento.id;
+ const alcance=completa?`Sesión completa, desde el inicio hasta la muestra ${ultimo}`:p.evento?`Evento ${p.evento.id} · ${p.mediciones.length} mediciones`:`Corrida ${p.sesion.id} · ${p.mediciones.length} mediciones`;
+ $('#export-body').innerHTML=`<div class="export-icon">↓</div><h2>${completa?'Exportar sesión completa':p.evento?'Exportar evento':'Exportar corrida'}</h2><p>${escape(alcance)} · ${p.sesion.origen==='real'?'Datos reales':'Datos simulados'}</p>
+  <div class="export-info"><strong>Resumen</strong><span>Para leer: qué pasó en cada evento, tramos inclinados y la rueda con sensor. Sin muestras sueltas.</span><small>Hojas Resumen, Eventos, Inclinaciones y Rueda · ${escape(nombre)}-resumen.xlsx</small></div>
+  <div class="export-info"><strong>Datos técnicos</strong><span>Todas las muestras con rueda_pulsos, eventos completos y parámetros del firmware.</span><small>Hojas Datos, Eventos, Parámetros del firmware, ${p.parametros?'Parámetros simulación, ':''}Columnas, Léeme y Metadatos · ${escape(nombre)}-datos-tecnicos.xlsx</small></div>
+  <div id="export-error" role="alert"></div><div class="dialog-actions"><button id="cancel-export" class="secondary">Cancelar</button><button id="download-tecnico" class="secondary">↓ Descargar datos técnicos</button><button id="download-resumen" class="primary">↓ Descargar resumen</button></div>`;
  $('#export-dialog').showModal();$('#cancel-export').onclick=()=>$('#export-dialog').close();
- $('#download').onclick=async()=>{const b=$('#download');b.disabled=true;b.textContent='Preparando archivo…';try{
+ let preparado;
+ // Una sola preparación para ambos botones: mediciones y eventos de la sesión, y el reloj para la hora aproximada.
+ const preparar=()=>preparado??=(async()=>{
   if(completa){
     p.mediciones=[];
     for await(const rows of paginasSesion(get,p.sesion.id,ultimo))p.mediciones.push(...rows);
@@ -478,21 +479,23 @@ function openExport(){
       if(!r.hay_mas)break;
       offset=r.siguiente_offset;
     }
-    p.eventos=[...eventos.values()];
+    p.eventos=[...eventos.values()];delete p.evento;
   }
-  const {default:ExcelJS}=await import('exceljs');
-  let buffer;
-  if(completa){
-   const book=new ExcelJS.Workbook();
-   const sheet=(name,rows)=>{const h=book.addWorksheet(name);if(rows.length){h.columns=[...new Set(rows.flatMap(Object.keys))].map(k=>({header:k,key:k,width:22}));h.addRows(rows);h.getRow(1).font={bold:true};h.views=[{state:'frozen',ySplit:1}];}};
-   sheet('Datos',p.mediciones);
-   const filaEvento=({ubicacion,...e})=>({...e,latitud:ubicacion?.latitud??null,longitud:ubicacion?.longitud??null,respuesta_ms:e.t_activacion_ms===null?null:e.t_activacion_ms-e.t_deteccion_ms});
-   sheet('Eventos',p.eventos.map(filaEvento));
-   sheet('Metadatos',[{sesion:p.sesion.id,origen:p.sesion.origen,aceleracion:'m/s²',angulos:'grados',tiempo:'ms desde inicio de sesión'}]);
-   buffer=await book.xlsx.writeBuffer();
-  }else buffer=await crearExcel(ExcelJS,p,{fuente:'web'});
-  const url=URL.createObjectURL(new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));const a=document.createElement('a');a.href=url;a.download=(completa?p.sesion.id:p.evento?.id||p.sesion.id)+'.xlsx';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);$('#export-dialog').close();toast('Descarga iniciada');
- }catch(e){$('#export-error').textContent='No se pudo preparar el archivo. '+e.message;}finally{b.disabled=false;b.textContent='↓ Descargar .xlsx';}};
+  try{
+    const r=await get(`/sesiones/${p.sesion.id}/ultima`);
+    p.reloj={ultima_recepcion_ms:r.ultima_recepcion_ms??null,t_ultima_medicion_ms:r.medicion?.t_ms??null};
+  }catch{p.reloj=null;}
+  return p;
+ })();
+ for(const formato of ['resumen','tecnico']){
+  const b=$('#download-'+formato), texto=b.textContent;
+  b.onclick=async()=>{b.disabled=true;b.textContent='Preparando archivo…';$('#export-error').textContent='';try{
+   const paquete=await preparar();
+   const {default:ExcelJS}=await import('exceljs');
+   const buffer=await crearExcel(ExcelJS,paquete,{fuente:'web',formato});
+   const url=URL.createObjectURL(new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));const a=document.createElement('a');a.href=url;a.download=`${nombre}-${formato==='resumen'?'resumen':'datos-tecnicos'}.xlsx`;a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);toast('Descarga iniciada');
+  }catch(e){preparado=undefined;$('#export-error').textContent='No se pudo preparar el archivo. '+e.message;}finally{b.disabled=false;b.textContent=texto;}};
+ }
 }
 function route(){const hash=location.hash.slice(1);page=hash.startsWith('explicar/')?'explicar':['simulacion','historial','detalle'].includes(hash)?hash:'monitor';if(page==='detalle'&&!current.evento){current=ev2;}if(page==='monitor'){current=demo;position=0;}if(page==='simulacion'){current=generarEscenario('vuelco');position=0;}render();}
 layout();route();requestAnimationFrame(frame);window.addEventListener('hashchange',route);loadEvents().then(()=>{

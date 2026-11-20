@@ -65,9 +65,13 @@ export function crearApp({ repositorio, apiKey = '', origins = ['http://localhos
   api.get('/eventos/:id', (req, res) => res.json(repositorio.obtenerPaquete(validarId(req.params.id))));
   api.get('/eventos/:id/excel', async (req, res) => {
     const paquete = repositorio.obtenerPaquete(validarId(req.params.id));
-    const buffer = await crearExcel(paquete);
+    const formato = req.query.formato === 'resumen' ? 'resumen' : 'tecnico';
+    // Reloj de la sesión para la hora aproximada: última recepción y su última medición.
+    const vivo = repositorio.leerVivo(paquete.sesion.id, 0);
+    const reloj = { ultima_recepcion_ms: vivo.ultima_recepcion_ms ?? null, t_ultima_medicion_ms: vivo.medicion?.t_ms ?? null };
+    const buffer = await crearExcel({ ...paquete, reloj }, { formato });
     res.type('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.attachment(`${paquete.evento.id}.xlsx`).send(Buffer.from(buffer));
+    res.attachment(`${paquete.evento.id}-${formato === 'resumen' ? 'resumen' : 'datos-tecnicos'}.xlsx`).send(Buffer.from(buffer));
   });
   app.use('/api/v1', api);
   app.use((_req, _res, next) => next(new ErrorApi(404, 'RUTA_NO_ENCONTRADA', 'La ruta solicitada no existe')));

@@ -109,3 +109,4 @@
 .event-saved.flash { animation:aviso-evento 1.2s ease-out; }
 @keyframes aviso-evento { from { background:#dbeafe; transform:translateY(-3px); } to { background:#fff; transform:none; } }
 @media (prefers-reduced-motion: reduce) { .event-saved.flash { animation:none; } }
+#export-dialog{width:580px}.dialog-actions{flex-wrap:wrap}#export-dialog .export-info{margin:12px 0;padding:14px 16px}

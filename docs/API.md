@@ -15,7 +15,7 @@ Base local: `http://127.0.0.1:3000/api/v1`. Todas las escrituras requieren JSON 
 | POST | `/eventos` | `{version:1,evento:{...}}`. Guarda un evento final confirmado o cancelado. |
 | GET | `/eventos` | Listado por orden de inserción descendente. Filtro opcional `sesion_id`, `limite` (50, máximo 200), `offset` (0). Devuelve `eventos`, `hay_mas`, `siguiente_offset`, `version`. |
 | GET | `/eventos/:id` | `{version:1,sesion,evento,mediciones}` para reproducir y graficar. |
-| GET | `/eventos/:id/excel` | Archivo `.xlsx` del mismo paquete de datos. |
+| GET | `/eventos/:id/excel?formato=resumen\|tecnico` | `.xlsx` del evento. `resumen`: hojas Resumen, Eventos, Inclinaciones y Rueda. `tecnico` (por defecto): Datos con todas las muestras, Eventos, Parámetros del firmware, Columnas, Léeme y Metadatos. |
 
 Si aparecen eventos nuevos mientras navegas el listado por offset, actualiza la lista desde el inicio. Para las mediciones usa siempre el cursor `despues_numero`.
 

@@ -173,16 +173,29 @@ try {
  const exportCount=n;
  const cdp=await tab.createCDPSession();
  await cdp.send('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:dir,eventsEnabled:true});
- const download=new Promise(resolve=>cdp.on('Browser.downloadProgress',e=>{if(e.state==='completed')resolve();}));
- await tab.click('#export');await tab.click('#download');
- await tab.waitForFunction(()=>!document.querySelector('#export-dialog').open,{timeout:45000});
- await Promise.race([download,pause(10000).then(()=>{throw new Error('Falta descarga Excel');})]);
- const libro=new ExcelJS.Workbook();await libro.xlsx.readFile(join(dir,id+'.xlsx'));
+ const descargas=[];cdp.on('Browser.downloadProgress',e=>{if(e.state==='completed')descargas.push(e.guid);});
+ const descargar=async(boton,archivo)=>{
+   const antes=descargas.length;
+   await tab.click(boton);
+   await tab.waitForFunction(()=>!document.querySelector('#download-resumen').disabled&&!document.querySelector('#download-tecnico').disabled,{timeout:45000});
+   for(let i=0;i<100&&descargas.length===antes;i++)await pause(100);
+   assert.ok(descargas.length>antes,'Falta descarga '+archivo);
+   const libro=new ExcelJS.Workbook();await libro.xlsx.readFile(join(dir,archivo));return libro;
+ };
+ await tab.click('#export');
+ const libro=await descargar('#download-tecnico',id+'-datos-tecnicos.xlsx');
  const datos=libro.getWorksheet('Datos');
  assert.equal(datos.rowCount,exportCount+1);assert.equal(datos.getCell('A2').value,1);
  assert.equal(datos.getCell('A'+datos.rowCount).value,exportCount);
+ assert.deepEqual(datos.getRow(1).values.slice(1),['numero','t_ms','ax','ay','az','roll_deg','pitch_deg','rueda_rps','rueda_pulsos']);
  assert.equal(libro.getWorksheet('Eventos').rowCount,4);
- console.log(`Excel verificado: ${exportCount} mediciones y 3 eventos`);
+ assert.deepEqual(libro.worksheets.map(h=>h.name),['Datos','Eventos','Parámetros del firmware','Columnas','Léeme','Metadatos']);
+ const resumen=await descargar('#download-resumen',id+'-resumen.xlsx');
+ assert.deepEqual(resumen.worksheets.map(h=>h.name),['Resumen','Eventos','Inclinaciones','Rueda']);
+ assert.equal(resumen.getWorksheet('Eventos').rowCount,4);
+ assert.match(String(resumen.getWorksheet('Eventos').getCell('C2').value),/^\d\d:\d\d:\d\d$/,'hora aproximada de la API');
+ await tab.click('#cancel-export');
+ console.log(`Excel verificado: técnico con ${exportCount} mediciones y 3 eventos; resumen con 3 eventos y hora aproximada`);
  // Interrumpir solo las consultas del navegador; la API sigue recibiendo 1200 muestras.
  await tab.setRequestInterception(true);
  let offline=true,hold=false,release;
