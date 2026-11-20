@@ -1,1 +1,1 @@
-{"version":1,"evento":{"id":"RC-ABCDEF-BADC701C-EV001","sesion_id":"RC-ABCDEF-BADC701C","tipo":"golpe","gravedad":"alta","estado":"confirmado","t_inicio_ms":1003,"t_fin_ms":2799,"t_deteccion_ms":2007,"t_activacion_ms":2008,"ubicacion":null}}
+{"version":1,"evento":{"id":"RC-ABCDEF-A0B9C93E-EV001","sesion_id":"RC-ABCDEF-A0B9C93E","tipo":"golpe","gravedad":"alta","estado":"confirmado","t_inicio_ms":1003,"t_fin_ms":2799,"t_deteccion_ms":2007,"t_activacion_ms":2008,"ubicacion":null}}

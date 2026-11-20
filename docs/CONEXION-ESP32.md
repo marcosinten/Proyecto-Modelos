@@ -9,7 +9,7 @@ Guía de montaje con los materiales comprados (revisión del 16 de noviembre de 
 |---|---|---|
 | 1 | ESP32 DevKit V1 de 30 pines (WROOM-32) | Control, alimentado por USB desde la salida 1 del power bank |
 | 1 | MPU6050 GY-521 | Aceleración (±16 g, filtro de 94 Hz) |
-| 1 | Sensor Hall A3144 + 2 imanes de neodimio | Velocidad de la rueda (2 pulsos por vuelta) |
+| 1 | Sensor Hall A3144 + 1 imán de neodimio en la rueda trasera | Giro de la rueda con sensor (1 pulso por vuelta) |
 | 1 | LED rojo de 5 mm + resistencia de 330 Ω | Alerta visual |
 | 1 | Buzzer activo de 5 V, TMB12A05 | Alerta sonora: suena con nivel alto, pitido intermitente de 200 ms |
 | 1 | Servo SG90 + banderita | Alerta mecánica (0° en reposo, 90° en alerta) |
@@ -59,8 +59,9 @@ el carro debe estar **quieto y horizontal durante 2 s** mientras se calibra (`CA
 
 Mirando la cara plana con el texto, con las patas hacia abajo: **1 = VCC, 2 = GND, 3 = OUT**
 (de izquierda a derecha). Confírmalo con la hoja de datos del fabricante de tu lote antes de soldar.
-El sensor detecta un solo polo del imán: orienta los dos imanes con la misma cara hacia el sensor,
-a 180° entre sí en la rueda, y deja una separación de 2 a 5 mm.
+El sensor detecta un solo polo del imán: orienta el imán con la cara correcta hacia el sensor
+(si con el imán delante la salida no baja, dale la vuelta) y deja una separación de 2 a 5 mm.
+Si se añaden más imanes, deben quedar a la misma distancia entre sí y con la misma cara hacia el sensor.
 
 ## Comprobaciones antes de conectar cada parte
 
@@ -116,7 +117,8 @@ En `firmware/carro_rc/carro_rc.ino`:
 - `WIFI_SSID_REAL`, `WIFI_CLAVE_REAL` y `API_BASE_REAL` con la IP del PC donde corre la API.
 - Para que el ESP32 llegue a la API, en `servidor/.env` configura `HOST=0.0.0.0` y `API_KEY` con 24 o más
   caracteres, y copia esa misma clave en `API_KEY` del firmware.
-- `PULSOS_POR_VUELTA = 2` si se instalan dos imanes.
+- `PULSOS_POR_VUELTA = 1` (un imán en la rueda trasera). Si cambia el número de imanes, cámbialo también en
+  `compartido/parametros-firmware.js`: `npm test` compara ambos valores.
 - `LECTURAS_GOLPE = 2` y `UMBRAL_GOLPE_MS2 = 16` son valores iniciales. Si la alarma salta con baches, sube el umbral o las lecturas; si no detecta choques suaves, baja el umbral.
 
 ## Ver el carro moverse en la web
@@ -125,7 +127,7 @@ En `firmware/carro_rc/carro_rc.ino`:
 2. Copia del monitor serie el identificador de la línea `SESION id=RC-…`.
 3. En la web, Monitor → En vivo, escribe ese identificador y pulsa «Conectar sesión».
 
-En vivo, el carro gira sobre su centro y permanece en el mismo lugar. `rueda_pulsos` registra también la primera pasada aislada: dos pulsos equivalen a una vuelta. `rueda_rps` es una estimación de velocidad; necesita dos flancos y vuelve a cero tras 750 ms sin pulsos. Con firmware anterior, la web estima las vueltas integrando esa velocidad entre muestras. Ver la [prueba física](PRUEBA-MONITOR.md).
+En vivo, el carro se apoya en la carretera y no avanza: muestra la postura y el giro de la rueda. `rueda_pulsos` registra también la primera pasada aislada: con un imán, cada pulso es una vuelta. `rueda_rps` es una estimación de velocidad; necesita dos flancos y vuelve a cero tras 750 ms sin pulsos. Con firmware anterior, la web estima las vueltas integrando esa velocidad entre muestras. Ver la [prueba física](PRUEBA-MONITOR.md).
 
 
 Ejecución en Wokwi y prueba de extremo a extremo con la web: ver docs/WOKWI-API.md.

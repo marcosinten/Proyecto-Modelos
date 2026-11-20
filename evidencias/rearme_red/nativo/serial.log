@@ -1,16 +1,18 @@
-INICIO carro_rc Grupo 11 origen=simulado ppr=2 umbral_golpe=16.0 m/s2 inclinacion=60 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
+INICIO carro_rc Grupo 11 origen=simulado ppr=1 umbral_golpe=16.0 m/s2 inclinacion=20 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
 MPU WHO_AM_I=0x68 SMPLRT_DIV=3 CONFIG=0x02 ACCEL_CONFIG=0x18 (esperado 3, 0x02, 0x18) OK
 CAL mantén el carro quieto y horizontal 2 s
+RED escaneo: 1 redes
+RED WiFi: [Wokwi-GUEST] | canal 6 | senal -50 dBm
 CAL OK muestras=500 media=(0.2955, -0.1960, 10.1978) m/s2 desv_norma=0.0406 offsets=(0.2955, -0.1960, 0.3912)
 SESION id=RC-ABCDEF-77AE0BF3 origen=simulado t0_us_arranque=2200222
-JSON sesion {"version":1,"sesion":{"id":"RC-ABCDEF-77AE0BF3","origen":"simulado"}}
 TEL n=1 t=15 ax=-0.056 ay=-0.067 az=9.846 roll=-0.39 pitch=-0.33 rps=0.00 k=3
-RED conectando a Wokwi-GUEST t_ms=20
 TEL n=2 t=27 ax=0.030 ay=0.014 az=9.856 roll=0.08 pitch=0.17 rps=0.00 k=1
 TEL n=3 t=43 ax=0.040 ay=0.009 az=9.894 roll=0.05 pitch=0.23 rps=0.00 k=0
 TEL n=4 t=67 ax=0.001 ay=-0.000 az=9.885 roll=-0.00 pitch=0.01 rps=0.00 k=1
 TEL n=5 t=87 ax=-0.027 ay=-0.005 az=9.832 roll=-0.03 pitch=-0.16 rps=0.00 k=1
+JSON sesion {"version":1,"sesion":{"id":"RC-ABCDEF-77AE0BF3","origen":"simulado"}}
 TEL n=6 t=119 ax=0.001 ay=0.033 az=9.832 roll=0.19 pitch=0.01 rps=0.00 k=4
+RED conectando a Wokwi-GUEST t_ms=20
 TEL n=7 t=131 ax=-0.042 ay=0.019 az=9.823 roll=0.11 pitch=-0.24 rps=0.00 k=2
 TEL n=8 t=151 ax=-0.013 ay=0.033 az=9.866 roll=0.19 pitch=-0.08 rps=0.00 k=2
 TEL n=9 t=179 ax=0.035 ay=-0.005 az=9.846 roll=-0.03 pitch=0.20 rps=0.00 k=4
@@ -210,68 +212,68 @@ TEL n=198 t=3959 ax=0.016 ay=-0.024 az=9.851 roll=-0.14 pitch=0.09 rps=0.00 k=4
 TEL n=199 t=3975 ax=-0.037 ay=-0.077 az=9.837 roll=-0.45 pitch=-0.22 rps=0.00 k=3
 TEL n=200 t=3987 ax=0.040 ay=-0.067 az=9.875 roll=-0.39 pitch=0.23 rps=0.00 k=1
 EST t=3999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=200 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO
-TEL n=201 t=4003 ax=-0.070 ay=9.854 az=0.021 roll=89.88 pitch=-0.41 rps=0.00 k=0
-TEL n=202 t=4039 ax=0.016 ay=9.835 az=-0.003 roll=90.02 pitch=0.09 rps=0.00 k=4
-TEL n=203 t=4047 ax=-0.070 ay=9.859 az=-0.042 roll=90.24 pitch=-0.41 rps=0.00 k=1
-TEL n=204 t=4067 ax=0.001 ay=9.816 az=-0.037 roll=90.21 pitch=0.01 rps=0.00 k=1
-TEL n=205 t=4087 ax=-0.008 ay=9.878 az=-0.013 roll=90.07 pitch=-0.05 rps=0.00 k=1
-TEL n=206 t=4111 ax=-0.051 ay=9.859 az=0.078 roll=89.55 pitch=-0.30 rps=0.00 k=2
-TEL n=207 t=4139 ax=0.035 ay=9.835 az=0.016 roll=89.91 pitch=0.20 rps=0.00 k=4
-DETECCION id=RC-ABCDEF-77AE0BF3-EV001 tipo_inicial=vuelco motivo=permanencia t_ms=4155 inicio_condicion=4003 norma=9.79 roll=90.30 pitch=0.09
+TEL n=201 t=4003 ax=-0.070 ay=9.816 az=-0.832 roll=94.84 pitch=-0.41 rps=0.00 k=0
+TEL n=202 t=4039 ax=0.016 ay=9.797 az=-0.856 roll=94.99 pitch=0.09 rps=0.00 k=4
+TEL n=203 t=4047 ax=-0.070 ay=9.821 az=-0.899 roll=95.23 pitch=-0.41 rps=0.00 k=1
+TEL n=204 t=4067 ax=0.001 ay=9.778 az=-0.894 roll=95.22 pitch=0.01 rps=0.00 k=1
+TEL n=205 t=4087 ax=-0.008 ay=9.840 az=-0.865 roll=95.03 pitch=-0.05 rps=0.00 k=1
+TEL n=206 t=4111 ax=-0.051 ay=9.821 az=-0.779 roll=94.54 pitch=-0.30 rps=0.00 k=2
+TEL n=207 t=4139 ax=0.035 ay=9.797 az=-0.841 roll=94.91 pitch=0.20 rps=0.00 k=4
+DETECCION id=RC-ABCDEF-77AE0BF3-EV001 tipo_inicial=vuelco motivo=permanencia t_ms=4155 inicio_condicion=4003 norma=9.79 roll=95.32 pitch=0.09
 ALERTA tipo=vuelco t_det_ms=4155 t_det_us_arranque=6356000 LED=+0.223 ms BUZZER=+0.224 ms SERVO(orden)=+0.227 ms
-TEL n=208 t=4147 ax=-0.018 ay=9.864 az=0.035 roll=89.80 pitch=-0.10 rps=0.00 k=1
-TEL n=209 t=4163 ax=-0.042 ay=9.902 az=0.011 roll=89.94 pitch=-0.24 rps=0.00 k=0
-TEL n=210 t=4199 ax=0.044 ay=9.859 az=0.025 roll=89.85 pitch=0.26 rps=0.00 k=4
-TEL n=211 t=4215 ax=-0.104 ay=9.825 az=-0.027 roll=90.16 pitch=-0.61 rps=0.00 k=3
-TEL n=212 t=4227 ax=0.006 ay=9.854 az=0.097 roll=89.43 pitch=0.04 rps=0.00 k=1
-TEL n=213 t=4247 ax=0.035 ay=9.811 az=0.035 roll=89.80 pitch=0.20 rps=0.00 k=1
-TEL n=214 t=4267 ax=-0.037 ay=9.888 az=0.069 roll=89.60 pitch=-0.21 rps=0.00 k=1
-TEL n=215 t=4295 ax=0.059 ay=9.849 az=0.006 roll=89.96 pitch=0.34 rps=0.00 k=3
-TEL n=216 t=4307 ax=-0.003 ay=9.840 az=0.016 roll=89.91 pitch=-0.02 rps=0.00 k=1
-TEL n=217 t=4331 ax=-0.032 ay=9.854 az=-0.022 roll=90.13 pitch=-0.19 rps=0.00 k=2
-TEL n=218 t=4347 ax=-0.023 ay=9.835 az=0.011 roll=89.94 pitch=-0.13 rps=0.00 k=1
-TEL n=219 t=4375 ax=-0.023 ay=9.821 az=-0.027 roll=90.16 pitch=-0.13 rps=0.00 k=3
-TEL n=220 t=4387 ax=-0.023 ay=9.849 az=0.021 roll=89.88 pitch=-0.13 rps=0.00 k=1
-TEL n=221 t=4419 ax=0.044 ay=9.840 az=-0.056 roll=90.33 pitch=0.26 rps=0.00 k=4
-TEL n=222 t=4423 ax=-0.037 ay=9.873 az=0.021 roll=89.88 pitch=-0.21 rps=0.00 k=0
-TEL n=223 t=4443 ax=0.035 ay=9.859 az=0.035 roll=89.80 pitch=0.20 rps=0.00 k=0
-TEL n=224 t=4463 ax=-0.013 ay=9.849 az=-0.070 roll=90.41 pitch=-0.08 rps=0.00 k=0
-TEL n=225 t=4499 ax=0.035 ay=9.821 az=0.088 roll=89.49 pitch=0.20 rps=0.00 k=4
-TEL n=226 t=4519 ax=-0.080 ay=9.830 az=0.001 roll=89.99 pitch=-0.47 rps=0.00 k=4
-RED POST /sesiones sesion intento=1 bytes=70 hash=731C9EBD resultado=-1 t_ms=4520
-TEL n=227 t=4527 ax=-0.042 ay=9.830 az=0.001 roll=89.99 pitch=-0.24 rps=0.00 k=1
-RED wifi apagado por orden t_ms=4540; alertas y registro siguen locales
-TEL n=228 t=4555 ax=-0.066 ay=9.845 az=0.021 roll=89.88 pitch=-0.38 rps=0.00 k=3
-TEL n=229 t=4579 ax=0.011 ay=9.854 az=-0.018 roll=90.10 pitch=0.06 rps=0.00 k=4
-TEL n=230 t=4599 ax=-0.032 ay=9.854 az=0.040 roll=89.77 pitch=-0.19 rps=0.00 k=4
-TEL n=231 t=4607 ax=-0.008 ay=9.897 az=-0.013 roll=90.07 pitch=-0.05 rps=0.00 k=1
-TEL n=232 t=4635 ax=0.030 ay=9.869 az=0.021 roll=89.88 pitch=0.17 rps=0.00 k=3
-TEL n=233 t=4647 ax=0.040 ay=9.883 az=0.073 roll=89.57 pitch=0.23 rps=0.00 k=1
-TEL n=234 t=4679 ax=0.059 ay=9.849 az=-0.008 roll=90.05 pitch=0.34 rps=0.00 k=4
-TEL n=235 t=4691 ax=-0.042 ay=9.845 az=0.001 roll=89.99 pitch=-0.24 rps=0.00 k=2
-TEL n=236 t=4711 ax=-0.066 ay=9.782 az=0.011 roll=89.94 pitch=-0.38 rps=0.00 k=2
-TEL n=237 t=4735 ax=0.030 ay=9.873 az=-0.123 roll=90.71 pitch=0.17 rps=0.00 k=3
-TEL n=238 t=4751 ax=0.025 ay=9.864 az=-0.032 roll=90.19 pitch=0.15 rps=0.00 k=2
-TEL n=239 t=4767 ax=0.016 ay=9.869 az=-0.042 roll=90.24 pitch=0.09 rps=0.00 k=1
-TEL n=240 t=4791 ax=-0.037 ay=9.854 az=0.064 roll=89.63 pitch=-0.21 rps=0.00 k=2
-TEL n=241 t=4811 ax=-0.042 ay=9.854 az=0.011 roll=89.94 pitch=-0.24 rps=0.00 k=2
-TEL n=242 t=4831 ax=0.059 ay=9.873 az=-0.032 roll=90.19 pitch=0.34 rps=0.00 k=2
-TEL n=243 t=4843 ax=0.035 ay=9.840 az=-0.008 roll=90.05 pitch=0.20 rps=0.00 k=0
-TEL n=244 t=4875 ax=-0.018 ay=9.864 az=0.045 roll=89.74 pitch=-0.10 rps=0.00 k=3
-TEL n=245 t=4899 ax=0.040 ay=9.878 az=-0.037 roll=90.21 pitch=0.23 rps=0.00 k=4
-TEL n=246 t=4907 ax=-0.042 ay=9.845 az=-0.008 roll=90.05 pitch=-0.24 rps=0.00 k=1
-TEL n=247 t=4935 ax=0.054 ay=9.873 az=-0.051 roll=90.30 pitch=0.31 rps=0.00 k=3
-TEL n=248 t=4947 ax=-0.061 ay=9.869 az=-0.061 roll=90.35 pitch=-0.35 rps=0.00 k=1
-TEL n=249 t=4967 ax=-0.032 ay=9.873 az=0.001 roll=89.99 pitch=-0.19 rps=0.00 k=1
-TEL n=250 t=4995 ax=0.001 ay=9.825 az=0.107 roll=89.38 pitch=0.01 rps=0.00 k=3
+TEL n=208 t=4143 ax=0.049 ay=9.825 az=-0.908 roll=95.28 pitch=0.29 rps=0.00 k=0
+TEL n=209 t=4163 ax=-0.042 ay=9.864 az=-0.846 roll=94.90 pitch=-0.24 rps=0.00 k=0
+TEL n=210 t=4199 ax=0.044 ay=9.825 az=-0.832 roll=94.84 pitch=0.26 rps=0.00 k=4
+TEL n=211 t=4215 ax=-0.104 ay=9.787 az=-0.884 roll=95.16 pitch=-0.61 rps=0.00 k=3
+TEL n=212 t=4239 ax=0.035 ay=9.816 az=-0.904 roll=95.26 pitch=0.20 rps=0.00 k=4
+TEL n=213 t=4247 ax=0.035 ay=9.773 az=-0.822 roll=94.81 pitch=0.20 rps=0.00 k=1
+TEL n=214 t=4267 ax=-0.037 ay=9.849 az=-0.789 roll=94.58 pitch=-0.21 rps=0.00 k=1
+TEL n=215 t=4295 ax=0.059 ay=9.811 az=-0.846 roll=94.93 pitch=0.34 rps=0.00 k=3
+TEL n=216 t=4307 ax=-0.003 ay=9.801 az=-0.841 roll=94.91 pitch=-0.02 rps=0.00 k=1
+TEL n=217 t=4331 ax=-0.032 ay=9.816 az=-0.875 roll=95.09 pitch=-0.19 rps=0.00 k=2
+TEL n=218 t=4347 ax=-0.023 ay=9.797 az=-0.846 roll=94.94 pitch=-0.13 rps=0.00 k=1
+TEL n=219 t=4375 ax=-0.023 ay=9.787 az=-0.880 roll=95.14 pitch=-0.13 rps=0.00 k=3
+TEL n=220 t=4387 ax=-0.023 ay=9.811 az=-0.836 roll=94.87 pitch=-0.13 rps=0.00 k=1
+TEL n=221 t=4419 ax=0.044 ay=9.806 az=-0.913 roll=95.32 pitch=0.26 rps=0.00 k=4
+TEL n=222 t=4423 ax=-0.037 ay=9.835 az=-0.836 roll=94.86 pitch=-0.21 rps=0.00 k=0
+TEL n=223 t=4443 ax=0.035 ay=9.825 az=-0.817 roll=94.76 pitch=0.20 rps=0.00 k=0
+TEL n=224 t=4463 ax=-0.013 ay=9.816 az=-0.923 roll=95.37 pitch=-0.08 rps=0.00 k=0
+TEL n=225 t=4499 ax=0.035 ay=9.787 az=-0.769 roll=94.50 pitch=0.20 rps=0.00 k=4
+TEL n=226 t=4519 ax=-0.080 ay=9.792 az=-0.856 roll=94.99 pitch=-0.47 rps=0.00 k=4
+TEL n=227 t=4527 ax=-0.042 ay=9.792 az=-0.851 roll=94.97 pitch=-0.24 rps=0.00 k=1
+TEL n=228 t=4555 ax=-0.066 ay=9.806 az=-0.836 roll=94.88 pitch=-0.38 rps=0.00 k=3
+TEL n=229 t=4579 ax=0.011 ay=9.816 az=-0.870 roll=95.07 pitch=0.06 rps=0.00 k=4
+TEL n=230 t=4599 ax=-0.032 ay=9.816 az=-0.817 roll=94.76 pitch=-0.19 rps=0.00 k=4
+TEL n=231 t=4607 ax=-0.008 ay=9.859 az=-0.870 roll=95.04 pitch=-0.05 rps=0.00 k=1
+RED POST /sesiones sesion intento=1 bytes=70 hash=731C9EBD resultado=-1 t_ms=4620
+TEL n=232 t=4635 ax=0.030 ay=9.830 az=-0.832 roll=94.84 pitch=0.17 rps=0.00 k=3
+RED wifi apagado por orden t_ms=4640; alertas y registro siguen locales
+TEL n=233 t=4647 ax=0.040 ay=9.845 az=-0.779 roll=94.52 pitch=0.23 rps=0.00 k=1
+TEL n=234 t=4679 ax=0.059 ay=9.816 az=-0.865 roll=95.04 pitch=0.34 rps=0.00 k=4
+TEL n=235 t=4691 ax=-0.042 ay=9.811 az=-0.856 roll=94.98 pitch=-0.24 rps=0.00 k=2
+TEL n=236 t=4711 ax=-0.066 ay=9.749 az=-0.846 roll=94.96 pitch=-0.38 rps=0.00 k=2
+TEL n=237 t=4735 ax=0.030 ay=9.835 az=-0.980 roll=95.69 pitch=0.17 rps=0.00 k=3
+TEL n=238 t=4751 ax=0.025 ay=9.825 az=-0.889 roll=95.17 pitch=0.15 rps=0.00 k=2
+TEL n=239 t=4767 ax=0.016 ay=9.830 az=-0.894 roll=95.20 pitch=0.09 rps=0.00 k=1
+TEL n=240 t=4791 ax=-0.037 ay=9.816 az=-0.789 roll=94.59 pitch=-0.22 rps=0.00 k=2
+TEL n=241 t=4811 ax=-0.042 ay=9.816 az=-0.846 roll=94.93 pitch=-0.24 rps=0.00 k=2
+TEL n=242 t=4831 ax=0.059 ay=9.835 az=-0.884 roll=95.14 pitch=0.34 rps=0.00 k=2
+TEL n=243 t=4843 ax=0.035 ay=9.801 az=-0.865 roll=95.04 pitch=0.20 rps=0.00 k=0
+TEL n=244 t=4875 ax=-0.018 ay=9.825 az=-0.813 roll=94.73 pitch=-0.10 rps=0.00 k=3
+TEL n=245 t=4899 ax=0.040 ay=9.840 az=-0.894 roll=95.19 pitch=0.23 rps=0.00 k=4
+TEL n=246 t=4907 ax=-0.042 ay=9.806 az=-0.860 roll=95.01 pitch=-0.24 rps=0.00 k=1
+TEL n=247 t=4935 ax=0.054 ay=9.835 az=-0.908 roll=95.28 pitch=0.31 rps=0.00 k=3
+TEL n=248 t=4947 ax=-0.061 ay=9.835 az=-0.918 roll=95.33 pitch=-0.35 rps=0.00 k=1
+TEL n=249 t=4967 ax=-0.032 ay=9.835 az=-0.856 roll=94.97 pitch=-0.19 rps=0.00 k=1
+TEL n=250 t=4995 ax=0.001 ay=9.792 az=-0.750 roll=94.38 pitch=0.01 rps=0.00 k=3
 EST t=4999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=227 err_i2c=0 anillo=250 perdidas=0 log_perdidas=0 wifi=0 estado=EPISODIO
 TEL n=251 t=5007 ax=0.006 ay=0.004 az=9.880 roll=0.03 pitch=0.04 rps=0.00 k=1
-RED sin conexion t_ms=5020 pendiente=sesion hash=731C9EBD anillo=251; datos y alertas locales activos
 TEL n=252 t=5027 ax=0.068 ay=0.014 az=9.899 roll=0.08 pitch=0.40 rps=0.00 k=1
 TEL n=253 t=5059 ax=-0.003 ay=-0.039 az=9.842 roll=-0.23 pitch=-0.02 rps=0.00 k=4
 TEL n=254 t=5075 ax=0.001 ay=-0.015 az=9.909 roll=-0.09 pitch=0.01 rps=0.00 k=3
 TEL n=255 t=5087 ax=-0.023 ay=0.076 az=9.818 roll=0.44 pitch=-0.13 rps=0.00 k=1
 TEL n=256 t=5119 ax=-0.013 ay=-0.043 az=9.832 roll=-0.25 pitch=-0.08 rps=0.00 k=4
+RED sin conexion t_ms=5120 pendiente=sesion hash=731C9EBD anillo=256; datos y alertas locales activos
 TEL n=257 t=5123 ax=0.021 ay=-0.020 az=9.861 roll=-0.11 pitch=0.12 rps=0.00 k=0
 TEL n=258 t=5147 ax=0.030 ay=0.014 az=9.890 roll=0.08 pitch=0.17 rps=0.00 k=1
 TEL n=259 t=5163 ax=0.030 ay=0.028 az=9.846 roll=0.17 pitch=0.18 rps=0.00 k=0
@@ -318,7 +320,7 @@ TEL n=298 t=5951 ax=-0.047 ay=-0.010 az=9.861 roll=-0.06 pitch=-0.27 rps=0.00 k=
 TEL n=299 t=5967 ax=0.025 ay=-0.039 az=9.837 roll=-0.23 pitch=0.15 rps=0.00 k=1
 DETECTOR listo t_ms=5999
 TEL n=300 t=5983 ax=0.107 ay=0.009 az=9.894 roll=0.05 pitch=0.62 rps=0.00 k=0
-EST t=5999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=223 err_i2c=0 anillo=300 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
+EST t=5999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=300 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
 TEL n=301 t=6011 ax=-0.032 ay=-0.020 az=9.870 roll=-0.11 pitch=-0.19 rps=0.00 k=2
 REARME t_ms=6035 alarma=apagada detector=REPOSO eventos=1
 TEL n=302 t=6035 ax=-0.013 ay=0.052 az=9.894 roll=0.30 pitch=-0.08 rps=0.00 k=3
@@ -476,12 +478,12 @@ TEL n=450 t=8991 ax=-0.032 ay=-0.015 az=9.861 roll=-0.09 pitch=-0.19 rps=0.00 k=
 EST t=8999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=450 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
 ORDEN wifi on t_ms=9010
 TEL n=451 t=9007 ax=0.011 ay=-0.000 az=9.851 roll=-0.00 pitch=0.06 rps=0.00 k=1
-RED conectando a Wokwi-GUEST t_ms=9020
 TEL n=452 t=9035 ax=-0.056 ay=0.009 az=9.856 roll=0.05 pitch=-0.33 rps=0.00 k=3
 TEL n=453 t=9059 ax=0.049 ay=-0.020 az=9.866 roll=-0.11 pitch=0.29 rps=0.00 k=4
 TEL n=454 t=9079 ax=0.001 ay=0.071 az=9.842 roll=0.42 pitch=0.01 rps=0.00 k=4
 TEL n=455 t=9095 ax=-0.003 ay=-0.048 az=9.890 roll=-0.28 pitch=-0.02 rps=0.00 k=3
 TEL n=456 t=9115 ax=-0.023 ay=-0.063 az=9.846 roll=-0.36 pitch=-0.13 rps=0.00 k=3
+RED conectando a Wokwi-GUEST t_ms=9020
 TEL n=457 t=9131 ax=-0.008 ay=-0.058 az=9.837 roll=-0.34 pitch=-0.05 rps=0.00 k=2
 TEL n=458 t=9159 ax=-0.070 ay=-0.053 az=9.823 roll=-0.31 pitch=-0.41 rps=0.00 k=4
 TEL n=459 t=9171 ax=0.006 ay=0.043 az=9.832 roll=0.25 pitch=0.04 rps=0.00 k=2
@@ -528,12 +530,12 @@ TEL n=499 t=9975 ax=0.001 ay=0.009 az=9.861 roll=0.05 pitch=0.01 rps=0.00 k=3
 TEL n=500 t=9983 ax=-0.003 ay=0.038 az=9.842 roll=0.22 pitch=-0.02 rps=0.00 k=0
 EST t=9999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=500 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO
 TEL n=501 t=10003 ax=0.064 ay=0.004 az=9.880 roll=0.03 pitch=0.37 rps=0.00 k=0
-RED sin conexion t_ms=10020 pendiente=sesion hash=731C9EBD anillo=501; datos y alertas locales activos
 TEL n=502 t=10039 ax=-0.008 ay=-0.029 az=9.842 roll=-0.17 pitch=-0.05 rps=0.00 k=4
 TEL n=503 t=10059 ax=0.025 ay=0.019 az=9.842 roll=0.11 pitch=0.15 rps=0.00 k=4
 TEL n=504 t=10079 ax=-0.008 ay=-0.010 az=9.818 roll=-0.06 pitch=-0.05 rps=0.00 k=4
 TEL n=505 t=10099 ax=0.040 ay=0.091 az=9.832 roll=0.53 pitch=0.23 rps=0.00 k=4
 TEL n=506 t=10103 ax=0.030 ay=-0.024 az=9.899 roll=-0.14 pitch=0.17 rps=0.00 k=0
+RED sin conexion t_ms=10120 pendiente=sesion hash=731C9EBD anillo=506; datos y alertas locales activos
 TEL n=507 t=10123 ax=0.021 ay=-0.000 az=9.890 roll=-0.00 pitch=0.12 rps=0.00 k=0
 TEL n=508 t=10143 ax=0.030 ay=0.009 az=9.818 roll=0.05 pitch=0.18 rps=0.00 k=0
 TEL n=509 t=10179 ax=0.016 ay=-0.024 az=9.875 roll=-0.14 pitch=0.09 rps=0.00 k=4
@@ -707,12 +709,12 @@ TEL n=673 t=13459 ax=0.035 ay=-0.005 az=9.861 roll=-0.03 pitch=0.20 rps=0.00 k=4
 TEL n=674 t=13463 ax=-0.037 ay=-0.029 az=9.856 roll=-0.17 pitch=-0.21 rps=0.00 k=0
 TEL n=675 t=13483 ax=0.111 ay=0.038 az=9.875 roll=0.22 pitch=0.65 rps=0.00 k=0
 TEL n=676 t=13507 ax=-0.018 ay=0.038 az=9.842 roll=0.22 pitch=-0.10 rps=0.00 k=1
-RED POST /sesiones sesion intento=2 bytes=70 hash=731C9EBD resultado=-1 t_ms=13520
 TEL n=677 t=13523 ax=0.030 ay=0.024 az=9.842 roll=0.14 pitch=0.18 rps=0.00 k=0
 TEL n=678 t=13555 ax=-0.056 ay=0.009 az=9.842 roll=0.05 pitch=-0.33 rps=0.00 k=3
 TEL n=679 t=13571 ax=0.011 ay=-0.024 az=9.861 roll=-0.14 pitch=0.06 rps=0.00 k=2
 TEL n=680 t=13599 ax=-0.037 ay=-0.043 az=9.851 roll=-0.25 pitch=-0.21 rps=0.00 k=4
 TEL n=681 t=13615 ax=-0.008 ay=-0.048 az=9.894 roll=-0.28 pitch=-0.05 rps=0.00 k=3
+RED POST /sesiones sesion intento=2 bytes=70 hash=731C9EBD resultado=-1 t_ms=13620
 TEL n=682 t=13639 ax=-0.008 ay=0.048 az=9.823 roll=0.28 pitch=-0.05 rps=0.00 k=4
 TEL n=683 t=13659 ax=0.040 ay=0.014 az=9.851 roll=0.08 pitch=0.23 rps=0.00 k=4
 TEL n=684 t=13667 ax=-0.027 ay=0.009 az=9.842 roll=0.05 pitch=-0.16 rps=0.00 k=1

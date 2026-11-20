@@ -8,6 +8,7 @@ import {setTimeout as pause} from 'node:timers/promises';
 import {createServer} from 'vite';
 import puppeteer from 'puppeteer-core';
 import ExcelJS from 'exceljs';
+import {PULSOS_POR_VUELTA} from '../compartido/parametros-firmware.js';
 import {crearRepositorio} from '../servidor/src/adaptadores/sqlite/repositorio.js';
 import {crearApp} from '../servidor/src/adaptadores/http/app.js';
 
@@ -162,7 +163,8 @@ try {
  const pulse=[sample(),sample(),sample()];pulse.forEach((s,i)=>s.rueda_pulsos=i?1:0);
  await batch(pulse);
  await waitText('#mode-help','Recibiendo');
- await tab.waitForFunction(angle=>Math.abs(framesRC.at(-1).angle-angle)<1e-7,{},stopped.angle-Math.PI);
+ // Un pulso del contador = 1/PULSOS_POR_VUELTA de vuelta, aunque la velocidad estimada sea cero.
+ await tab.waitForFunction(angle=>Math.abs(framesRC.at(-1).angle-angle)<1e-7,{},stopped.angle-2*Math.PI/PULSOS_POR_VUELTA);
  const exportCount=n;
  const cdp=await tab.createCDPSession();
  await cdp.send('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:dir,eventsEnabled:true});

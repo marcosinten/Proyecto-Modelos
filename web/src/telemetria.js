@@ -1,3 +1,5 @@
+import {PULSOS_POR_VUELTA} from '../../compartido/parametros-firmware.js';
+
 export const VENTANA = 300; // 6 s a 50 Hz
 export const PAUSA_MS = 3000; // seis lotes de 500 ms sin datos nuevos
 // Una sesión se puede conectar en vivo si recibió datos hace como máximo 10 s
@@ -35,7 +37,7 @@ export function sesionMasReciente(sesiones, ahora, actualId, recepcionActual, de
 export function vueltasEntre(a,b) {
   if (!a || !b) return 0;
   if (a.rueda_pulsos != null && b.rueda_pulsos != null)
-    return Math.max(0,b.rueda_pulsos-a.rueda_pulsos)/2;
+    return Math.max(0,b.rueda_pulsos-a.rueda_pulsos)/PULSOS_POR_VUELTA;
   const dt = (b.t_ms-a.t_ms)/1000;
   return dt>0 && dt<=.5 && a.rueda_rps!=null && b.rueda_rps!=null
     ? (a.rueda_rps+b.rueda_rps)*dt/2 : 0;

@@ -22,8 +22,8 @@
   },
   {
     "prueba": "Marcha · rueda_rps",
-    "criterio": "4 pulsos/s, 2 por vuelta: estable entre 1,8 y 2,2 vueltas/s",
-    "observado": "20 flancos contados; 188 lecturas desde +1 s hasta el último pulso: min 2.000, max 2.000 vueltas/s",
+    "criterio": "4 pulsos/s, 1 por vuelta: estable entre 3.60 y 4.40 vueltas/s",
+    "observado": "20 flancos contados; 188 lecturas desde +1 s hasta el último pulso: min 4.000, max 4.000 vueltas/s",
     "estado": "OK",
     "evidencia": "evidencias/marcha/nativo/"
   },
@@ -35,9 +35,9 @@
     "evidencia": "evidencias/marcha/nativo/"
   },
   {
-    "prueba": "Frenada normal",
-    "criterio": "Desaceleración hasta -7 m/s² y menos pulsos: sin detección ni alerta",
-    "observado": "ax mínima -7.11 m/s², |a| máx 12.13 m/s² (< 16), |pitch| máx 36.0° (< 60); rueda_rps 4/s→2.00–2.00, 2/s→1.00–1.00, 1,5/s→0.75–0.86; detecciones 0",
+    "prueba": "Frenada · inclinación aparente",
+    "criterio": "A -7 m/s² el ángulo acelerométrico supera 20°: inclinación, sin golpe ni vuelco",
+    "observado": "ax mínima -7.11 m/s², |a| máx 12.13 m/s², |pitch| máx 36.0°; rueda_rps 4/s→4.00–4.00, 2/s→2.00–2.00, 1,5/s→1.50–1.50; detecciones 1",
     "estado": "OK",
     "evidencia": "evidencias/frenada/nativo/"
   },
@@ -57,8 +57,8 @@
   },
   {
     "prueba": "Golpe · buzzer activo",
-    "criterio": "nivel alto/bajo cada 200 ms durante la alarma (sin PWM de audio) y bajo al final",
-    "observado": "12 cambios de nivel; tramos intermedios 200–200 ms; nivel final 0",
+    "criterio": "120 ms en inclinación, 500 ms en golpe, continuo en vuelco, apagado al rearmar",
+    "observado": "6 cambios de nivel; tramos intermedios 500–500 ms; nivel final 0",
     "estado": "OK",
     "evidencia": "evidencias/golpe/nativo/"
   },
@@ -85,8 +85,8 @@
   },
   {
     "prueba": "Inclinacion · buzzer activo",
-    "criterio": "nivel alto/bajo cada 200 ms durante la alarma (sin PWM de audio) y bajo al final",
-    "observado": "18 cambios de nivel; tramos intermedios 200–200 ms; nivel final 0",
+    "criterio": "120 ms en inclinación, 500 ms en golpe, continuo en vuelco, apagado al rearmar",
+    "observado": "30 cambios de nivel; tramos intermedios 120–120 ms; nivel final 0",
     "estado": "OK",
     "evidencia": "evidencias/inclinacion/nativo/"
   },
@@ -113,8 +113,8 @@
   },
   {
     "prueba": "Vuelco costado · buzzer activo",
-    "criterio": "nivel alto/bajo cada 200 ms durante la alarma (sin PWM de audio) y bajo al final",
-    "observado": "28 cambios de nivel; tramos intermedios 200–200 ms; nivel final 0",
+    "criterio": "120 ms en inclinación, 500 ms en golpe, continuo en vuelco, apagado al rearmar",
+    "observado": "2 cambios de nivel; tramos intermedios 5380–5380 ms; nivel final 0",
     "estado": "OK",
     "evidencia": "evidencias/vuelco_costado/nativo/"
   },
@@ -141,8 +141,8 @@
   },
   {
     "prueba": "Vuelco boca abajo · buzzer activo",
-    "criterio": "nivel alto/bajo cada 200 ms durante la alarma (sin PWM de audio) y bajo al final",
-    "observado": "26 cambios de nivel; tramos intermedios 200–200 ms; nivel final 0",
+    "criterio": "120 ms en inclinación, 500 ms en golpe, continuo en vuelco, apagado al rearmar",
+    "observado": "2 cambios de nivel; tramos intermedios 4880–4880 ms; nivel final 0",
     "estado": "OK",
     "evidencia": "evidencias/vuelco_boca_abajo/nativo/"
   },
@@ -156,7 +156,7 @@
   {
     "prueba": "Inclinacion a vuelco · clasificación",
     "criterio": "un solo evento 'vuelco', gravedad alta",
-    "observado": "detecciones 1, eventos 1: vuelco/alta t_inicio=703 t_det=1855 t_act=1856 t_fin=6299 cierre=condicion_ausente; clasificación inicial inclinacion → final vuelco",
+    "observado": "detecciones 1, eventos 1: vuelco/alta t_inicio=295 t_det=1447 t_act=1448 t_fin=6299 cierre=condicion_ausente; clasificación inicial inclinacion → final vuelco",
     "estado": "OK",
     "evidencia": "evidencias/inclinacion_a_vuelco/nativo/"
   },
@@ -169,8 +169,8 @@
   },
   {
     "prueba": "Inclinacion a vuelco · buzzer activo",
-    "criterio": "nivel alto/bajo cada 200 ms durante la alarma (sin PWM de audio) y bajo al final",
-    "observado": "24 cambios de nivel; tramos intermedios 200–200 ms; nivel final 0",
+    "criterio": "120 ms en inclinación, 500 ms en golpe, continuo en vuelco, apagado al rearmar",
+    "observado": "8 cambios de nivel; tramos intermedios 92–120 ms; nivel final 0",
     "estado": "OK",
     "evidencia": "evidencias/inclinacion_a_vuelco/nativo/"
   },
@@ -204,8 +204,8 @@
   },
   {
     "prueba": "Golpe corto · buzzer activo",
-    "criterio": "nivel alto/bajo cada 200 ms durante la alarma (sin PWM de audio) y bajo al final",
-    "observado": "12 cambios de nivel; tramos intermedios 200–200 ms; nivel final 0",
+    "criterio": "120 ms en inclinación, 500 ms en golpe, continuo en vuelco, apagado al rearmar",
+    "observado": "6 cambios de nivel; tramos intermedios 500–500 ms; nivel final 0",
     "estado": "OK",
     "evidencia": "evidencias/golpe_corto/nativo/"
   },
@@ -219,7 +219,7 @@
   {
     "prueba": "Red · alertas sin Wi-Fi",
     "criterio": "con Wi-Fi apagado la detección y las alertas siguen locales",
-    "observado": "'wifi off' en línea 160, ALERTA en línea 220; 2 avisos 'RED sin conexion' (anillo conserva muestras: 501); eventos 1",
+    "observado": "'wifi off' en línea 162, ALERTA en línea 222; 2 avisos 'RED sin conexion' (anillo conserva muestras: 506); eventos 1",
     "estado": "OK",
     "evidencia": "evidencias/rearme_red/nativo/"
   },
@@ -233,28 +233,35 @@
   {
     "prueba": "API · envío",
     "criterio": "sesión, lotes y evento aceptados por la API local (201/200)",
-    "observado": "17 POST; códigos [200, 201]; evento guardado: GET /eventos/RC-ABCDEF-BADC701C-EV001 → tipo golpe, gravedad alta, ubicacion None, 90 mediciones en la ventana",
+    "observado": "17 POST; códigos [200, 201]; evento guardado: GET /eventos/RC-ABCDEF-A0B9C93E-EV001 → tipo golpe, gravedad alta, ubicacion None, 90 mediciones en la ventana",
+    "estado": "OK",
+    "evidencia": "evidencias/api/nativo/"
+  },
+  {
+    "prueba": "API · contador Hall",
+    "criterio": "primer pulso visible aun con rps=0; total igual a los flancos",
+    "observado": "12 flancos; contador final 12",
     "estado": "OK",
     "evidencia": "evidencias/api/nativo/"
   },
   {
     "prueba": "API · rueda_rps en el lote",
-    "criterio": "cada medición enviada lleva rueda_rps; 4 pulsos/s dan 2,0 ±10 % y luego 0",
-    "observado": "595 valores en 595 mediciones enviadas; máximo 2.0; último 0.0",
+    "criterio": "cada medición enviada lleva rueda_rps; 4 pulsos/s dan 4.0 ±10 % y luego 0",
+    "observado": "600 valores en 600 mediciones enviadas; máximo 4.0; último 0.0",
     "estado": "OK",
     "evidencia": "evidencias/api/nativo/"
   },
   {
     "prueba": "API · reintento",
     "criterio": "respuesta perdida → reintento con el mismo JSON, ids y tiempos; la API responde 200",
-    "observado": "/sesiones/RC-ABCDEF-BADC701C/mediciones hash 1B5A11C9: API 201→200 (cuerpos idénticos); /eventos hash CFC6A46A: API 201→200 (cuerpos idénticos)",
+    "observado": "/sesiones/RC-ABCDEF-A0B9C93E/mediciones hash 67560B4D: API 201→200 (cuerpos idénticos); /eventos hash 80111D14: API 201→200 (cuerpos idénticos)",
     "estado": "OK",
     "evidencia": "evidencias/api/nativo/"
   },
   {
     "prueba": "Frecuencias",
     "criterio": "lectura y decisión a 250 Hz; telemetría a 50 Hz (líneas EST de todos los casos)",
-    "observado": "f_adq 250.0–250.0 Hz, f_dec 250.0–250.0 Hz, f_tel 50.0–50.0 Hz, periodo 4000–4000 µs, ciclo máx 227 µs (coste modelado de I2C)",
+    "observado": "f_adq 250.0–250.0 Hz, f_dec 250.0–250.0 Hz, f_tel 49.8–50.0 Hz, periodo 4000–4000 µs, ciclo máx 227 µs (coste modelado de I2C)",
     "estado": "OK",
     "evidencia": "evidencias/*/nativo/serial.log (EST)"
   },

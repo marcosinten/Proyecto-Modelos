@@ -25,7 +25,7 @@ Si aparecen eventos nuevos mientras navegas el listado por offset, actualiza la 
 - `origen`: `real` o `simulado`. No mezclar los dos orígenes dentro de la misma sesión.
 - Una medición contiene `numero`, `t_ms`, `ax`, `ay`, `az`, `roll_deg`, `pitch_deg`. El `sesion_id` se toma de la ruta.
 - `rueda_rps` es opcional: vueltas de rueda por segundo, de 0 a 1000. Si no hay sensor Hall se omite el campo; omitirlo no significa rueda detenida.
-- `rueda_pulsos` es opcional: contador acumulado de flancos Hall desde el arranque (entero de 32 bits sin signo, dos pulsos/vuelta). Una sesión nueva empieza una cuenta independiente.
+- `rueda_pulsos` es opcional: contador acumulado de flancos Hall desde el arranque (entero de 32 bits sin signo; vueltas = rueda_pulsos / PULSOS_POR_VUELTA, hoy 1 imán = 1 pulso por vuelta, ver `compartido/parametros-firmware.js`). Una sesión nueva empieza una cuenta independiente.
 - `GET /api/v1/sesiones?limite=50&offset=0` lista todas las sesiones, con o sin evento, con sus conteos y `ultima_recepcion_ms`, las más recientes primero. Esta marca (Unix ms de la API) solo avanza al guardar muestras nuevas; es `null` para históricos sin fecha y sesiones vacías. Comparar con `ahora_ms` de la respuesta, nunca con `t_ms`. «Recibiendo» significa datos nuevos en los últimos tres segundos, no una garantía de conectividad permanente.
 - Signos: `roll_deg` positivo levanta el lado izquierdo; `pitch_deg` positivo levanta la trompa. Ver docs/CONEXION-ESP32.md.
 - `numero`: entero desde 1, único dentro de la sesión. `t_ms`: entero no negativo desde el comienzo de la sesión, no una fecha UTC.

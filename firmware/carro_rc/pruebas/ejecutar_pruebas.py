@@ -24,6 +24,8 @@ RAIZ = FW.parents[1]
 NATIVO = FW / "pruebas" / "nativo"
 ESC = FW / "escenarios"
 EVID = RAIZ / "evidencias"
+# Pulsos por vuelta del firmware: las expectativas de rueda_rps se derivan de este valor.
+PPR = int(re.search(r"PULSOS_POR_VUELTA\s*=?\s*(\d+)", (FW / "carro_rc.ino").read_text(encoding="utf-8")).group(1))
 
 # Sensor modelado con error de cero y ruido típicos del MPU6050 para que la
 # calibración se compruebe de verdad (Wokwi entrega valores exactos).
@@ -215,9 +217,10 @@ def evaluar(caso, d, vcd, ev, extra):
         est = [m["rps"] for m in tel if primero + 1000 <= m["t"] <= ultimo]
         cero = next((m for m in tel if m["t"] > ultimo and m["rps"] == 0), None)
         h0 = d["hall0"][-1] if d["hall0"] else None
-        res.append(r("Marcha · rueda_rps", "4 pulsos/s, 2 por vuelta: estable entre 1,8 y 2,2 vueltas/s",
+        esperado = 4 / PPR
+        res.append(r("Marcha · rueda_rps", f"4 pulsos/s, {PPR} por vuelta: estable entre {esperado*.9:.2f} y {esperado*1.1:.2f} vueltas/s",
                      f"{len(bajadas)} flancos contados; {len(est)} lecturas desde +1 s hasta el último pulso: "
-                     f"min {min(est):.3f}, max {max(est):.3f} vueltas/s", 1.8 <= min(est) and max(est) <= 2.2
+                     f"min {min(est):.3f}, max {max(est):.3f} vueltas/s", esperado*.9 <= min(est) and max(est) <= esperado*1.1
                      and len(bajadas) == 20, ev))
         dt = cero["t"] - ultimo if cero else None
         res.append(r("Marcha · vuelta a cero", "< 1 s desde el último pulso hasta la primera lectura de cero",
@@ -320,10 +323,10 @@ def evaluar(caso, d, vcd, ev, extra):
                      f"{flancos} flancos; contador final {cuenta[-1] if cuenta else '?'}",
                      cuenta and cuenta[0]==0 and cuenta==sorted(cuenta) and cuenta[-1]==flancos and
                      any(m.get("rueda_pulsos")==1 and m["rueda_rps"]==0 for m in muestras.values()), ev))
-        res.append(r("API · rueda_rps en el lote", "cada medición enviada lleva rueda_rps; 4 pulsos/s dan 2,0 ±10 % y luego 0",
+        res.append(r("API · rueda_rps en el lote", f"cada medición enviada lleva rueda_rps; 4 pulsos/s dan {4/PPR:.1f} ±10 % y luego 0",
                      f"{len(rps)} valores en {n_med} mediciones enviadas; máximo {max(rps) if rps else '?'}; "
                      f"último {rps[-1] if rps else '?'}",
-                     bool(rps) and len(rps) == n_med and 1.8 <= max(rps) <= 2.2 and rps[-1] == 0, ev))
+                     bool(rps) and len(rps) == n_med and 4/PPR*.9 <= max(rps) <= 4/PPR*1.1 and rps[-1] == 0, ev))
         res.append(r("API · reintento", "respuesta perdida → reintento con el mismo JSON, ids y tiempos; la API responde 200",
                      txt or "sin reintentos", bool(ok_rep), ev))
     # Frecuencias y mismo JSON en todos los casos
