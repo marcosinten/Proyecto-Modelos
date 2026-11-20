@@ -18,6 +18,7 @@ import {app, $, number, escape, label, seconds, request, get, toast, heading} fr
 import {eventTable, tablaMediciones, historialSesion, bindRows, renderHistory, loadEvents, refrescarRecientes} from './pantallas/historial.js';
 import {showExplanation} from './pantallas/explicar.js';
 import {openExport} from './pantallas/exportar.js';
+import {simulationForm, bindSimulation} from './pantallas/simulacion.js';
 
 const demo = generarEscenario('vuelco', 16, 90, 100);
 app.current=demo;app.page='monitor';app.running=false;app.position=0;app.speed=1;app.lastFrame=0;
@@ -152,7 +153,7 @@ function makeChart(id, keys, names, colors) {
   }
  });
 }
-function refreshData() {
+export function refreshData() {
  $('#timeline').min=start();$('#timeline').max=end();
  $('#range-start').textContent=start()+' ms';$('#range-end').textContent=end()+' ms';
  $('#sample-count').textContent=app.current.mediciones.length+' muestras';
@@ -242,12 +243,6 @@ function frame(time){
     app.viewer.update(app.current.mediciones.at(-1),undefined,0,app.liveTurns,true);
   }
  if(app.running){if(app.lastFrame)app.position=Math.min(end(),app.position+(time-app.lastFrame)*app.speed);app.lastFrame=time;if(app.position>=end())app.running=false;update();}requestAnimationFrame(frame);}
-function simulationForm(){return `<form id="simulation-form" class="card simulation-form"><label>Escenario<select name="type"><option value="vuelco">Vuelco</option><option value="normal">Marcha normal</option><option value="frenada">Frenada brusca</option><option value="impacto">Impacto</option><option value="inclinacion">Inclinación</option></select></label><label>Umbral de aceleración (m/s²)<input name="acceleration" type="number" min="10" max="100" step="0.1" value="16" required></label><label>Ángulo mínimo (°)<input name="angle" type="number" min="5" max="180" value="60" required></label><label>Permanencia (ms)<input name="duration" type="number" min="0" max="5000" step="10" value="150" required></label><label>Permanencia de impacto (ms)<input name="impact-duration" type="number" min="0" max="5000" step="4" value="8" required></label><label>Rango del sensor<select name="range"><option value="">Ideal · sin límite</option><option value="2">±2 g · valor de fábrica</option><option value="4">±4 g</option><option value="8">±8 g</option><option value="16">±16 g</option></select></label><label>Duración del golpe (ms)<input name="impact-length" type="number" min="1" max="1000" step="1" value="100" required></label><label>Ruido del sensor (m/s²)<input name="noise" type="number" min="0" max="5" step="0.05" value="0" required></label><button class="primary">▷ Ejecutar simulación</button><button type="reset" class="secondary">Restablecer</button><p class="helper">Señales sintéticas · Reglas experimentales sobre aceleración total e inclinación · Muestreo 20 ms · Impacto: permanencia independiente</p></form><div id="simulation-actions"><button class="secondary" id="save-run">Guardar corrida en API</button><span class="helper" id="simulation-status">Ejecuta un escenario para obtener un resultado.</span></div><details class="card compare"><summary>Comparar corridas de esta sesión</summary><div id="comparisons"></div></details>`;}
-function bindSimulation(){
- $('#simulation-form').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);app.current=generarEscenario(f.get('type'),Number(f.get('acceleration')),Number(f.get('angle')),Number(f.get('duration')),Number(f.get('impact-duration')),{rango_g:f.get('range')?Number(f.get('range')):null,duracion_impacto_ms:Number(f.get('impact-length')),ruido:Number(f.get('noise'))});app.previousRuns.push(app.current);app.position=0;app.running=false;refreshData();$('#simulation-status').textContent=app.current.evento?'Evento listo para guardar. La activación física está sin medir.':'Sin incidente. Puedes exportar las mediciones.';$('#save-run').disabled=false;$('#comparisons').innerHTML='<div class="table-scroll"><table><tr><th>Escenario</th><th>Umbral</th><th>Ángulo</th><th>Permanencia</th><th>Sensor</th><th>Golpe</th><th>Resultado</th></tr>'+app.previousRuns.map(p=>`<tr><td>${escape(p.parametros.escenario)}</td><td>${p.parametros.aceleracion} m/s²</td><td>${p.parametros.angulo}°</td><td>${p.parametros.permanencia} ms</td><td>${typeof p.parametros.rango_g==='number'?'±'+p.parametros.rango_g+' g':'Ideal'}</td><td>${p.parametros.duracion_impacto_ms} ms</td><td>${p.evento?escape(label[p.evento.tipo]):'Sin incidente'}</td></tr>`).join('')+'</table></div>';};
- $('#save-run').disabled=!app.current.parametros;
- $('#save-run').onclick=async()=>{const button=$('#save-run');button.disabled=true;const p=app.current;try{await request('/sesiones',{version:1,sesion:p.sesion});await request('/sesiones/'+p.sesion.id+'/mediciones',{version:1,mediciones:p.mediciones});if(p.evento)await request('/eventos',{version:1,evento:p.evento});toast('Corrida guardada: '+p.sesion.id);await loadEvents();}catch(e){toast(e.message);button.disabled=false;}};
-}
 async function connectLive(id){
  const generation=++app.liveGeneration, valid=()=>generation===app.liveGeneration;
  clearTimeout(app.liveTimer);app.running=false;app.liveActive=false;
