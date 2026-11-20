@@ -66,7 +66,11 @@ static const uint32_t REARME_ANTIRREBOTE_MS = 30;
 
 static const int MAX_MUESTRAS_LOTE = 50;
 static const uint32_t ESPERA_LOTE_MS = 500;
-static const int CAPACIDAD_ANILLO = 3000;
+// Muestras guardadas mientras no hay red: 1000 × 36 B ≈ 36 KB = 20 s a 50 Hz.
+// Con 3000 (≈108 KB) el montón del ESP32 quedaba sin un bloque libre suficiente para el Wi-Fi,
+// HTTPClient y el String del lote: los JSON salían cortados (HTTP 400) y luego no se podía
+// enviar (-11). Valor probado en la PC de Piero con la placa.
+static const int CAPACIDAD_ANILLO = 1000;
 
 struct Muestra {
   uint32_t numero;
