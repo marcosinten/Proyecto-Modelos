@@ -6,6 +6,7 @@ import './style.css';
 import Chart from 'chart.js/auto';
 import {crearVisor} from './car.js';
 import {generarEscenario} from './simulation.js';
+import {mostrarExplicacion} from './explanation-view.js';
 import {crearExcel} from '../../compartido/libro-excel.js';
 import ev1 from '../../ejemplos/vuelco.json';
 import ev2 from '../../ejemplos/vuelco-002.json';
@@ -23,6 +24,7 @@ let impactTime;
 let wheelTurnsBySample = [];
 // Live wheel motion: last rueda_rps received, when it arrived and the turns accumulated on screen.
 let liveRps = null, liveStamp = 0, liveTurns = 0, lastLiveFrame = 0;
+let cerrarExplicacion;
 const seconds = ms => (ms / 1000).toLocaleString('es-EC', {maximumFractionDigits:3});
 async function request(path,body) {
  const response=await fetch('/api/v1'+path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(6000)});
@@ -39,15 +41,17 @@ function dashboard() {
  return `<div class="metrics">${metric('Aceleración X','ax','m/s²','#1d4ed8')}${metric('Aceleración Y','ay','m/s²','#0f766e')}${metric('Aceleración Z','az','m/s²','#7e22ce')}${metric('Inclinación lateral','roll','Roll · grados')}${metric('Inclinación frontal','pitch','Pitch · grados')}</div><div class="visual-grid"><section class="card stage-card"><div class="card-title"><div><h2>Postura del carro</h2><p>Orientación según datos · recorrido y ruedas ilustrativos en simulación</p><p style="font-size:10px">Modelo: <a href="https://sketchfab.com/3d-models/oldsmobile-cutlass-supreme-sedan-71-78f76d386a4341b0b71745bdc50fd5ab" target="_blank" rel="noopener noreferrer">Barbo</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · Adaptado al visor</p></div><span class="badge purple" id="origin">Datos simulados</span></div><div class="stage"><div class="scene-label"><span class="status-dot"></span> VISTA 3D <small id="sample-time">1 500 ms</small></div><div id="car"></div><div class="camera-controls"><button data-camera="seguimiento" class="selected">Seguimiento</button><button data-camera="lateral">Lateral</button><button data-camera="frontal">Frontal</button><button data-camera="libre" title="Arrastra para girar y usa la rueda o pellizca para acercar">Libre 3D</button></div><span class="axis-guide">X → &nbsp; Y ↗ &nbsp; Z ↑</span></div><div class="player"><div class="player-top"><button id="play" class="primary small">▶ Reproducir</button><button id="reset" class="secondary small" title="Volver al inicio">↺ Reiniciar</button><label class="speed"><span>Ritmo de reproducción</span><select id="speed"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label><span class="mono" id="clock"></span></div><input id="timeline" type="range" aria-label="Tiempo de la sesión en milisegundos" step="1"><div class="timeline-labels"><span id="range-start"></span><span>Tiempo desde inicio de sesión</span><span id="range-end"></span></div></div></section><div class="chart-stack"><section class="card"><div class="card-title"><h2>Aceleración por eje</h2><span class="unit">m/s²</span></div><div class="chart-wrap"><canvas id="accel"></canvas></div></section><section class="card"><div class="card-title"><h2>Inclinación</h2><span class="unit">grados</span></div><div class="chart-wrap"><canvas id="angles"></canvas></div></section><section class="card"><div class="card-title"><h2>Intensidad de la señal</h2><span class="unit">m/s² · incluye gravedad</span></div><div class="chart-wrap"><canvas id="magnitude"></canvas></div></section><output id="graph-reading" class="card graph-reading" aria-label="Lectura seleccionada"></output></div></div><div class="result-strip" id="result"></div><p class="helper" id="protocol" role="status"></p><details class="card data-table"><summary>Ver tabla de mediciones <span id="sample-count"></span></summary><div class="table-scroll" id="samples"></div></details>`;
 }
 function render() {
- running=false; clearInterval(liveTimer); liveGeneration++; liveActive=false;
- viewer?.destroy(); charts.forEach(c=>c.destroy());charts=[];
- document.querySelectorAll('[data-nav]').forEach(a=>a.classList.toggle('active',a.dataset.nav===page));
- if(page==='historial'){renderHistory();return;}
+  running=false; clearInterval(liveTimer); liveGeneration++; liveActive=false;
+  viewer?.destroy(); viewer=undefined; charts.forEach(c=>c.destroy());charts=[];
+  cerrarExplicacion?.(); cerrarExplicacion=undefined;
+  document.querySelectorAll('[data-nav]').forEach(a=>a.classList.toggle('active',a.dataset.nav===(page==='explicar'?'historial':page)));
+  if(page==='historial'){renderHistory();return;}
+  if(page==='explicar'){showExplanation();return;}
  const detail=page==='detalle';
  const simulation=page==='simulacion';
  let title=detail?`${label[current.evento.tipo]||current.evento.tipo} · ${current.evento.id}`:simulation?'Simulación de incidentes':'Monitor de telemetría';
  const desc=detail?`Sesión ${current.sesion.id} · Reproducción de las mediciones registradas`:simulation?'Explora escenarios y observa cómo responden las reglas de detección.':'Una vista completa del movimiento, la orientación y los incidentes del carro.';
- $('#main').innerHTML=(detail?'<a class="back" href="#historial">← Volver al historial</a>':'')+heading(title,desc,`<button class="secondary" id="export">↓ Exportar Excel</button>`)+(simulation?simulationForm():detail?'':`<div class="mode-row"><div class="tabs"><button id="demo-mode" class="selected">Demostración</button><button id="live-mode">En vivo</button></div><span class="helper" id="mode-help">Escenario local · puedes explorarlo sin conectar el circuito</span></div><form id="live-form" hidden><label>Identificador de sesión <input name="session" placeholder="SES-001 o ID del ESP32" required pattern="[A-Za-z0-9_\\-]{1,64}"></label><button class="primary">Conectar sesión</button></form>`)+dashboard()+(!simulation&&!detail?`<section class="card recent"><div class="card-title"><div><h2>Eventos recientes</h2><p>El registro de tus últimas pruebas</p></div><a href="#historial">Ver historial →</a></div>${eventTable(events.slice(0,3))}</section>`:'');
+  $('#main').innerHTML=(detail?'<a class="back" href="#historial">← Volver al historial</a>':'')+heading(title,desc,`${detail?`<a class="secondary explain-detail-link" href="#explicar/${escape(current.evento.id)}">Explicar evento →</a>`:''}<button class="secondary" id="export">↓ Exportar Excel</button>`)+(simulation?simulationForm():detail?'':`<div class="mode-row"><div class="tabs"><button id="demo-mode" class="selected">Demostración</button><button id="live-mode">En vivo</button></div><span class="helper" id="mode-help">Escenario local · puedes explorarlo sin conectar el circuito</span></div><form id="live-form" hidden><label>Identificador de sesión <input name="session" placeholder="SES-001 o ID del ESP32" required pattern="[A-Za-z0-9_\\-]{1,64}"></label><button class="primary">Conectar sesión</button></form>`)+dashboard()+(!simulation&&!detail?`<section class="card recent"><div class="card-title"><div><h2>Eventos recientes</h2><p>El registro de tus últimas pruebas</p></div><a href="#historial">Ver historial →</a></div>${eventTable(events.slice(0,3))}</section>`:'');
  $('#export').onclick=openExport;
  viewer=crearVisor($('#car'));
  if(viewer.mode==='2d'){
@@ -222,8 +226,11 @@ function frame(time){
  if(liveActive&&liveRps>.01&&time-liveStamp<1500&&lastLiveFrame){liveTurns+=liveRps*Math.min(.1,(time-lastLiveFrame)/1000);update();}
  lastLiveFrame=time;
  if(running){if(lastFrame)position=Math.min(end(),position+(time-lastFrame)*speed);lastFrame=time;if(position>=end())running=false;update();}requestAnimationFrame(frame);}
-function eventTable(list){return `<div class="table-scroll"><table><thead><tr><th>Evento / sesión</th><th>Tipo</th><th>Gravedad</th><th>Origen</th><th>Respuesta</th><th></th></tr></thead><tbody>${list.map(p=>`<tr><td><strong>${escape(p.evento.id)}</strong><small>${escape(p.sesion.id)}</small></td><td>${escape(label[p.evento.tipo]||p.evento.tipo)}</td><td><span class="badge ${p.evento.gravedad==='alta'?'danger':'warning'}">${escape(label[p.evento.gravedad]||p.evento.gravedad)}</span></td><td><span class="badge ${p.sesion.origen==='real'?'neutral':'purple'}">${p.sesion.origen==='real'?'Real':'Simulado'}</span></td><td class="mono">${p.evento.t_activacion_ms===null?'—':p.evento.t_activacion_ms-p.evento.t_deteccion_ms+' ms'}</td><td><button class="text-button" data-event="${escape(p.evento.id)}">Ver detalle →</button></td></tr>`).join('')||'<tr><td colspan="6">No hay eventos con estos filtros.</td></tr>'}</tbody></table></div>`;}
-function bindRows(){document.querySelectorAll('[data-event]').forEach(b=>b.onclick=()=>{current=events.find(p=>p.evento.id===b.dataset.event);position=current.evento.t_deteccion_ms;location.hash='detalle';});}
+function eventTable(list){return `<div class="table-scroll"><table><thead><tr><th>Evento / sesión</th><th>Tipo</th><th>Gravedad</th><th>Origen</th><th>Respuesta</th><th>Acciones</th></tr></thead><tbody>${list.map(p=>`<tr><td><strong>${escape(p.evento.id)}</strong><small>${escape(p.sesion.id)}</small></td><td>${escape(label[p.evento.tipo]||p.evento.tipo)}</td><td><span class="badge ${p.evento.gravedad==='alta'?'danger':'warning'}">${escape(label[p.evento.gravedad]||p.evento.gravedad)}</span></td><td><span class="badge ${p.sesion.origen==='real'?'neutral':'purple'}">${p.sesion.origen==='real'?'Real':'Simulado'}</span></td><td class="mono">${p.evento.t_activacion_ms===null?'—':p.evento.t_activacion_ms-p.evento.t_deteccion_ms+' ms'}</td><td><div class="event-actions"><button class="text-button" data-event="${escape(p.evento.id)}">Ver detalle</button><button class="explain-action" data-explain="${escape(p.evento.id)}" aria-label="Explicar evento ${escape(p.evento.id)}">Explicar →</button></div></td></tr>`).join('')||'<tr><td colspan="6">No hay eventos con estos filtros.</td></tr>'}</tbody></table></div>`;}
+function bindRows(){
+ document.querySelectorAll('[data-event]').forEach(b=>b.onclick=()=>{current=events.find(p=>p.evento.id===b.dataset.event);position=current.evento.t_deteccion_ms;location.hash='detalle';});
+ document.querySelectorAll('[data-explain]').forEach(b=>b.onclick=()=>{location.hash='explicar/'+b.dataset.explain;});
+}
 function renderHistory(){
  $('#main').innerHTML=heading('Historial de eventos','Consulta, reproduce y exporta los registros de tus pruebas.',`<button id="reload" class="secondary">↻ Actualizar</button>`)+`<div class="filters card"><label>Buscar<input id="search" placeholder="Evento o sesión"></label><label>Tipo<select id="type"><option value="">Todos los tipos</option><option value="vuelco">Vuelco</option><option value="golpe">Impacto</option><option value="inclinacion">Inclinación</option></select></label><label>Gravedad<select id="severity"><option value="">Todas</option><option value="alta">Alta</option><option value="media">Media</option><option value="baja">Baja</option></select></label><label>Origen<select id="filter-origin"><option value="">Todos</option><option value="simulado">Simulado</option><option value="real">Real</option></select></label><button class="text-button" id="clear">Limpiar filtros</button></div><section class="card" id="history-list"></section><div class="pagination"><button class="secondary" id="prev">← Anterior</button><span id="page-count"></span><button class="secondary" id="next">Siguiente →</button></div><p class="helper">${apiAvailable?'Registros consultados en la API local.':'Ejemplos locales disponibles mientras la API está desconectada.'}</p>`;
  const filtered=()=>events.filter(p=>(p.evento.id+' '+p.sesion.id).toLowerCase().includes($('#search').value.toLowerCase())&&(!$('#type').value||p.evento.tipo===$('#type').value)&&(!$('#severity').value||p.evento.gravedad===$('#severity').value)&&(!$('#filter-origin').value||p.sesion.origen===$('#filter-origin').value));
@@ -250,6 +257,27 @@ async function connectLive(id){
  }catch(e){toast(e.message);}
 }
 async function loadEvents(){try{let list=[],offset=0;while(true){const r=await (await request('/eventos?limite=200&offset='+offset)).json();list.push(...r.eventos);if(!r.hay_mas)break;offset=r.siguiente_offset;}const loaded=[];for(const e of list){loaded.push(await (await request('/eventos/'+e.id)).json());}events=loaded;apiAvailable=true;}catch{apiAvailable=false;}$('#connection').textContent=apiAvailable?'● API conectada':'○ Modo local';$('#connection').className='badge '+(apiAvailable?'success':'neutral');}
+async function showExplanation(){
+ const id=location.hash.slice('#explicar/'.length);
+ const generation=liveGeneration;
+ $('#main').innerHTML='<a class="back" href="#historial">← Volver al historial</a><div class="card explain-empty" role="status">Cargando lecturas del evento…</div>';
+ if(!/^[A-Za-z0-9_-]{1,64}$/.test(id)){
+  $('#main').innerHTML='<a class="back" href="#historial">← Volver al historial</a><div class="card explain-empty" role="alert">El identificador del evento no es válido.</div>';return;
+ }
+ let paquete, aviso='';
+ try{paquete=await (await request('/eventos/'+id)).json();}
+ catch(e){
+  paquete=events.find(p=>p.evento.id===id);
+  if(!paquete){
+   if(generation===liveGeneration&&page==='explicar')
+    $('#main').innerHTML=`<a class="back" href="#historial">← Volver al historial</a><div class="card explain-empty" role="alert">No se pudo abrir el evento. ${escape(e.message)} <a href="#historial">Revisa el historial</a> y vuelve a intentarlo.</div>`;
+   return;
+  }
+  aviso='No se pudo actualizar el evento: se muestran las lecturas guardadas en esta página. Si llegaron más datos, vuelve a cargar el historial.';
+ }
+ if(generation!==liveGeneration||page!=='explicar'||location.hash!=='#explicar/'+id)return;
+ cerrarExplicacion=mostrarExplicacion($('#main'),paquete,aviso);
+}
 function openExport(){
  const p=structuredClone(current);
  $('#export-body').innerHTML=`<div class="export-icon">↓</div><h2>Exportar ${p.evento?'evento':'corrida'}</h2><p>Las mediciones del escenario seleccionado, listas para analizar.</p><div class="export-info"><strong>${escape(p.evento?.id||p.sesion.id)}.xlsx</strong><span>${p.mediciones.length} mediciones · ${p.sesion.origen==='real'?'Datos reales':'Datos simulados'}</span><small>Hojas Resumen, ${p.evento?'Evento, ':''}Datos, ${p.parametros?'Parámetros, ':''}Columnas y Metadatos</small></div><div id="export-error" role="alert"></div><div class="dialog-actions"><button id="cancel-export" class="secondary">Cancelar</button><button id="download" class="primary">↓ Descargar .xlsx</button></div>`;
@@ -260,5 +288,5 @@ function openExport(){
  const url=URL.createObjectURL(new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));const a=document.createElement('a');a.href=url;a.download=(p.evento?.id||p.sesion.id)+'.xlsx';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);$('#export-dialog').close();toast('Descarga iniciada');
  }catch(e){$('#export-error').textContent='No se pudo preparar el archivo. '+e.message;}finally{b.disabled=false;b.textContent='↓ Descargar .xlsx';}};
 }
-function route(){const hash=location.hash.slice(1);page=['simulacion','historial','detalle'].includes(hash)?hash:'monitor';if(page==='detalle'&&!current.evento){current=ev2;}if(page==='monitor'){current=demo;position=0;}if(page==='simulacion'){current=generarEscenario('vuelco');position=0;}render();}
+function route(){const hash=location.hash.slice(1);page=hash.startsWith('explicar/')?'explicar':['simulacion','historial','detalle'].includes(hash)?hash:'monitor';if(page==='detalle'&&!current.evento){current=ev2;}if(page==='monitor'){current=demo;position=0;}if(page==='simulacion'){current=generarEscenario('vuelco');position=0;}render();}
 layout();route();requestAnimationFrame(frame);window.addEventListener('hashchange',route);loadEvents().then(()=>{if(page==='monitor'||page==='historial')render();});
