@@ -50,6 +50,7 @@ function render() {
  const desc=detail?`Sesión ${current.sesion.id} · Reproducción de las mediciones registradas`:simulation?'Explora escenarios y observa cómo responden las reglas de detección.':'Una vista completa del movimiento, la orientación y los incidentes del carro.';
  $('#main').innerHTML=(detail?'<a class="back" href="#historial">← Volver al historial</a>':'')+heading(title,desc,`<button class="secondary" id="export">↓ Exportar Excel</button>`)+(simulation?simulationForm():detail?'':`<div class="mode-row"><div class="tabs"><button id="demo-mode" class="selected">Demostración</button><button id="live-mode">En vivo</button></div><span class="helper" id="mode-help">Escenario local · puedes explorarlo sin conectar el circuito</span></div><form id="live-form" hidden><label>Identificador de sesión <input name="session" placeholder="SES-001 o ID del ESP32" required pattern="[A-Za-z0-9_\\-]{1,64}"></label><button class="primary" id="connect-session">Conectar sesión</button><button type="button" class="secondary" id="find-session">Buscar sesiones</button></form>`)+dashboard()+(!simulation&&!detail?`<section class="card recent"><div class="card-title"><div><h2>Eventos recientes</h2><p>El registro de tus últimas pruebas</p></div><a href="#historial">Ver historial →</a></div>${eventTable(events.slice(0,3))}</section>`:'');
  $('#export').onclick=openExport;
+ if(detail)$('#origin').textContent=current.sesion.origen==='real'?'Mediciones reales · historial':'Datos simulados · historial';
  viewer=crearVisor($('#car'));
  if(viewer.mode==='2d'){
    document.querySelector('.scene-label').innerHTML='<span class="status-dot"></span> VISTA 2D <small id="sample-time"></small>';
@@ -224,7 +225,7 @@ function update(){
 
  $('#graph-reading').innerHTML = `<strong>Lectura a ${seconds(m.t_ms)} s</strong>
   <span>X ${number(m.ax)} · Y ${number(m.ay)} · Z ${number(m.az)} m/s²</span>
-   <span>Lateral ${number(m.roll_deg)}° · Frontal ${number(m.pitch_deg)}°</span><span>Rueda: ${liveActive&&stale?'último dato desactualizado':m.rueda_rps == null ? "sin dato" : m.rueda_rps > 0 ? "girando" : "detenida"}${m.rueda_pulsos!=null?' · '+m.rueda_pulsos+' pulsos':''}</span>`;
+   <span>Lateral ${number(m.roll_deg)}° · Frontal ${number(m.pitch_deg)}°</span><span>Rueda: ${liveActive&&stale?'último dato desactualizado':m.rueda_rps == null ? "sin dato" : m.rueda_rps > 0 ? "girando" : "detenida"}${m.rueda_rps!=null?' · '+m.rueda_rps.toLocaleString('es-EC',{maximumFractionDigits:3})+' vueltas/s (estimación Hall)':''}${m.rueda_pulsos!=null?' · '+m.rueda_pulsos+' pulsos':''}</span>`;
 
  charts.forEach(c=>c.draw());
 }
@@ -238,24 +239,36 @@ function frame(time){
 function eventTable(list){return `<div class="table-scroll"><table><thead><tr><th>Evento / sesión</th><th>Tipo</th><th>Gravedad</th><th>Origen</th><th>Respuesta</th><th></th></tr></thead><tbody>${list.map(p=>`<tr><td><strong>${escape(p.evento.id)}</strong><small>${escape(p.sesion.id)}</small></td><td>${escape(label[p.evento.tipo]||p.evento.tipo)}</td><td><span class="badge ${p.evento.gravedad==='alta'?'danger':'warning'}">${escape(label[p.evento.gravedad]||p.evento.gravedad)}</span></td><td><span class="badge ${p.sesion.origen==='real'?'neutral':'purple'}">${p.sesion.origen==='real'?'Real':'Simulado'}</span></td><td class="mono">${p.evento.t_activacion_ms===null?'—':p.evento.t_activacion_ms-p.evento.t_deteccion_ms+' ms'}</td><td><button class="text-button" data-event="${escape(p.evento.id)}">Ver detalle →</button></td></tr>`).join('')||'<tr><td colspan="6">No hay eventos con estos filtros.</td></tr>'}</tbody></table></div>`;}
 function tablaMediciones(rows){
  const headers=['Muestra','Tiempo (ms)','X (m/s²)','Y (m/s²)','Z (m/s²)','Lateral (°)','Frontal (°)','Rueda (vueltas/s)','Pulsos'];
- return '<table><thead><tr>'+headers.map(s=>`<th>${s}</th>`).join('')+'</tr></thead><tbody>'+rows.map(m=>'<tr>'+[m.numero,m.t_ms,...[m.ax,m.ay,m.az,m.roll_deg,m.pitch_deg,m.rueda_rps].map(v=>v==null?'—':number(v)),m.rueda_pulsos??'—'].map(v=>`<td>${v}</td>`).join('')+'</tr>').join('')+'</tbody></table>';
+ return '<table><thead><tr>'+headers.map(s=>`<th>${s}</th>`).join('')+'</tr></thead><tbody>'+rows.map(m=>'<tr>'+[m.numero,m.t_ms,...[m.ax,m.ay,m.az,m.roll_deg,m.pitch_deg].map(number),m.rueda_rps?.toLocaleString('es-EC',{maximumFractionDigits:3})??'—',m.rueda_pulsos??'—'].map(v=>`<td>${v}</td>`).join('')+'</tr>').join('')+'</tbody></table>';
 }
 function historialSesion(id){
  const d=document.createElement('dialog');d.className='session-history';
- d.innerHTML=`<form method="dialog"><button class="close" aria-label="Cerrar">×</button></form><h2>Mediciones de ${escape(id)}</h2><div class="table-scroll"></div><div class="pagination"><button class="secondary">Anterior</button><small></small><button class="secondary">Siguiente</button></div>`;
+ d.innerHTML=`<form method="dialog"><button class="close" aria-label="Cerrar">×</button></form><h2>Mediciones de ${escape(id)}</h2>
+ <form class="sample-jump"><label>Desde la muestra <input type="number" min="1" max="${Number.MAX_SAFE_INTEGER}" step="1" required value="1"></label><button class="secondary">Ir a muestra</button></form>
+ <div class="table-scroll"></div><div class="pagination"><button class="secondary">Anterior</button><small role="status"></small><button class="secondary">Siguiente</button></div>`;
  document.body.append(d);d.showModal();d.onclose=()=>d.remove();
- const cursores=[0], [prev,next]=d.querySelectorAll('.secondary');
+ const cursores=[0], [prev,next]=d.querySelectorAll('.pagination button');
+ let peticion=0;
+ const salto=d.querySelector('.sample-jump');
+ salto.onsubmit=e=>{
+   e.preventDefault();
+   const cursor=salto.querySelector('input').valueAsNumber-1;
+   if(cursores.at(-1)!==cursor)cursores.push(cursor);
+   mostrar();
+ };
  async function mostrar(){
+   const turno=++peticion;
    prev.disabled=next.disabled=true;
    try{
      const r=await get(`/sesiones/${id}/mediciones?limite=100&despues_numero=${cursores.at(-1)}`);
-     if(!d.open)return;
+     if(!d.open||turno!==peticion)return;
      d.querySelector('.table-scroll').innerHTML=tablaMediciones(r.mediciones);
-     d.querySelector('small').textContent=`Página ${cursores.length} · ${r.mediciones.length} muestras`;
+     d.querySelector('.table-scroll').scrollTop=0;
+     d.querySelector('small').textContent=r.mediciones.length?`Muestras ${r.mediciones[0].numero}–${r.mediciones.at(-1).numero}`:'No hay mediciones desde ese número.';
      prev.disabled=cursores.length===1;next.disabled=!r.hay_mas;
      next.onclick=()=>{cursores.push(r.siguiente_numero);mostrar();};
      prev.onclick=()=>{cursores.pop();mostrar();};
-   }catch(e){d.querySelector('small').textContent=e.message;}
+   }catch(e){if(d.open&&turno===peticion)d.querySelector('small').textContent=e.message;}
  }
  mostrar();
 }

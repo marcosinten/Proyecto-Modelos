@@ -19,6 +19,22 @@ Envía 30 000 muestras por HTTP antes de abrir el monitor. Verifica el tiempo in
 
 **Medición local de referencia:** antes de la corrección, el monitor mostraba 60 000 ms cuando la base ya tenía 600 000 ms. Después abrió en 600 000 ms. En una ejecución, el tiempo desde el inicio del POST hasta la primera llamada completada al renderizador WebGL con esa muestra fue de **267, 126, 84, 174 y 102 ms** para horizontal → frontal 20° → lateral 90° → invertido → horizontal. Mediana: **126 ms**. Se usó el mismo reloj de pared para emisor y navegador en una sola PC. No incluye el armado del lote en el ESP32, la Wi-Fi física ni el refresco del panel.
 
+## Contraste con la copia de Piero del 19/11/2026
+
+Se consultó `telemetria_piero_20261119_233531.sqlite` con SQLite `mode=ro&immutable=1` (instantánea cerrada sin archivos WAL). `quick_check`: OK; `foreign_key_check`: sin incidencias. Hay **9 sesiones de origen real, 81 529 muestras reales, 13 golpes, 3 inclinaciones y 1 vuelco**. Aparte hay dos sesiones de ejemplo. La numeración de `RC-077000-620D0068` empieza en 20 997; los conteos son de filas guardadas. El esquema histórico no registra hora de recepción, tiempo de pantalla ni contador Hall.
+
+- **Vuelco:** en Historial filtrar por *Real* y *Vuelco* y abrir `RC-077000-769E75F0-EV007`. A los 311 961 ms la muestra 15 598 tiene **94,566° lateral y 6,851° frontal**. El dispositivo registró activación 1 ms después. En las 308 muestras del evento, 301 alcanzan o superan 90° de roll; el máximo es 98,517°. La última muestra de la sesión (48 875, a los 977 493 ms) vuelve cerca de horizontal: roll 0,199°, pitch −2,847°.
+- **Contraste de ejes:** recalculando roll y pitch desde `ax/ay/az` según el firmware, las diferencias máximas en las 81 529 muestras reales son menores de 0,001°. Eso comprueba coherencia interna, no la calibración de la placa. El extremo de 169,747° corresponde a la muestra 32 051 a los 641 009 ms, dentro de una ventana de golpe posterior; no fue el ángulo del vuelco confirmado.
+- **Hall:** `RC-077000-2BB2D323` tiene 357 muestras positivas en seis tramos (máximo 1,614 vueltas/s), sin incidentes. En *Historial → Mediciones por sesión → Ir a muestra* introducir `1341` para ver giro y luego cero en la fila siguiente. `RC-077000-769E75F0` tiene 1 453 muestras positivas en 31 tramos. Su máximo de 422,297 vueltas/s (muestra 46 660) es un pico de la estimación. Sin flancos individuales ni contador en esta copia, no se puede establecer su causa ni reconstruir el número exacto de pasadas.
+
+Para repetir el contraste de la API y del historial en Chrome:
+
+```sh
+node scripts/probar-copia-piero.mjs ~/Descargas/telemetria_piero_20261119_233531.sqlite
+```
+
+La prueba comprueba el SHA-256 de esa instantánea y arranca la API sobre **un duplicado temporal**. El archivo de Descargas no recibe migraciones.
+
 ## Prueba corta en la PC de Piero
 
 La **postura** y la **clasificación del evento** son comprobaciones distintas. En el banco, una referencia de exactamente 90° con ruido cruzaba el umbral en ambos sentidos y podía cerrar como inclinación: el detector exige permanencia. Para probar la alarma, superar claramente 90°. Durante una frenada la aceleración longitudinal también puede producir inclinación aparente; usar posturas estáticas para contrastar los grados.
