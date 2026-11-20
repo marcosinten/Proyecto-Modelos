@@ -44,6 +44,10 @@ static const int MUESTRAS_POR_TEL = 5;
 static const uint8_t MPU_DIR = 0x68;
 static const float LSB_POR_G = 2048.0f;
 static const float G_MS2 = 9.80665f;
+// Tras tantas lecturas fallidas seguidas (50 = 200 ms a 250 Hz) se reinicializan Wire y el MPU.
+// Si sigue fallando, el siguiente intento espera el doble de lecturas (máximo 1250 = 5 s).
+static const uint32_t I2C_FALLOS_PARA_REINICIAR = 50;
+static const uint32_t I2C_ESPERA_MAX_LECTURAS = 1250;
 // 1 = corrección experimental medida para el MPU6050 del equipo (desplazamientos y el factor
 // ×9,038 en Z son de ese módulo). 0 = lecturas nominales del sensor (±16 g, 2048 LSB/g), para
 // otro módulo. Se cambia en config_local.h. Prueba rápida en docs/MANANA-CIRCUITO.md.
@@ -649,6 +653,8 @@ static void tareaAdquisicion(void*) {
   int picoIdx = 0, enVentana = 0;
   uint32_t numeroTel = 0;
   uint32_t cAdq = 0, cDec = 0, cTel = 0, errI2c = 0;
+  uint32_t i2cSeguidos = 0, i2cRecuperaciones = 0;
+  uint32_t i2cProximo = I2C_FALLOS_PARA_REINICIAR, i2cEspera = I2C_FALLOS_PARA_REINICIAR;
   int64_t ventanaIni = esp_timer_get_time(), ultimoCiclo = 0;
   uint32_t dtMin = UINT32_MAX, dtMax = 0, cicloMax = 0;
   bool rearmeEstable = HIGH, rearmeUltimo = HIGH;
@@ -674,8 +680,26 @@ static void tareaAdquisicion(void*) {
       ay = y - offY;
       az = z - offZ;
       cAdq++;
+      if (i2cSeguidos >= I2C_FALLOS_PARA_REINICIAR) {
+        logq("I2C OK de nuevo t_ms=%lu tras %lu lecturas fallidas seguidas; recuperaciones=%lu",
+             (unsigned long)t, (unsigned long)i2cSeguidos, (unsigned long)i2cRecuperaciones);
+      }
+      i2cSeguidos = 0;
+      i2cProximo = i2cEspera = I2C_FALLOS_PARA_REINICIAR;
     } else {
       errI2c++;
+      // Mientras falla se conservan las últimas lecturas válidas (no se inventan valores nuevos).
+      if (++i2cSeguidos >= i2cProximo) {
+        i2cRecuperaciones++;
+        Wire.end();
+        Wire.begin(PIN_SDA, PIN_SCL, 400000);
+        bool ok = mpuIniciar();
+        logq("I2C recuperacion n=%lu t_ms=%lu tras %lu lecturas fallidas seguidas: Wire y MPU reiniciados %s",
+             (unsigned long)i2cRecuperaciones, (unsigned long)t, (unsigned long)i2cSeguidos,
+             ok ? "OK" : "ERROR");
+        i2cEspera = min<uint32_t>(i2cEspera * 2, I2C_ESPERA_MAX_LECTURAS);
+        i2cProximo = i2cSeguidos + i2cEspera;
+      }
     }
 
     float norma = sqrtf(ax * ax + ay * ay + az * az);

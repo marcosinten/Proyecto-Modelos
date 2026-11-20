@@ -1,0 +1,13 @@
+# Bus I2C colgado a los 2 s (falla hasta reiniciar Wire); después el MPU desconectado 1 s (de 4 a 5 s). Solo banco nativo: Wokwi no simula fallos del bus.
+wait CAL OK
+wait SESION id=
+delay 2000.0
+set imu1 bus_colgado 1
+delay 2000
+set imu1 desconectado 1
+delay 1000
+set imu1 desconectado 0
+delay 1500
+expect led1 A 0
+expect esp D27 0
+mark fin i2c_fallo

@@ -304,6 +304,9 @@ static double gauss() {
                 return ((semillaRuido >> 11) + 0.5) / 9007199254740992.0; };
   return sqrt(-2 * log(u())) * cos(2 * PI * u());
 }
+// Fallos del bus: "bus_colgado" falla hasta que el firmware vuelve a llamar a Wire.begin()
+// (como un esclavo que retiene SDA); "desconectado" falla mientras dure (cable suelto).
+static bool busColgado = false, mpuDesconectado = false;
 static uint8_t dirTx = 0;
 static std::vector<uint8_t> tx;
 static std::deque<uint8_t> rx;
@@ -320,12 +323,16 @@ static void actualizarRegistrosAcel() {
     regs[0x3C + 2 * k] = (uint8_t)(v & 0xFF);
   }
 }
-bool TwoWireSim::begin(int, int, uint32_t) { regs[0x75] = 0x68; regs[0x6B] = 0x40; return true; }
+bool TwoWireSim::begin(int, int, uint32_t) {
+  if (busColgado) diario("I2C bus liberado por Wire.begin()");
+  busColgado = false;
+  regs[0x75] = 0x68; regs[0x6B] = 0x40; return true;
+}
 void TwoWireSim::beginTransmission(uint8_t d) { dirTx = d; tx.clear(); }
 size_t TwoWireSim::write(uint8_t v) { tx.push_back(v); return 1; }
 uint8_t TwoWireSim::endTransmission(bool) {
   costeI2c(tx.size() + 1);
-  if (dirTx != 0x68) return 2;
+  if (dirTx != 0x68 || busColgado || mpuDesconectado) return 2;
   if (!tx.empty()) {
     punteroMpu = tx[0];
     for (size_t i = 1; i < tx.size(); i++) regs[(punteroMpu++) & 0x7F] = tx[i];
@@ -334,7 +341,7 @@ uint8_t TwoWireSim::endTransmission(bool) {
 }
 int TwoWireSim::requestFrom(int d, int n) {
   costeI2c(n + 1);
-  if (d != 0x68) return 0;
+  if (d != 0x68 || busColgado || mpuDesconectado) return 0;
   actualizarRegistrosAcel();
   rx.clear();
   for (int i = 0; i < n; i++) rx.push_back(regs[(punteroMpu++) & 0x7F]);
@@ -485,6 +492,8 @@ static void tareaEscenario(void*) {
         if (control == "accelX") controlG[0] = v;
         else if (control == "accelY") controlG[1] = v;
         else if (control == "accelZ") controlG[2] = v;
+        else if (control == "bus_colgado") busColgado = v != 0;
+        else if (control == "desconectado") mpuDesconectado = v != 0;
       } else if (parte == "hall_sim") pulsar(32, v != 0, false);
       else if (parte == "btn_rearme") pulsar(33, v != 0, true);
     } else if (op == "wait") {

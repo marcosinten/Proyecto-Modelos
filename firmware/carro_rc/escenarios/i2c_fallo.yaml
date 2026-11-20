@@ -1,0 +1,32 @@
+name: 'i2c_fallo'
+version: 1
+author: 'Grupo 11'
+# Bus I2C colgado a los 2 s (falla hasta reiniciar Wire); después el MPU desconectado 1 s (de 4 a 5 s). Solo banco nativo: Wokwi no simula fallos del bus.
+steps:
+  - wait-serial: 'CAL OK'
+  - wait-serial: 'SESION id='
+  - delay: 2000ms
+  - set-control:
+      part-id: imu1
+      control: bus_colgado
+      value: 1
+  - delay: 2000ms
+  - set-control:
+      part-id: imu1
+      control: desconectado
+      value: 1
+  - delay: 1000ms
+  - set-control:
+      part-id: imu1
+      control: desconectado
+      value: 0
+  - delay: 1500ms
+  - expect-pin:
+      part-id: led1
+      pin: 'A'
+      value: 0
+  - expect-pin:
+      part-id: esp
+      pin: 'D27'
+      value: 0
+  # fin i2c_fallo

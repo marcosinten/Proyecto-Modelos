@@ -243,6 +243,15 @@ def escenarios():
     L.en(11000, "mark", "fin reinicio_boton (no se alcanza: el ESP32 se reinicia antes)")
     res.append(L)
 
+    L = Linea("i2c_fallo", "Bus I2C colgado a los 2 s (falla hasta reiniciar Wire); después el MPU desconectado "
+              "1 s (de 4 a 5 s). Solo banco nativo: Wokwi no simula fallos del bus.")
+    L.en(2000, "set", "imu1", "bus_colgado", 1)
+    L.en(4000, "set", "imu1", "desconectado", 1)
+    L.en(5000, "set", "imu1", "desconectado", 0)
+    salidas_apagadas(L, 6500)
+    L.en(6500, "mark", "fin i2c_fallo")
+    res.append(L)
+
     L = Linea("sesion_perdida", "API falsa: a los 3 s olvida las sesiones (base borrada); el siguiente lote recibe 404, "
               "el firmware vuelve a crear la sesión y reenvía ese lote; después un golpe y su evento.")
     L.en(3000, "api", "reiniciar")

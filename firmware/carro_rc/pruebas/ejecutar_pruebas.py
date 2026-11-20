@@ -35,7 +35,7 @@ CASOS = {
     # Exactamente en el umbral: verificar >=90° sin ruido. Los otros escenarios
     # conservan sesgo y ruido; un ángulo que fluctúa bajo 90° no cumple permanencia.
     "inclinacion": SENSOR, "vuelco_costado": [], "vuelco_boca_abajo": SENSOR,
-    "inclinacion_a_vuelco": SENSOR, "pico": SENSOR, "golpe_corto": SENSOR, "rearme_red": SENSOR, "rebote_hall": SENSOR, "reinicio_boton": SENSOR, "sesion_perdida": [*SENSOR, "--api", "falsa"], "api": SENSOR,
+    "inclinacion_a_vuelco": SENSOR, "pico": SENSOR, "golpe_corto": SENSOR, "rearme_red": SENSOR, "rebote_hall": SENSOR, "reinicio_boton": SENSOR, "i2c_fallo": SENSOR, "sesion_perdida": [*SENSOR, "--api", "falsa"], "api": SENSOR,
 }
 
 
@@ -316,6 +316,21 @@ def evaluar(caso, d, vcd, ev, extra):
                      bool(rein) and espera is not None and 3000 <= espera <= 3100 and ultimo("led_gpio25") == 0
                      and ultimo("buzzer_gpio27_activo") == 0 and ultimo("servo_gpio26_pulso_us") == 500
                      and any(l.startswith("BANCO ESP.restart()") for l in L), ev))
+    elif caso == "i2c_fallo":
+        L = d["lineas"]
+        rec = [re.search(r"n=(\d+) t_ms=(\d+) tras (\d+) .* (OK|ERROR)$", l).groups() for l in L if l.startswith("I2C recuperacion")]
+        de_nuevo = [l for l in L if l.startswith("I2C OK de nuevo")]
+        tras = [m for m in tel if m["t"] > 5100]
+        az_ok = tras and all(abs(m["az"] - 9.81) < .3 for m in tras)
+        res.append(r("I2C · bus colgado", "tras 50 lecturas fallidas seguidas se reinician Wire y el MPU y vuelven las lecturas",
+                     f"recuperaciones {[(int(a), int(b), int(c), e) for a, b, c, e in rec]}",
+                     bool(rec) and rec[0][2] == "50" and rec[0][3] == "OK" and 2150 <= int(rec[0][1]) <= 2300, ev))
+        res.append(r("I2C · desconexión de 1 s", "reintentos espaciados (50, 100 lecturas…), lecturas válidas al reconectar, sin eventos falsos",
+                     f"{len(rec) - 1} intentos con el MPU desconectado ({', '.join(e for *_, e in rec[1:])}); "
+                     f"{de_nuevo[-1] if de_nuevo else 'sin I2C OK de nuevo'}; az tras reconectar dentro de 9,81 ± 0,3: {bool(az_ok)}; "
+                     f"detecciones {len(dets)}, eventos {len(eventos)}",
+                     len(rec) == 3 and all(x[3] == "ERROR" for x in rec[1:]) and [int(x[2]) for x in rec[1:]] == [50, 150]
+                     and len(de_nuevo) == 2 and az_ok and not dets and not eventos, ev))
     elif caso == "rebote_hall":
         bajadas = [t for t, v in vcd["hall_gpio32"] if v == 0 and t >= d["t0"]]
         pulsos = int(d["hall0"][-1][2]) if d["hall0"] else None
@@ -375,7 +390,8 @@ def evaluar(caso, d, vcd, ev, extra):
         res.append(r("API · reintento", "respuesta perdida → reintento con el mismo JSON, ids y tiempos; la API responde 200",
                      txt or "sin reintentos", bool(ok_rep), ev))
     # Frecuencias y mismo JSON en todos los casos
-    ests = [(float(e[1]), float(e[2]), float(e[3]), int(e[4]), int(e[5]), int(e[6])) for e in d["est"]]
+    # i2c_fallo pierde lecturas a propósito: no entra en el control global de frecuencias.
+    ests = [] if caso == "i2c_fallo" else [(float(e[1]), float(e[2]), float(e[3]), int(e[4]), int(e[5]), int(e[6])) for e in d["est"]]
     if ests:
         fa = [e[0] for e in ests]; fd = [e[1] for e in ests]; ft = [e[2] for e in ests]
         extra["frecuencias"] = dict(adq=(min(fa), max(fa)), dec=(min(fd), max(fd)), tel=(min(ft), max(ft)),
