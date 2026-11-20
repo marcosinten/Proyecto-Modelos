@@ -29,10 +29,13 @@ La primera ejecución crea `servidor/data/accidentes.sqlite` y carga EV-001 y EV
 - Umbrales ajustables y comparación de corridas mientras la página está abierta.
 - Guardado del evento simulado y sus muestras en Express/SQLite.
 - Historial con búsqueda, filtros, paginación y detalle.
+- **Explicar** en cada evento del historial: lectura del registro con línea de tiempo, valores y gráficas de roll, pitch, variación de aceleración y giro de rueda cuando exista. También se puede abrir desde el detalle o con `#explicar/ID-DEL-EVENTO`.
 - Descarga real de Excel desde la web, también con datos locales. Los números provienen del escenario seleccionado.
 - Interfaz adaptable a móvil, controles de teclado y diálogo de exportación.
 
 Las señales de simulación se generan matemáticamente y se evalúan con reglas experimentales. Deben calibrarse con el sensor. El tiempo de activación queda sin medir en nuevas corridas. EV-001 y EV-002 incluyen 20 ms como dato sintético de ejemplo.
+
+«Explicar» lee el paquete ya guardado en `GET /api/v1/eventos/:id` (o los ejemplos locales si la API no responde). No entrena ni consulta el árbol del cuaderno de IA, no reclasifica eventos y no modifica SQLite. La ventana del evento no es necesariamente el comienzo físico del incidente; las gráficas solo representan las muestras recibidas. La variación `|√(ax² + ay² + az²) − 9,81|` es un cálculo descriptivo, no una medida de fuerza de choque o causa. El origen simulado se marca explícitamente. Las corridas sin evento, como reposo y frenada sin incidente, no aparecen como eventos en el historial.
 
 ## Corrección del aporte de base de datos
 
