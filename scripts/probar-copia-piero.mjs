@@ -45,7 +45,7 @@ try {
   const text=sel=>tab.$eval(sel,e=>e.textContent);
   assert.equal(await text('#origin'),'Mediciones reales · historial');
   assert.equal(await text('#sample-time'),'311961 ms');
-  assert.equal(await text('#roll'),'94,57°');assert.equal(await text('#pitch'),'6,85°');
+  assert.equal(await text('#roll'),'94,6°');assert.equal(await text('#pitch'),'6,9°');
   await tab.click('.back');await tab.waitForSelector('#history-sessions');await tab.click('#history-sessions');
   await tab.type('.session-picker input','2BB2D323');await tab.waitForSelector('.session-list article');
   await tab.click('.session-list .primary');

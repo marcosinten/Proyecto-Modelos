@@ -22,13 +22,20 @@ app.wheelTurnsBySample=[];
 app.liveTurns=0;app.wheelFrom=0;app.wheelTo=0;app.wheelStart=0;app.wheelDuration=0;app.stale=false;
 app.cerrarExplicacion=undefined;app.historyTimer=undefined;
 function layout() {
- $('#app').innerHTML=`<aside><a class="brand" href="#monitor"><span class="brand-icon">↗</span><span>telemetría<span class="brand-small">RC / GRUPO 11</span></span></a><div class="nav-caption">ESPACIO DE TRABAJO</div><nav><a href="#monitor" data-nav="monitor">◉ <span>Monitor</span></a><a href="#simulacion" data-nav="simulacion">▷ <span>Simulación</span></a><a href="#historial" data-nav="historial">▤ <span>Historial</span></a></nav><div class="aside-bottom"><span class="status-dot"></span> Laboratorio de movimiento<small>Modelos y Simulación · Grupo 11</small></div></aside><div class="workspace"><header><span>Proyecto experimental <span class="divider">/</span> Telemetría vehicular</span><span id="connection" class="badge neutral">Comprobando API</span></header><main id="main"></main><footer>TELEMETRÍA RC <span>Datos en movimiento. Decisiones con contexto.</span><span>Grupo 11 · v1.1</span></footer></div><div id="toast" role="status"></div><dialog id="export-dialog"><form method="dialog"><button class="close" aria-label="Cerrar">×</button></form><div id="export-body"></div></dialog>`;
+ $('#app').innerHTML=`<a class="saltar" href="#main">Saltar al contenido</a>
+ <header class="barra"><a class="marca" href="#monitor"><strong>Telemetría RC</strong><span>Grupo 11 · Modelos y Simulación</span></a>
+  <nav aria-label="Secciones"><a href="#monitor" data-nav="monitor">Monitor</a><a href="#historial" data-nav="historial">Historial</a><a href="#simulacion" data-nav="simulacion">Simulación</a></nav>
+  <span id="connection" class="etiqueta" data-estado="neutro">API: comprobando</span></header>
+ <main id="main" tabindex="-1"></main>
+ <div id="toast" role="status" aria-live="polite"></div>
+ <dialog id="export-dialog" aria-label="Exportar a Excel"><form method="dialog"><button class="close" aria-label="Cerrar">×</button></form><div id="export-body"></div></dialog>`;
 }
 function render() {
   app.running=false; clearInterval(app.liveTimer); clearTimeout(app.historyTimer); app.liveGeneration++; app.liveActive=false;
   app.viewer?.destroy(); app.viewer=undefined; app.charts.forEach(c=>c.destroy());app.charts=[];
   app.cerrarExplicacion?.(); app.cerrarExplicacion=undefined;
-  document.querySelectorAll('[data-nav]').forEach(a=>a.classList.toggle('active',a.dataset.nav===(app.page==='explicar'?'historial':app.page)));
+  document.querySelectorAll('[data-nav]').forEach(a=>{const activa=a.dataset.nav===(app.page==='explicar'||app.page==='detalle'?'historial':app.page);a.classList.toggle('active',activa);activa?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current');});
+  if(app.page!=='monitor'&&app.presentacion){app.presentacion=false;document.body.classList.remove('presentacion');}
   if(app.page==='historial'){renderHistory();return;}
   if(app.page==='explicar'){showExplanation();return;}
  renderMonitor();

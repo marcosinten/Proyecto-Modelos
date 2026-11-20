@@ -1,9 +1,28 @@
 // En vivo: conexión a una sesión, consulta periódica de la postura, avisos de evento guardado
 // y de sesión nueva.
 import {app, $, escape, seconds, get, toast} from '../app.js';
-import {vueltasEntre, VENTANA, PAUSA_MS, recepcion, sesionMasReciente} from '../telemetria.js';
+import {vueltasEntre, PAUSA_MS, recepcion, sesionMasReciente, textoConexion} from '../telemetria.js';
 import {horaAproximadaMs, textoHora, NOTA_HORA} from '../../../compartido/hora.js';
-import {refreshData, update, start} from './monitor.js';
+import {refreshData, update, start, pintarEventos} from './monitor.js';
+
+// Ventana en vivo seleccionable: 10, 30 o 60 s a 50 Hz. /ultima entrega hasta 1000 muestras; para
+// ventanas mayores se rellena hacia atrás con /mediciones al (re)conectar.
+const MAX_ULTIMA = 1000;
+const muestrasVentana = () => (app.ventanaS ?? 10) * 50;
+async function rellenar(id, datos, valid) {
+  const faltan = muestrasVentana() - datos.length;
+  if (faltan <= 0 || !datos.length || datos[0].numero <= 1) return datos;
+  const antes = [];
+  let cursor = Math.max(0, datos[0].numero - 1 - faltan);
+  while (cursor < datos[0].numero - 1) {
+    const r = await get(`/sesiones/${id}/mediciones?despues_numero=${cursor}&limite=1000`);
+    if (!valid() || !r.mediciones.length) break;
+    antes.push(...r.mediciones.filter(m => m.numero < datos[0].numero));
+    cursor = r.siguiente_numero;
+    if (!r.hay_mas) break;
+  }
+  return [...antes, ...datos];
+}
 import {loadEvents, refrescarRecientes} from './historial.js';
 
 export const tipoAviso={golpe:'Golpe',inclinacion:'Inclinación',vuelco:'Vuelco'};
@@ -21,11 +40,17 @@ export async function connectLive(id){
  app.current={version:1,sesion:session,evento:null,eventos:[],mediciones:[]};
  app.liveActive=true;app.wheelTo=app.wheelFrom=app.liveTurns=0;app.position=0;
  $('#origin').textContent=session.origen==='real'?'Mediciones reales':'Emisor simulado';
+ $('#ventana').hidden=false;
+ $('.monitor').classList.add('en-vivo');
+ $('#live-form').hidden=true;
+ $('#sesion-actual').hidden=false;$('#sesion-actual').textContent='Sesión '+id;$('#cambiar-sesion').hidden=false;
+ $('#conexion-texto').textContent='Conectando…';
  for(const s of ['play','reset','timeline','speed'])$('#'+s).disabled=true;
- btn.hidden=true;$('#find-session').textContent='Cambiar sesión';
- for(const s of ['ax','ay','az','roll','pitch','clock','sample-time','graph-reading','protocol','samples'])$('#'+s).textContent='—';
+ btn.hidden=true;$('#find-session').textContent='Cambiar sesión';$('#accion-sesion').textContent='Cambiar sesión';
+ for(const s of ['ax','ay','az','roll','pitch','clock','sample-time','graph-reading','protocol','samples','estado-texto','estado-detalle'])$('#'+s).textContent='—';
  $('#car').style.visibility='hidden';refreshData();
  let reset=true, lastRecepcion=null, markerKey='', eventoVisto;
+ app.reiniciarVivo=()=>{if(valid())reset=true;};
  $('#live-notices').replaceChildren();
  const descartadas=new Set();
  // 1b: otra sesión real «Recibiendo» más reciente (p. ej. el ESP32 se reinició). Solo avisa; no cambia sola.
@@ -44,13 +69,16 @@ export async function connectLive(id){
    try{
      const prev=app.current.mediciones.at(-1);
      const since=!reset && prev?`&despues_numero=${prev.numero}&desde_ms=${start()}`:'';
-     const r=await get(`/sesiones/${id}/ultima?ventana=${VENTANA}${since}`);
+     const r=await get(`/sesiones/${id}/ultima?ventana=${Math.min(MAX_ULTIMA,muestrasVentana())}${since}`);
      if(!valid())return;
-     const data=r.mediciones;
+     let data=r.mediciones;
+     if(reset||r.recortada)data=await rellenar(id,data,valid);
+     if(!valid())return;
      lastRecepcion=r.ultima_recepcion_ms;
      const oldStale=app.stale;
      app.stale=lastRecepcion==null || r.ahora_ms-lastRecepcion>PAUSA_MS;
      $('#mode-help').textContent=recepcion(lastRecepcion,r.ahora_ms,!!r.medicion);
+     $('#conexion-texto').textContent=textoConexion(lastRecepcion,r.ahora_ms);
      if(!reset && !r.recortada && data.length && !app.stale){
        let a=prev, delta=0;
        for(const b of data){delta+=vueltasEntre(a,b);a=b;}
@@ -59,7 +87,11 @@ export async function connectLive(id){
          app.wheelDuration=Math.max(100,Math.min(240,a.t_ms-(prev??data[0]).t_ms));
        }
      }
-     app.current.mediciones=reset||r.recortada?data:[...app.current.mediciones,...data].slice(-VENTANA);
+     app.current.mediciones=reset||r.recortada?data:[...app.current.mediciones,...data];
+     // Conserva la ventana elegida por tiempo (10, 30 o 60 s).
+     const desde=app.current.mediciones.at(-1)?.t_ms-(app.ventanaS??10)*1000;
+     const corte=app.current.mediciones.findIndex(m=>m.t_ms>desde);
+     if(corte>0)app.current.mediciones=app.current.mediciones.slice(corte);
      reset=false;
      const events=r.eventos.filter(e=>e.t_deteccion_ms>=start());
      const key=JSON.stringify([r.ultimo_evento?.id,events.map(e=>e.id)]);
@@ -75,12 +107,14 @@ export async function connectLive(id){
      if(r.medicion){
        app.position=r.medicion.t_ms;$('#car').style.visibility='';
        if(data.length||key!==markerKey)refreshData();
+       if(key!==markerKey)pintarEventos();
        else if(oldStale!==app.stale)update();
      }
      markerKey=key;
    } catch(e){
      if(!valid())return;
      reset=true;app.stale=true;app.wheelTo=app.liveTurns;
+     $('#conexion-texto').textContent='Conexión: interrumpida · reintentando';
      $('#mode-help').textContent='Conexión interrumpida. Reintentando…'+(lastRecepcion?' Última recepción: '+new Date(lastRecepcion).toLocaleString('es-EC'):'');
      if(app.current.mediciones.length)update();
    }
@@ -93,7 +127,7 @@ export function avisarEvento(ev,horaMs){
  const hora=textoHora(horaMs);
  let aviso=$('#event-saved');
  if(!aviso){aviso=document.createElement('div');aviso.id='event-saved';aviso.className='live-notice event-saved';aviso.setAttribute('role','status');$('#live-notices').prepend(aviso);}
- aviso.innerHTML=`<strong>Evento guardado: ${escape(tipoAviso[ev.tipo]||ev.tipo)} · ${hora?`${hora}</strong> <small>(${NOTA_HORA})</small>`:`${seconds(ev.t_deteccion_ms)} s de sesión</strong> <small>(hora sin medir)</small>`} <a href="#explicar/${escape(ev.id)}">Explicar →</a>`;
+ aviso.innerHTML=`<strong>Evento guardado: ${escape(tipoAviso[ev.tipo]||ev.tipo)} · ${hora?`${hora}</strong> <small>(${NOTA_HORA})</small>`:`${seconds(ev.t_deteccion_ms)} s de sesión</strong> <small>(hora sin medir)</small>`} <a href="#explicar/${escape(ev.id)}">Explicar</a>`;
  aviso.classList.remove('flash');void aviso.offsetWidth;aviso.classList.add('flash');
 }
 
