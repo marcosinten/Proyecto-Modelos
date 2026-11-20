@@ -210,9 +210,8 @@ export function crearVisor(element) {
     }
     car.position.y = roadTop - lowest + .008;
   }
-  // Live is an attitude display. Keep its centered pivot fixed, clear of the
-  // surface even at extreme pitch; replay still uses actual mesh/road contact.
-  const liveHeight = roadTop + 2.1;
+  // Live and replay rest on the road: the lowest point of the model touches it.
+  // Flat = on its wheels, tilted = pivoting on its lowest point, upside down = on its roof.
   fitToRoad();
 
   const render = () => renderer.render(scene, view === 'seguimiento' ? chaseCamera : camera);
@@ -248,13 +247,13 @@ export function crearVisor(element) {
     const fraction = progress == null ? 0 : T.MathUtils.clamp(progress, 0, 1);
     const distance = 11.3 * fraction;
     vehicle.position.set(progress == null ? 0 : -5.65 + distance, 0, 0);
-    const target = vehicle.position.clone(); target.y = live ? liveHeight : .15;
+    const target = vehicle.position.clone(); target.y = .15;
     if (view === 'libre') {
       camera.position.add(target.clone().sub(previousTarget));
       controls.target.copy(target);
     } else if (view !== 'seguimiento') {
       camera.position.copy(target).addScaledVector(view === 'frontal' ? forward : lateral, 12);
-      camera.position.y = live ? liveHeight : 2.7;
+      camera.position.y = 2.7;
       camera.lookAt(target);
       controls.target.copy(target);
     }
@@ -264,9 +263,9 @@ export function crearVisor(element) {
     shadow.rotation.z = vehicle.rotation.y;
     if (view === 'seguimiento') {
       chaseCamera.position.copy(vehicle.position).addScaledVector(forward, -6.8);
-      chaseCamera.position.y = roadTop + 3.7 + (live ? liveHeight : 0);
+      chaseCamera.position.y = roadTop + 3.7;
       const look = vehicle.position.clone().addScaledVector(forward, 5);
-      look.y = roadTop + .4 + (live ? liveHeight : 0);
+      look.y = roadTop + .4;
       chaseCamera.lookAt(look);
     }
     let moved = false;
@@ -347,7 +346,7 @@ export function crearVisor(element) {
     }
     advanceOnRoad();
     collectContactPoints();
-    if (!live) fitToRoad();
+    fitToRoad();
     render();
   }).catch(error => console.warn('Se conserva el carro de respaldo:', error));
 
@@ -365,8 +364,9 @@ export function crearVisor(element) {
         lastPitch = live ? liveAngle(changedMode ? null : lastPitch, sample.pitch_deg) : sample.pitch_deg;
         // Roll first, then pitch about the level lateral axis: the same order the telemetry model uses.
         car.rotation.set(T.MathUtils.degToRad(lastRoll), 0, T.MathUtils.degToRad(lastPitch), 'YZX');
-        if (live) car.position.y = liveHeight;
-        else fitToRoad();
+        // Contact points are refreshed when switching mode (connecting), not for each live wheel turn.
+        if (changedMode) collectContactPoints();
+        fitToRoad();
       }
       render();
     },

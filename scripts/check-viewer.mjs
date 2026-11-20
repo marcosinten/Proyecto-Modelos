@@ -57,9 +57,21 @@ try {
  // Simulated replay on the road: the wheel follows the distance travelled, whatever the Hall turns say.
  viewer.update(flat,.5,0,40);
  assert(Math.abs(wheel.rotation.x+11.3*.5/r)<1e-9,'Wheel must roll with the car, without slipping');
- // Exceed the old track length twice without moving the chassis in any axis.
+ // En vivo el carro se apoya en la carretera (antes flotaba a 2,1 unidades con un pivote fijo):
+ // su punto más bajo toca la carretera en cualquier postura y cámara.
  const scene=globalThis.captured.scene, body=scene.getObjectByName('car-body');
- viewer.update(flat,undefined,0,0,true);
+ for(const view of ['seguimiento','lateral','frontal','libre']){
+  viewer.camera(view);
+  for(const roll of [0,45,90,135,180]){
+   viewer.update({roll_deg:roll,pitch_deg:15},undefined,0,0,true);
+   const box=new T.Box3().setFromObject(scene.getObjectByName('vehicle'),true);
+   assert(Math.abs(box.min.y-(-.57+.008))<1e-5,`vivo ${view} ${roll} contacto ${box.min.y}`);
+  }
+ }
+ viewer.camera('seguimiento');
+ // Exceed the old track length twice: turning the wheel must not move the chassis.
+ // The pivot is taken after applying the posture, because the height now depends on it.
+ viewer.update({roll_deg:90,pitch_deg:20},undefined,0,0,true);
  const pivot=body.getWorldPosition(new T.Vector3());
  for(let turns=0;turns<=140;turns+=.25){
   viewer.update({roll_deg:90,pitch_deg:20},undefined,0,turns,true);
@@ -75,5 +87,5 @@ try {
    assert(Math.abs(new T.Vector3(0,1,0).applyQuaternion(body.quaternion).y-Math.cos(roll*Math.PI/180)*Math.cos(pitch*Math.PI/180))<1e-8);
  }
  viewer.destroy();
- console.log('PASS: Oldsmobile, contacto en reproducción, giro físico Hall, pivote fijo, 20°, horizontal, inversión y cruce corto +179° → −179°.');
+ console.log('PASS: Oldsmobile, contacto en reproducción, giro físico Hall, apoyo en la carretera en vivo, chasis fijo al girar la rueda, 20°, horizontal, inversión y cruce corto +179° → −179°.');
 } finally {await fs.unlink('scripts/.viewer-harness.mjs');}

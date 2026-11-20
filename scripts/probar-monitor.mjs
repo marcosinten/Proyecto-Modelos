@@ -118,7 +118,18 @@ try {
    const frame=await tab.evaluate(ms=>framesRC.find(f=>f.ms===ms),end.t_ms);
    latencias.push(frame.at-sent);
    assert.ok(Math.abs(frame.pitch-pitch)<.001 && Math.abs((frame.roll-roll)%360)<.001,JSON.stringify(frame));
-   assert.equal(frame.x,origin.x);assert.equal(frame.y,origin.y);
+   assert.equal(frame.x,origin.x);
+   // En vivo el carro se apoya en la carretera: su punto más bajo toca la superficie (−0,57 + 0,008).
+   const bajo=await tab.evaluate(()=>{
+     let min=Infinity;
+     window.testScene.getObjectByName('vehicle').traverse(o=>{
+       if(!o.isMesh)return;
+       const v=o.geometry.attributes.position,e=o.matrixWorld.elements;
+       for(let i=0;i<v.count;i++)min=Math.min(min,e[1]*v.getX(i)+e[5]*v.getY(i)+e[9]*v.getZ(i)+e[13]);
+     });
+     return min;
+   });
+   assert.ok(Math.abs(bajo-(-.57+.008))<1e-3,`Punto más bajo ${bajo} con roll ${roll}, pitch ${pitch}`);
    await waitText('#roll',roll.toLocaleString('es-EC',{minimumFractionDigits:2})+'°');
    await waitText('#pitch',pitch.toLocaleString('es-EC',{minimumFractionDigits:2})+'°');
    const charts=await tab.evaluate(()=>['angles','wheel','accel'].map(id=>testChart.getChart(id).data.datasets.map(d=>d.data.slice(-10))));
