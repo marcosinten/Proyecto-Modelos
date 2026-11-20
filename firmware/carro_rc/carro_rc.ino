@@ -63,7 +63,10 @@ static const uint32_t REARME_DETECTOR_MS = 1000;
 #define PULSOS_POR_VUELTA 1
 #endif
 static_assert(PULSOS_POR_VUELTA >= 1, "PULSOS_POR_VUELTA debe ser 1 o más");
-static const uint32_t HALL_FILTRO_US = 1000;
+// Flancos del Hall más cercanos que esto se ignoran (ruido eléctrico del motor y rebotes).
+// Con 1000 µs, dos flancos a 1,18 ms dieron un pico falso de 422 vueltas/s. 3000 µs sigue
+// admitiendo más de 300 pulsos/s (166 vueltas/s con 2 imanes), muy por encima de una rueda RC.
+static const uint32_t HALL_FILTRO_US = 3000;
 static const uint32_t HALL_TIMEOUT_CERO_MS = 750;
 
 static const int SERVO_REPOSO_DEG = 0;

@@ -41,12 +41,17 @@ class Linea:
         r, p = math.radians(roll), math.radians(pitch)
         self.imu(t, math.sin(p), math.cos(p) * math.sin(r), math.cos(p) * math.cos(r))
 
-    def pulsos(self, t0, hz, segundos, ancho=20):
+    def pulsos(self, t0, hz, segundos, ancho=20, rebote=None):
+        """rebote=(sube_ms, baja_ms): tras el flanco de bajada, la salida sube y vuelve a bajar
+        (dos flancos de bajada por pasada del imán, como el rebote medido en la placa)."""
         periodo = 1000.0 / hz
         n = int(round(segundos * hz))
         for k in range(n):
             t = t0 + k * periodo
             self.en(t, "set", "hall_sim", "pressed", 1)
+            if rebote:
+                self.en(t + rebote[0], "set", "hall_sim", "pressed", 0)
+                self.en(t + rebote[1], "set", "hall_sim", "pressed", 1)
             self.en(t + ancho, "set", "hall_sim", "pressed", 0)
         return t0 + (n - 1) * periodo  # instante del último pulso
 
@@ -218,6 +223,12 @@ def escenarios():
     L.en(4000, "wait", "/eventos evento")
     L.en(4000, "delay", 3000)
     res.append(L)
+    L = Linea("rebote_hall", "4 pasadas/s durante 3 s; cada pasada rebota: baja, sube a 0,6 ms y vuelve a bajar a 1,18 ms "
+              "(dos flancos de bajada separados 1,18 ms, como el pico falso de 422 vueltas/s).")
+    ultimo = L.pulsos(1000, 4, 3, rebote=(0.6, 1.18))
+    L.en(ultimo + 1500, "mark", "fin rebote_hall")
+    res.append(L)
+
     L = Linea("sesion_perdida", "API falsa: a los 3 s olvida las sesiones (base borrada); el siguiente lote recibe 404, "
               "el firmware vuelve a crear la sesión y reenvía ese lote; después un golpe y su evento.")
     L.en(3000, "api", "reiniciar")

@@ -35,7 +35,7 @@ CASOS = {
     # Exactamente en el umbral: verificar >=90° sin ruido. Los otros escenarios
     # conservan sesgo y ruido; un ángulo que fluctúa bajo 90° no cumple permanencia.
     "inclinacion": SENSOR, "vuelco_costado": [], "vuelco_boca_abajo": SENSOR,
-    "inclinacion_a_vuelco": SENSOR, "pico": SENSOR, "golpe_corto": SENSOR, "rearme_red": SENSOR, "sesion_perdida": [*SENSOR, "--api", "falsa"], "api": SENSOR,
+    "inclinacion_a_vuelco": SENSOR, "pico": SENSOR, "golpe_corto": SENSOR, "rearme_red": SENSOR, "rebote_hall": SENSOR, "sesion_perdida": [*SENSOR, "--api", "falsa"], "api": SENSOR,
 }
 
 
@@ -296,6 +296,14 @@ def evaluar(caso, d, vcd, ev, extra):
                      f"expect-pin fallos {extra['fallos']}",
                      len(rea) == 2 and rea[0][1] == "apagada" and rea[1][1] == "ya_inactiva" and len(dets) == 1
                      and not extra["fallos"], ev))
+    elif caso == "rebote_hall":
+        bajadas = [t for t, v in vcd["hall_gpio32"] if v == 0 and t >= d["t0"]]
+        pulsos = int(d["hall0"][-1][2]) if d["hall0"] else None
+        maxrps = max(m["rps"] for m in tel)
+        pasadas = 12
+        res.append(r("Hall · rebote filtrado", f"{pasadas} pasadas con rebote a 1,18 ms: contador = {pasadas} y giro máximo ≤ {4 / PPR * 1.1:.1f} vueltas/s",
+                     f"{len(bajadas)} flancos de bajada en GPIO32; contador del firmware {pulsos}; máximo rueda_rps {maxrps:.2f}",
+                     len(bajadas) == 2 * pasadas and pulsos == pasadas and maxrps <= 4 / PPR * 1.1, ev))
     elif caso == "sesion_perdida":
         posts = extra.get("posts", [])
         L = d["lineas"]

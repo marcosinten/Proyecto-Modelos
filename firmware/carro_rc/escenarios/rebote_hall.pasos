@@ -1,0 +1,101 @@
+# 4 pasadas/s durante 3 s; cada pasada rebota: baja, sube a 0,6 ms y vuelve a bajar a 1,18 ms (dos flancos de bajada separados 1,18 ms, como el pico falso de 422 vueltas/s).
+wait CAL OK
+wait SESION id=
+delay 1000.0
+set hall_sim pressed 1
+delay 0.6
+set hall_sim pressed 0
+delay 0.58
+set hall_sim pressed 1
+delay 18.82
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 0.6
+set hall_sim pressed 0
+delay 0.58
+set hall_sim pressed 1
+delay 18.82
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 0.6
+set hall_sim pressed 0
+delay 0.58
+set hall_sim pressed 1
+delay 18.82
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 0.6
+set hall_sim pressed 0
+delay 0.58
+set hall_sim pressed 1
+delay 18.82
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 0.6
+set hall_sim pressed 0
+delay 0.58
+set hall_sim pressed 1
+delay 18.82
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 0.6
+set hall_sim pressed 0
+delay 0.58
+set hall_sim pressed 1
+delay 18.82
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 0.6
+set hall_sim pressed 0
+delay 0.58
+set hall_sim pressed 1
+delay 18.82
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 0.6
+set hall_sim pressed 0
+delay 0.58
+set hall_sim pressed 1
+delay 18.82
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 0.6
+set hall_sim pressed 0
+delay 0.58
+set hall_sim pressed 1
+delay 18.82
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 0.6
+set hall_sim pressed 0
+delay 0.58
+set hall_sim pressed 1
+delay 18.82
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 0.6
+set hall_sim pressed 0
+delay 0.58
+set hall_sim pressed 1
+delay 18.82
+set hall_sim pressed 0
+delay 230.0
+set hall_sim pressed 1
+delay 0.6
+set hall_sim pressed 0
+delay 0.58
+set hall_sim pressed 1
+delay 18.82
+set hall_sim pressed 0
+delay 1480.0
+mark fin rebote_hall

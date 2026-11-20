@@ -1,0 +1,249 @@
+name: 'rebote_hall'
+version: 1
+author: 'Grupo 11'
+# 4 pasadas/s durante 3 s; cada pasada rebota: baja, sube a 0,6 ms y vuelve a bajar a 1,18 ms (dos flancos de bajada separados 1,18 ms, como el pico falso de 422 vueltas/s).
+steps:
+  - wait-serial: 'CAL OK'
+  - wait-serial: 'SESION id='
+  - delay: 1000ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 0.6ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 0.58ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 18.82ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 0.6ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 0.58ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 18.82ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 0.6ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 0.58ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 18.82ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 0.6ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 0.58ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 18.82ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 0.6ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 0.58ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 18.82ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 0.6ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 0.58ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 18.82ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 0.6ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 0.58ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 18.82ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 0.6ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 0.58ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 18.82ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 0.6ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 0.58ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 18.82ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 0.6ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 0.58ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 18.82ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 0.6ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 0.58ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 18.82ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 230ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 0.6ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 0.58ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 1
+  - delay: 18.82ms
+  - set-control:
+      part-id: hall_sim
+      control: pressed
+      value: 0
+  - delay: 1480ms
+  # fin rebote_hall
