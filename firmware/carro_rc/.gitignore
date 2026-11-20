@@ -1,3 +1,4 @@
 .pio/
 pruebas/nativo/build/
 __pycache__/
+/config_local.h
