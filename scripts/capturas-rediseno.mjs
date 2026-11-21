@@ -120,7 +120,13 @@ try {
   if (quiere('sesion')) {
     await tab.goto(url + `#sesion/${id}`);
     await tab.waitForFunction(() => document.querySelector('#ds-exportar') && !document.querySelector('#ds-exportar').disabled, {timeout: 20000});
-    await pause(2500);
+    await pause(1000);
+    if (await tab.$('#ds-postura')) {
+      await tab.$eval('#ds-postura', e => e.scrollIntoView());
+      await tab.waitForSelector('#ds-postura-lienzo .postura-lienzo', {timeout: 15000});
+      await tab.evaluate(() => scrollTo(0, 0));
+    }
+    await pause(1500);
     await foto('sesion');
     if (await tab.$('[data-vista-postura="2d"]')) { await tab.click('[data-vista-postura="2d"]'); await pause(800); await foto('sesion-postura-2d'); }
   }

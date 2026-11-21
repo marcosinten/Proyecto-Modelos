@@ -137,7 +137,7 @@ const dibujo = {
     // rótulo corto «Tipo hh:mm:ss» arriba (carriles para que no se solapen).
     // t.banderas queda con lo dibujado (lo usan las pruebas del navegador).
     t.banderas = [];
-    const carriles = [];
+    const carriles = [], rotulos = [];
     const visibles = (t.eventos ?? []).map(e => ({ e, px: x.getPixelForValue(e.t_deteccion_ms) }))
       .filter(v => v.px >= a.left && v.px <= a.right).sort((p, q) => p.px - q.px);
     for (const { e, px } of visibles) {
@@ -160,7 +160,11 @@ const dibujo = {
         ctx.fillStyle = color; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke();
         ctx.beginPath(); ctx.arc(px, py, (grande ? 6 : 5) + 1.5, 0, Math.PI * 2); ctx.lineWidth = 1; ctx.strokeStyle = texto; ctx.stroke();
       }
-      if (t.rotular) {
+      if (t.rotular) rotulos.push({ nombre, hora, px, color, texto });
+    }
+    // Rótulos en una segunda pasada: ninguna línea de otro evento los cruza.
+    for (const { nombre, hora, px, color, texto } of rotulos) {
+      {
         const tam = grande ? 13 : 11, alto = tam + 8;
         ctx.font = `600 ${tam}px ${FUENTE}`; const wTipo = ctx.measureText(nombre).width;
         ctx.font = `500 ${tam}px ${MONO}`; const wHora = ctx.measureText(hora).width;

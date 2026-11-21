@@ -249,6 +249,7 @@ export function update(drawCharts=true){
  $('#valor-golpe').textContent = `${uno(total)} m/s²`;
  $('#acel-total').textContent = `${uno(total)} m/s²`;
  $('#acel-detalle').textContent = `${uno(total / 9.81)} g · golpe desde ${CONSTANTES_INO.UMBRAL_GOLPE_MS2} m/s²`;
+ if ($('#valor-ejes')) $('#valor-ejes').textContent = `${uno(m.ax)} · ${uno(m.ay)} · ${uno(m.az)}`;
  const v = app.wheelTurnsBySample[sampleIndex];
  $('#valor-rueda').textContent = m.rueda_rps == null && m.rueda_pulsos == null ? 'Sin dato' : `${uno(v ?? 0)} vueltas`;
  if(drawCharts && app.graficas) moverCursor(app.graficas, app.liveActive ? null : app.position);
