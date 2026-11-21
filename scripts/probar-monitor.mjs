@@ -49,6 +49,16 @@ try {
        const body=scene.getObjectByName('car-body'), wheel=scene.getObjectByName('animated-wheel');
        if(body&&wheel)window.framesRC.push({ms:parseInt(document.querySelector('#sample-time')?.textContent),at:Date.now(),
          roll:body.rotation.x*180/Math.PI,pitch:body.rotation.z*180/Math.PI,angle:wheel.rotation.x,x:body.parent.position.x,y:body.position.y});
+       // Apoyo medido en el mismo cuadro que muestra la muestra pedida (antes de que la rueda empiece a girar).
+       if(body&&window.medirApoyo!=null&&parseInt(document.querySelector('#sample-time')?.textContent)===window.medirApoyo){
+         let min=Infinity;
+         scene.getObjectByName('vehicle').traverse(o=>{
+           if(!o.isMesh)return;
+           const v=o.geometry.attributes.position,e=o.matrixWorld.elements;
+           for(let i=0;i<v.count;i++)min=Math.min(min,e[1]*v.getX(i)+e[5]*v.getY(i)+e[9]*v.getZ(i)+e[13]);
+         });
+         window.apoyo=min;window.medirApoyo=null;
+       }
      };
    }});
  });
@@ -83,16 +93,16 @@ try {
    console.log(`Emisión continua, primer POST de 20° → render de 20°: ${cambio.at-cambioPost.post} ms (muestra ${cambio.ms/20})`);
  } finally {emitting=false;await flujo;}
  await tab.waitForFunction(ms=>framesRC.at(-1)?.ms===ms,{},n*20);
- // Rango en vivo por defecto (rediseño): 30 s a 50 Hz, más que las 1000 muestras de /ultima, así que
- // se rellena hacia atrás con /mediciones. Opciones: 6 s · 30 s · 2 min · Sesión.
- assert.equal(await tab.$eval('#sample-count',e=>e.textContent),'1500 muestras');
- await tab.click('[data-ventana="6"]');
- await tab.waitForFunction(()=>document.querySelector('#sample-count').textContent==='300 muestras',{timeout:15000});
+ // Rangos en vivo del rediseño: 6 s (por defecto) · 30 s · 2 min · Sesión, a 50 Hz. 30 s son más que las
+ // 1000 muestras de /ultima, así que se rellena hacia atrás con /mediciones.
+ assert.equal(await tab.$eval('#sample-count',e=>e.textContent),'300 muestras');
+ await tab.click('[data-ventana="30"]');
+ await tab.waitForFunction(()=>document.querySelector('#sample-count').textContent==='1500 muestras',{timeout:15000});
  // «Sesión»: todas las mediciones desde la primera; la gráfica dibuja una versión reducida (mín./máx. por cubo).
  await tab.click('[data-ventana="sesion"]');
  await tab.waitForFunction(total=>document.querySelector('#sample-count').textContent===total+' muestras',{timeout:30000},n);
- await tab.click('[data-ventana="30"]');
- await tab.waitForFunction(()=>document.querySelector('#sample-count').textContent==='1500 muestras',{timeout:15000});
+ await tab.click('[data-ventana="6"]');
+ await tab.waitForFunction(()=>document.querySelector('#sample-count').textContent==='300 muestras',{timeout:15000});
  const waitText=async(sel,value)=>tab.waitForFunction((s,v)=>document.querySelector(s)?.textContent.includes(v),{},sel,value);
  const state=()=>tab.evaluate(()=>framesRC.at(-1));
  const snap=async name=>{if(process.env.CAPTURAS){await mkdir(process.env.CAPTURAS,{recursive:true});await tab.screenshot({path:join(process.env.CAPTURAS,name+'.png')});}};
@@ -121,6 +131,7 @@ try {
    const rows=Array.from({length:10},(_,i)=>sample(roll,pitch,i===4?5:0));
    if(tipo==='golpe')rows[6].az=18;
    const end=rows.at(-1), before=await state();
+   await tab.evaluate(ms=>{window.medirApoyo=ms;window.apoyo=null;},end.t_ms);
    const sent=Date.now();
    await batch(rows);
    if(tipo)await post('/eventos',{evento:{id:'EV-'+tipo,sesion_id:id,tipo,gravedad:'alta',estado:'confirmado',t_inicio_ms:rows[0].t_ms,t_deteccion_ms:rows[6].t_ms,t_fin_ms:end.t_ms,t_activacion_ms:rows[7].t_ms,ubicacion:null}});
@@ -130,16 +141,12 @@ try {
    assert.ok(Math.abs(frame.pitch-pitch)<.001 && Math.abs((frame.roll-roll)%360)<.001,JSON.stringify(frame));
    assert.equal(frame.x,origin.x);
    // En vivo el carro se apoya en la carretera: su punto más bajo toca la superficie (−0,57 + 0,008).
-   const bajo=await tab.evaluate(()=>{
-     let min=Infinity;
-     window.testScene.getObjectByName('vehicle').traverse(o=>{
-       if(!o.isMesh)return;
-       const v=o.geometry.attributes.position,e=o.matrixWorld.elements;
-       for(let i=0;i<v.count;i++)min=Math.min(min,e[1]*v.getX(i)+e[5]*v.getY(i)+e[9]*v.getZ(i)+e[13]);
-     });
-     return min;
-   });
-   assert.ok(Math.abs(bajo-(-.57+.008))<1e-3,`Punto más bajo ${bajo} con roll ${roll}, pitch ${pitch}`);
+   // Se mide en el cuadro que dibuja la postura recibida. Antes se medía un poco después y, si la rueda ya
+   // había empezado a girar (el visor recalcula el apoyo al cambiar la postura, no en cada giro de rueda),
+   // el resultado dependía de cuántos cuadros alcanzaban a dibujarse: con la vista rediseñada, más fluida,
+   // fallaba a veces por 1–3 mm.
+   const bajo=await tab.evaluate(()=>window.apoyo);
+   assert.ok(Math.abs(bajo-(-.57+.008))<1e-3,`Punto más bajo ${bajo} con roll ${roll}, pitch ${pitch}, evento ${tipo}`);
    const uno=v=>v.toLocaleString('es-EC',{minimumFractionDigits:1,maximumFractionDigits:1})+'°';
    await waitText('#roll',uno(roll));
    await waitText('#pitch',uno(pitch));
@@ -177,6 +184,21 @@ try {
    }
  }
  console.log('POST → primer render WebGL observado (ms), horizontal / 20° / lado / invertido / horizontal:',latencias);
+ // Rango «Sesión»: más de 2000 mediciones se dibujan reducidas por cubos (mín./máx.) sin perder el golpe.
+ await tab.click('[data-ventana="sesion"]');
+ await tab.waitForFunction(total=>document.querySelector('#sample-count').textContent===total+' muestras',{timeout:30000},n);
+ const reducida=await tab.evaluate(()=>{const c=testChart.getChart('magnitude');const d=c.data.datasets[0].data.filter(p=>p.y!=null);return {puntos:d.length,max:Math.max(...d.map(p=>p.y))};});
+ assert.ok(reducida.puntos<=2100,`dibuja ${reducida.puntos} puntos`);
+ assert.ok(Math.abs(reducida.max-Math.hypot(0,0,18))<1e-9||reducida.max>=18,`el golpe sigue en la versión reducida (${reducida.max})`);
+ await tab.click('[data-ventana="6"]');
+ await tab.waitForFunction(()=>document.querySelector('#sample-count').textContent==='300 muestras',{timeout:15000});
+ // Pantalla completa: tecla F la activa (sin barra lateral) y Esc la quita.
+ await tab.keyboard.press('f');
+ await tab.waitForFunction(()=>document.body.classList.contains('presentacion'));
+ assert.equal(await tab.$eval('.lateral',e=>getComputedStyle(e).display),'none');
+ assert.ok(await tab.$eval('#car canvas',c=>c.getBoundingClientRect().width>200));
+ await tab.keyboard.press('Escape');
+ await tab.waitForFunction(()=>!document.body.classList.contains('presentacion'));
  await waitText('#graph-summary','180°');
  await waitText('#mode-help','Sin datos recientes');
  const stopped=await state();
@@ -258,7 +280,7 @@ try {
  await tab.$eval('[href="#historial"]',e=>e.click());await tab.waitForSelector('#history-list');
  await post('/eventos',{evento:{id:'EV-HISTORIAL-AUTO',sesion_id:other,tipo:'golpe',gravedad:'media',estado:'confirmado',t_inicio_ms:0,t_deteccion_ms:12,t_fin_ms:12,t_activacion_ms:null,ubicacion:null}});
  await tab.waitForFunction(()=>document.querySelector('#history-list')?.textContent.includes('EV-HISTORIAL-AUTO'),{timeout:12000});
- console.log('PASS: rangos de 30 s, 6 s y Sesión, tres marcas de evento, giro dentro del lote, pulso aislado, aviso de evento guardado, aviso de sesión nueva, historial que se actualiza solo, pausa, reconexión, cambio con petición pendiente e historial desde la primera muestra.');
+ console.log('PASS: rangos de 6 s, 30 s y Sesión (reducida sin perder el golpe), pantalla completa con F/Esc, tres marcas de evento, giro dentro del lote, pulso aislado, aviso de evento guardado, aviso de sesión nueva, historial que se actualiza solo, pausa, reconexión, cambio con petición pendiente e historial desde la primera muestra.');
  assert.deepEqual(errors,[]);
 } finally {
  await browser?.close(); await web.close(); api.close(); await once(api,'close'); repo.cerrar(); await rm(dir,{recursive:true,force:true});

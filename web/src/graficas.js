@@ -20,7 +20,13 @@ export const ZONA_NORMAL_DEG = 10;   // banda «Zona normal» (pedido de diseño
 export const MAX_PUNTOS = 2000;      // por encima se dibuja la versión reducida (mín./máx. por cubo)
 const GRAVEDAD = 9.81;
 const HUECO_MS = 500;                // más separación entre muestras: la línea se corta (datos perdidos)
-const css = (nombre, defecto = '#667085') => getComputedStyle(document.documentElement).getPropertyValue(nombre).trim() || defecto;
+// Los tokens no cambian en ejecución: se leen una vez (getComputedStyle fuerza un recálculo de estilos
+// si el DOM cambió, y las gráficas se redibujan cada 200 ms en vivo).
+const tokens = new Map();
+const css = (nombre, defecto = '#667085') => {
+  if (!tokens.has(nombre)) tokens.set(nombre, getComputedStyle(document.documentElement).getPropertyValue(nombre).trim());
+  return tokens.get(nombre) || defecto;
+};
 const num = (v, d = 1) => v.toLocaleString('es-EC', { minimumFractionDigits: d, maximumFractionDigits: d });
 const seg = ms => (ms / 1000).toLocaleString('es-EC', { maximumFractionDigits: 1 });
 const FUENTE = '"IBM Plex Sans", system-ui, sans-serif';
@@ -424,12 +430,14 @@ export function zoomArrastrando(g, alElegir) {
 }
 
 // Pantalla completa: ticks de 14 px, rótulos más grandes y líneas de 3 px.
+// En un celular horizontal (alto ≤ 500 px) se conserva el tamaño normal: no hay sitio para más.
 export function modoPresentacion(g, activo) {
+  const grande = activo && innerHeight > 500;
   for (const c of g.todas) {
-    c.$tel.presentacion = activo;
-    for (const eje of Object.values(c.options.scales)) eje.ticks.font = { ...(eje.ticks.font ?? {}), size: activo ? 14 : 12 };
-    c.options.layout.padding.right = c.$tel.etiquetas ? (activo ? 130 : 112) : 12;
-    c.data.datasets.forEach(d => { d.borderWidth = activo ? 3 : (d.$ancho ?? 2.5); });
+    c.$tel.presentacion = grande;
+    for (const eje of Object.values(c.options.scales)) eje.ticks.font = { ...(eje.ticks.font ?? {}), size: grande ? 14 : activo ? 10 : 12 };
+    c.options.layout.padding.right = c.$tel.etiquetas ? (grande ? 130 : activo ? 84 : 112) : 12;
+    c.data.datasets.forEach(d => { d.borderWidth = grande ? 3 : (d.$ancho ?? 2.5); });
     c.update('none');
   }
 }

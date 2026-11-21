@@ -20,7 +20,8 @@ const vista = process.argv[3] || 'nueva';
 const solo = process.argv[4] ? new Set(process.argv[4].split(',')) : null;
 const VISTAS = (process.env.VISTAS || '1920x1080,1366x768,844x390').split(',').map(v => {
   const [width, height] = v.split('x').map(Number);
-  return {nombre: v, vp: {width, height, deviceScaleFactor: width < 900 ? 2 : 1, isMobile: width < 900, hasTouch: width < 900}};
+  // Sin isMobile: cambiarlo recarga la página en puppeteer y la vista de celular solo necesita el ancho.
+  return {nombre: v, vp: {width, height, deviceScaleFactor: width < 900 ? 2 : 1}};
 });
 const dir = await mkdtemp(join(tmpdir(), 'capturas-rediseno-'));
 const repo = crearRepositorio(join(dir, 'prueba.sqlite'));
@@ -113,6 +114,8 @@ try {
   await tab.goto(url + '#historial');
   await tab.waitForFunction(() => document.querySelector('#history-list')?.textContent.includes('EV00'), {timeout: 15000});
   await foto('historial');
+  await tab.type('#search', `${id}-EV001`);
+  await tab.waitForSelector(`[data-event="${id}-EV001"]`);
   await tab.$eval(`[data-event="${id}-EV001"]`, b => b.click());
   await tab.waitForSelector('#car canvas', {timeout: 15000});
   await pause(1500);

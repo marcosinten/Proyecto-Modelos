@@ -30,7 +30,7 @@ function tecnico(nombre, id, unidad) {
  return `<div class="dato"><span>${nombre}</span><strong id="${id}">—</strong><small>${unidad}</small></div>`;
 }
 const RANGOS = [['6', '6 s'], ['30', '30 s'], ['120', '2 min'], ['sesion', 'Sesión']];
-export const RANGO_INICIAL = '30';
+export const RANGO_INICIAL = '6';   // el más liviano en vivo (300 muestras); 30 s redibuja 1500 puntos por consulta
 export const segundosRango = v => v === 'sesion' ? Infinity : Number(v);
 
 // Tablero de En vivo, Detalle de un evento y Simulación. La rejilla de 12 columnas se reordena con CSS en

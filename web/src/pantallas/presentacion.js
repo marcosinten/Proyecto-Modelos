@@ -35,6 +35,13 @@ document.addEventListener('visibilitychange', () => { if (app.presentacion && do
 document.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
   if (e.target.closest?.('input, select, textarea, [contenteditable="true"]') || document.querySelector('dialog[open]')) return;
-  if (e.key === 'Escape' && app.presentacion && !document.fullscreenElement) { activarPresentacion(false); return; }
+  if (e.key === 'Escape' && app.presentacion) { activarPresentacion(false); return; }
   if ((e.key === 'f' || e.key === 'F') && PAGINAS.includes(app.page) && $('#presentation-mode')) { e.preventDefault(); activarPresentacion(!app.presentacion); }
+});
+// El tamaño de letra de las gráficas depende del alto disponible (celular horizontal o pantalla grande).
+let altoAnterior = innerHeight > 500;
+addEventListener('resize', () => {
+  const alto = innerHeight > 500;
+  if (app.presentacion && alto !== altoAnterior) app.alCambiarPresentacion?.(true);
+  altoAnterior = alto;
 });
