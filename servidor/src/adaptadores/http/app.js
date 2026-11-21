@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { timingSafeEqual } from 'node:crypto';
-import { crearSesionSchema, crearEventoSchema, loteSchema, registrarPruebaSchema, validar, validarId, enteroQuery, ErrorApi } from '../../aplicacion/contratos.js';
+import { crearSesionSchema, crearEventoSchema, loteSchema, registrarPruebaSchema, registrarTramoSchema, crearTramoSchema, validar, validarId, enteroQuery, ErrorApi } from '../../aplicacion/contratos.js';
 import { crearExcel } from '../../aplicacion/excel.js';
 
 export function crearApp({ repositorio, apiKey = '', origins = ['http://localhost:5173', 'http://127.0.0.1:5173'], logger = console }) {
@@ -64,6 +64,21 @@ export function crearApp({ repositorio, apiKey = '', origins = ['http://localhos
     if (prueba === null) return res.json({ version: 1, sesion_id: id, quitada: repositorio.quitarPrueba(id), prueba: null });
     const resultado = repositorio.registrarPrueba(id, prueba);
     res.status(resultado === 'creada' ? 201 : 200).json({ version: 1, sesion_id: id, resultado, prueba: repositorio.obtenerPrueba(id) });
+  });
+  api.get('/sesiones/:id/pruebas', (req, res) => {
+    const id = validarId(req.params.id); res.json({version: 1, sesion_id: id, pruebas: repositorio.listarPruebasSesion(id)});
+  });
+  api.post('/sesiones/:id/pruebas', (req, res) => {
+    const sesionId = validarId(req.params.id), {prueba} = validar(crearTramoSchema, req.body);
+    const id = repositorio.guardarTramo(sesionId, prueba);
+    res.status(201).json({version: 1, resultado: 'creada', prueba: repositorio.obtenerTramo(id)});
+  });
+  api.post('/pruebas/:id', (req, res) => {
+    const id = enteroQuery(req.params.id, 0, Number.MAX_SAFE_INTEGER, 1);
+    const previa = repositorio.obtenerTramo(id), {prueba} = validar(registrarTramoSchema, req.body);
+    if (prueba === null) { repositorio.quitarTramo(id); return res.json({version: 1, quitada: true, prueba: null}); }
+    const resultado = repositorio.guardarTramo(previa.sesion_id, prueba, id);
+    res.json({version: 1, resultado, prueba: repositorio.obtenerTramo(id)});
   });
   // Todas las pruebas registradas, con sus eventos y máximos, para la pantalla Resultados.
   api.get('/pruebas', (_req, res) => res.json({ version: 1, pruebas: repositorio.listarPruebas() }));

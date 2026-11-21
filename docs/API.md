@@ -99,3 +99,7 @@ curl http://127.0.0.1:3000/api/v1/eventos/EV-001
 En Windows PowerShell utiliza `curl.exe` en lugar de `curl` si este último es un alias. También puedes pegar las URLs, seleccionar POST y copiar el contenido de cada JSON en Postman. Con clave activa, añade `-H "X-API-Key: TU_CLAVE"`.
 
 Los esquemas están en `contratos/v1`. `npm run contratos` los regenera desde el código de validación. JSON Schema documenta la estructura; las relaciones entre tiempos y el orden de las muestras se comprueban además en el servidor.
+
+### Pruebas por tramo
+
+La migración 006 copia los registros anteriores con inicio en 0 y conserva su fin. `GET /api/v1/sesiones/:id/pruebas` lista los tramos de una sesión; `POST` en esa ruta crea uno con `{version: 1, prueba: {escenario_esperado, repeticion, nota, t_inicio_ms}}`. Solo puede existir uno abierto por sesión. `POST /api/v1/pruebas/:id` reemplaza el tramo con esos campos y, opcionalmente, `t_fin_ms` y `fin_automatico`; con `prueba: null` lo elimina. Los agregados y eventos de `GET /api/v1/pruebas` corresponden a la ventana inclusiva [inicio, fin]; sin fin se usa el resto de la sesión. Las rutas anteriores `/sesiones/:id/prueba` siguen disponibles para sesiones con un solo registro: GET devuelve el primero y POST rechaza sesiones con varios registros con `VARIAS_PRUEBAS`.

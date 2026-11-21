@@ -47,6 +47,13 @@ export const pruebaSchema = z.object({
   t_fin_ms: ms.optional()
 }).strict();
 export const registrarPruebaSchema = z.object({ version: z.literal(1), prueba: pruebaSchema.nullable() }).strict();
+export const tramoSchema = z.object({
+  escenario_esperado: z.enum(ESCENARIOS_PRUEBA), repeticion: z.number().int().min(1).max(1000),
+  nota: z.string().trim().max(500).optional(), t_inicio_ms: ms,
+  t_fin_ms: ms.nullable().optional(), fin_automatico: z.boolean().optional()
+}).strict().superRefine((p, ctx) => { if (p.t_fin_ms != null && p.t_fin_ms < p.t_inicio_ms) ctx.addIssue({code: 'custom', path: ['t_fin_ms'], message: 'Debe ser mayor o igual al inicio'}); });
+export const registrarTramoSchema = z.object({version: z.literal(1), prueba: tramoSchema.nullable()}).strict();
+export const crearTramoSchema = z.object({version: z.literal(1), prueba: z.object({escenario_esperado: z.enum(ESCENARIOS_PRUEBA), repeticion: z.number().int().min(1).max(1000), nota: z.string().trim().max(500).optional(), t_inicio_ms: ms}).strict()}).strict();
 export const crearSesionSchema = z.object({ version: z.literal(1), sesion: sesionSchema }).strict();
 export const loteSchema = z.object({ version: z.literal(1), mediciones: z.array(medicionSchema).min(1).max(1000) }).strict();
 export const crearEventoSchema = z.object({ version: z.literal(1), evento: eventoSchema }).strict();

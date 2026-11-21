@@ -1,3 +1,4 @@
+import {actualizarCierreAutomatico} from './prueba-fisica.js';
 // En vivo: conexión a una sesión, consulta periódica de la postura, avisos de evento guardado
 // y de sesión nueva.
 import {app, $, escape, seconds, get, toast} from '../app.js';
@@ -100,6 +101,7 @@ export async function connectLive(id){
      const events=r.eventos.filter(e=>e.t_deteccion_ms>=start());
      const key=JSON.stringify([r.ultimo_evento?.id,events.map(e=>e.id)]);
      app.current.eventos=events;app.current.evento=r.ultimo_evento;
+     actualizarCierreAutomatico();
      // 1a: un evento nuevo de esta sesión (el primero visto al conectar es la referencia).
      const ultimoId=r.ultimo_evento?.id??null;
      if(eventoVisto===undefined)eventoVisto=ultimoId;

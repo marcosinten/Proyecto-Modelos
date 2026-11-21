@@ -38,7 +38,7 @@ test('registrar, leer, corregir y quitar la prueba de una sesión real', async t
   assert.equal((await request('/sesiones/RC-1/prueba', registrar('golpe', 1, 'golpe contra la pared'))).data.resultado, 'sin_cambios');
   const c = await request('/sesiones/RC-1/prueba', registrar('vuelco', 2));
   assert.equal(c.status, 200); assert.equal(c.data.resultado, 'actualizada');
-  assert.deepEqual({ ...c.data.prueba, registrada_ms: 0 }, { escenario_esperado: 'vuelco', repeticion: 2, nota: '', registrada_ms: 0, t_fin_ms: null });
+  assert.deepEqual({ ...c.data.prueba, registrada_ms: 0 }, { id: c.data.prueba.id, sesion_id: 'RC-1', escenario_esperado: 'vuelco', repeticion: 2, nota: '', t_inicio_ms: 0, t_fin_ms: null, fin_automatico: 0, registrada_ms: 0 });
   assert.equal((await request('/sesiones/RC-1/prueba', { version: 1, prueba: null })).data.quitada, true);
   assert.equal((await request('/sesiones/RC-1/prueba')).data.prueba, null);
 });
@@ -133,4 +133,78 @@ test('migración 005 conserva las pruebas de una base anterior', t => {
   assert.equal(lista[0].escenario_esperado, 'inclinacion');
   assert.equal(lista[0].repeticion, 2);
   assert.equal(lista[0].t_fin_ms, null);
+});
+
+test('tramos de una sesión separan mediciones, picos y eventos', async t => {
+  const { request, sesion } = await entorno(t);
+  await sesion('TRAMOS', 'real', [medicion(1, 2), medicion(2, 10), medicion(3, 3), medicion(4, 20)]);
+  for (const [id, tiempo] of [['EV-A', 40], ['EV-B', 80]]) {
+    const respuesta = await request('/eventos', {version: 1, evento: {id, sesion_id: 'TRAMOS', tipo: 'golpe', gravedad: 'alta', estado: 'confirmado', t_inicio_ms: tiempo, t_fin_ms: tiempo, t_deteccion_ms: tiempo, t_activacion_ms: tiempo, ubicacion: null}});
+    assert.equal(respuesta.status, 201);
+  }
+  const datos = (repeticion, inicio) => ({escenario_esperado: 'golpe', repeticion, t_inicio_ms: inicio});
+  const primera = await request('/sesiones/TRAMOS/pruebas', {version: 1, prueba: datos(1, 20)});
+  assert.equal(primera.status, 201);
+  const cierre = await request(`/pruebas/${primera.data.prueba.id}`, {version: 1, prueba: {...datos(1, 20), t_fin_ms: 40}});
+  assert.equal(cierre.status, 200);
+  const segunda = await request('/sesiones/TRAMOS/pruebas', {version: 1, prueba: datos(2, 60)});
+  assert.equal(segunda.status, 201);
+  assert.equal((await request(`/pruebas/${segunda.data.prueba.id}`, {version: 1, prueba: {...datos(2, 60), t_fin_ms: 80}})).status, 200);
+  const pruebas = (await request('/pruebas')).data.pruebas;
+  assert.equal(pruebas.length, 2);
+  assert.deepEqual(pruebas.map(p => p.mediciones), [2, 2]);
+  assert.ok(Math.abs(pruebas[0].pico_aceleracion_ms2 - Math.hypot(10, 9.81)) < 1e-9);
+  assert.ok(Math.abs(pruebas[1].pico_aceleracion_ms2 - Math.hypot(20, 9.81)) < 1e-9);
+  assert.deepEqual(pruebas.map(p => p.eventos.map(e => e.id)), [['EV-A'], ['EV-B']]);
+});
+
+test('validaciones y borrado de pruebas por tramo', async t => {
+  const { request, sesion } = await entorno(t);
+  await sesion('TRAMOS-VALIDAR');
+  const tramo = (repeticion, t_inicio_ms) => ({escenario_esperado: 'golpe', repeticion, t_inicio_ms});
+  const primera = await request('/sesiones/TRAMOS-VALIDAR/pruebas', {version: 1, prueba: tramo(1, 100)});
+  assert.equal(primera.status, 201);
+  const duplicada = await request('/sesiones/TRAMOS-VALIDAR/pruebas', {version: 1, prueba: tramo(2, 200)});
+  assert.equal(duplicada.status, 409);
+  assert.equal(duplicada.data.error.codigo, 'PRUEBA_ABIERTA');
+  const id = primera.data.prueba.id;
+  assert.equal((await request(`/pruebas/${id}`, {version: 1, prueba: {...tramo(1, 100), t_fin_ms: 99}})).status, 400);
+  assert.equal((await request(`/pruebas/${id}`, {version: 1, prueba: {...tramo(1, 100), t_fin_ms: 150}})).status, 200);
+  const segunda = await request('/sesiones/TRAMOS-VALIDAR/pruebas', {version: 1, prueba: tramo(2, 200)});
+  assert.equal(segunda.status, 201);
+  const antigua = await request('/sesiones/TRAMOS-VALIDAR/prueba', registrar('golpe', 3));
+  assert.equal(antigua.status, 409);
+  assert.equal(antigua.data.error.codigo, 'VARIAS_PRUEBAS');
+  assert.equal((await request(`/pruebas/${id}`, {version: 1, prueba: null})).status, 200);
+  const lista = (await request('/sesiones/TRAMOS-VALIDAR/pruebas')).data.pruebas;
+  assert.deepEqual(lista.map(p => p.id), [segunda.data.prueba.id]);
+  assert.equal((await request('/pruebas/999999', {version: 1, prueba: null})).status, 404);
+});
+
+test('migración 006 conserva el inicio y el fin de las pruebas anteriores', t => {
+  const dir = mkdtempSync(join(tmpdir(), 'tramos-migracion-'));
+  let repo;
+  t.after(() => { repo?.cerrar(); rmSync(dir, {recursive: true, force: true}); });
+  const path = join(dir, 'antes.sqlite');
+  const vieja = new DatabaseSync(path);
+  vieja.exec(readFileSync(new URL('../db/migraciones/001_crear_tablas.sql', import.meta.url), 'utf8'));
+  vieja.exec('CREATE TABLE migraciones (nombre TEXT PRIMARY KEY, aplicada_ms INTEGER NOT NULL)');
+  for (const nombre of ['002_latencias_evento.sql', '003_pruebas_fisicas.sql', '004_estado_medicion.sql', '005_fin_prueba.sql']) {
+    vieja.exec(readFileSync(new URL('../db/migraciones/' + nombre, import.meta.url), 'utf8'));
+    vieja.prepare('INSERT INTO migraciones(nombre, aplicada_ms) VALUES (?,?)').run(nombre, Date.now());
+  }
+  vieja.exec("INSERT INTO sesiones(id, origen) VALUES ('RC-MIGRADA', 'real')");
+  vieja.exec("INSERT INTO pruebas_fisicas(sesion_id, escenario_esperado, repeticion, nota, registrada_ms, t_fin_ms) VALUES ('RC-MIGRADA', 'golpe', 7, 'guardada', 123, 4500)");
+  vieja.close();
+  repo = crearRepositorio(path);
+  const pruebas = repo.listarPruebas();
+  assert.equal(pruebas.length, 1);
+  assert.equal(pruebas[0].sesion_id, 'RC-MIGRADA');
+  assert.equal(pruebas[0].t_inicio_ms, 0);
+  assert.equal(pruebas[0].t_fin_ms, 4500);
+  assert.equal(pruebas[0].nota, 'guardada');
+  const comprobacion = new DatabaseSync(path);
+  try {
+    assert.equal(comprobacion.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='pruebas_fisicas'").get(), undefined);
+  } finally { comprobacion.close(); }
 });
