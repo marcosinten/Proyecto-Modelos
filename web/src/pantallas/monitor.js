@@ -20,6 +20,7 @@ import {simulationForm, bindSimulation} from './simulacion.js';
 import {connectLive} from './vivo.js';
 
 const uno = v => v.toLocaleString('es-EC', {minimumFractionDigits: 1, maximumFractionDigits: 1});
+const dos = v => v.toLocaleString('es-EC', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 const ATRIBUCION = 'Modelo 3D: <a href="https://sketchfab.com/3d-models/oldsmobile-cutlass-supreme-sedan-71-78f76d386a4341b0b71745bdc50fd5ab" target="_blank" rel="noopener noreferrer">Barbo</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · adaptado al visor';
 
 function lectura(serie, ic, titulo, id, idDetalle, extra = '') {
@@ -178,7 +179,7 @@ export function refreshData() {
  if (app.graficas) {
   const eventos = app.current.eventos ?? (app.current.evento ? [app.current.evento] : []);
   const r = actualizarGraficas(app.graficas, {mediciones: app.current.mediciones, eventos, desde: start(), hasta: end(),
-    cursor: app.liveActive ? null : app.position, umbralGolpe: app.current.parametros?.aceleracion});
+    cursor: app.liveActive ? null : app.position, umbralGolpe: app.current.parametros?.aceleracion, reloj: app.liveActive ? app.reloj : null});
   const max = app.current.mediciones.reduce((v,m)=>Math.max(v,Math.abs(m.roll_deg)),0);
   $('#graph-summary').textContent=app.current.mediciones.length?`Inclinación lateral máxima de ${max.toLocaleString('es-EC',{maximumFractionDigits:1})}° ${app.liveActive?'en la ventana':'en estas mediciones'}.`:'Sin mediciones todavía.';
   app.maxTotal = r.maxTotal;
@@ -192,7 +193,7 @@ export function update(drawCharts=true){
  $('#roll').textContent=uno(m.roll_deg)+'°';$('#pitch').textContent=uno(m.pitch_deg)+'°';
  $('#roll-dir').textContent=Math.abs(m.roll_deg)<2?'sin inclinación lateral':direccionRoll(m.roll_deg);
  $('#pitch-dir').textContent=Math.abs(m.pitch_deg)<2?'sin inclinación frontal':direccionPitch(m.pitch_deg);
- $('#sample-time').textContent=Math.round(app.position)+' ms';$('#clock').textContent=(app.position/1000).toFixed(2)+' / '+(end()/1000).toFixed(2)+' s';
+ $('#sample-time').textContent=Math.round(app.position)+' ms';$('#clock').textContent=dos(app.position/1000)+' / '+dos(end()/1000)+' s';
  $('#timeline').value=app.position;$('#play').textContent=app.running?'Pausar':'Reproducir';
  const sampleIndex = app.current.mediciones.indexOf(m);
  // Interpolate between samples so the wheel turns smoothly instead of jumping every 20 ms.

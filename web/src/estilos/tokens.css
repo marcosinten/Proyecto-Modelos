@@ -37,9 +37,12 @@
   --serie-pitch: #0E9384;
   --serie-total: #6941C6;
   --serie-rueda: #667085;
+  --serie-pitch-texto: #107569;  /* texto sobre blanco ≥ 4,5:1 (la línea usa --serie-pitch, 3,8:1) */
+  --eje-3d: #8A94A6;             /* ejes del gráfico 3D: #98A2B3 oscurecido para llegar a 3:1 */
   --serie-x: #2F5BEA;
   --serie-y: #D92D20;
   --serie-z: #0E9384;
+  --serie-z-texto: #107569;
   --rejilla: #E8ECF3;
 
   /* Eventos: mismo color en todas partes (línea/punto y texto) */

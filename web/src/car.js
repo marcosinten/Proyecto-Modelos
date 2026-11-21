@@ -84,7 +84,7 @@ export function crearVisor(element) {
   const light = new T.DirectionalLight(0xffffff, 4); light.position.set(3, 7, 5); scene.add(light);
   const roadTop = -.57;
   const fallbackRoad = new T.Group(); scene.add(fallbackRoad);
-  const verge = new T.Mesh(new T.PlaneGeometry(104, 26), new T.MeshStandardMaterial({color:0xb4c4b0}));
+  const verge = new T.Mesh(new T.PlaneGeometry(104, 26), new T.MeshStandardMaterial({color:0x9fb39b}));
   verge.rotation.x = -Math.PI / 2;
   verge.position.set(14, roadTop - .06, 1.6);
   scene.add(verge);
