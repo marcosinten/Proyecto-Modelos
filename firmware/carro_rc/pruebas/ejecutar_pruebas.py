@@ -28,6 +28,11 @@ EVID = RAIZ / "evidencias"
 PPR = int(re.search(r"PULSOS_POR_VUELTA\s*=?\s*(\d+)", (FW / "carro_rc.ino").read_text(encoding="utf-8")).group(1))
 # Umbral de inclinación del firmware (°): el criterio de la frenada se deriva de este valor.
 UMBRAL_INCL = float(re.search(r"UMBRAL_INCLINACION_DEG\s*=\s*([0-9.]+)", (FW / "carro_rc.ino").read_text(encoding="utf-8")).group(1))
+# Permanencia y periodo de lectura del firmware: definen qué latencia de detección es razonable.
+_INO = (FW / "carro_rc.ino").read_text(encoding="utf-8")
+PERMANENCIA = int(re.search(r"PERMANENCIA_MS\s*=\s*(\d+)", _INO).group(1))
+PERIODO = int(re.search(r"PERIODO_ADQ_MS\s*=\s*(\d+)", _INO).group(1))
+LECT_GOLPE = int(re.search(r"LECTURAS_GOLPE\s*=\s*(\d+)", _INO).group(1))
 
 # Sensor modelado con error de cero y ruido típicos del MPU6050 para que la
 # calibración se compruebe de verdad (Wokwi entrega valores exactos).
@@ -65,6 +70,7 @@ RX = {
     "alerta": re.compile(r"^ALERTA tipo=(\S+) t_det_ms=(\d+) t_det_us_arranque=(\d+) LED=\+(\S+) ms BUZZER=\+(\S+) ms SERVO\(orden\)=\+(\S+) ms"),
     "evento": re.compile(r"^EVENTO id=(\S+) tipo=(\S+) gravedad=(\S+) t_inicio=(\d+) t_det=(\d+) t_act=(\d+) t_fin=(\d+) cierre=(\S+)"),
     "det": re.compile(r"^DETECCION id=(\S+) tipo_inicial=(\S+) motivo=(\S+) t_ms=(\d+)"),
+    "latencia": re.compile(r"^LATENCIA id=(\S+) deteccion_ms=(\S+) activacion_ms=(\S+)"),
     "rearme": re.compile(r"^REARME t_ms=(\d+) alarma=(\S+)"),
     "hall0": re.compile(r"^HALL rueda_rps=0 t_ms=(\d+) desde_ultimo_pulso=(\S+) ms pulsos=(\d+)"),
     "post": re.compile(r"^RED POST (\S+) (.+?) intento=(\d+) bytes=(\d+) hash=(\w+) resultado=(-?\d+) t_ms=(\d+)"),
@@ -181,6 +187,28 @@ def latencias(d, vcd, ev):
     return out
 
 
+def rango_deteccion(motivo):
+    """Latencia de detección esperada (ms) según el contador que confirmó el evento."""
+    if motivo == "lecturas_golpe":  # LECTURAS_GOLPE lecturas seguidas: (n − 1) periodos
+        base = (LECT_GOLPE - 1) * PERIODO
+        return base - 1, base + PERIODO + 1
+    return PERMANENCIA, PERMANENCIA + 2 * PERIODO + 1  # permanencia en lecturas de PERIODO ms
+
+
+def tiempos_respuesta(d, ev):
+    """Latencias medidas con micros() en el firmware (línea LATENCIA de cada evento)."""
+    out = []
+    motivos = {x[0]: x[2] for x in d["det"]}
+    for eid, det, act in d["latencia"]:
+        det, act = float(det), float(act)
+        lo, hi = rango_deteccion(motivos.get(eid, "?"))
+        out.append(r("Tiempos de respuesta · medidos",
+                     f"detección (umbral → confirmado) entre {lo} y {hi} ms; activación (confirmado → órdenes) entre 0 y 50 ms",
+                     f"{eid}: motivo {motivos.get(eid, '?')}, latencia_deteccion_ms {det:.3f}, latencia_activacion_ms {act:.3f}",
+                     lo <= det <= hi and 0 <= act < 50, ev))
+    return out
+
+
 def vcd_servo(vcd, t):
     for tu, v in vcd["servo_gpio26_pulso_us"]:
         if tu == t:
@@ -256,6 +284,7 @@ def evaluar(caso, d, vcd, ev, extra):
                       f"t_act={ev0[5]} t_fin={ev0[6]} cierre={ev0[7]}" if ev0 else f"detecciones {len(dets)}, eventos 0") + extra_txt,
                      ok, ev))
         res += latencias(d, vcd, ev)
+        res += tiempos_respuesta(d, ev)
         # Patrones del prototipo: rápido, lento o fijo hasta el rearme.
         bz = [(t, v) for t, v in vcd["buzzer_gpio27_activo"] if t >= d["t0"]]
         cambios = [bz[i][0] for i in range(len(bz)) if i == 0 or bz[i][1] != bz[i - 1][1]]
@@ -389,6 +418,16 @@ def evaluar(caso, d, vcd, ev, extra):
                      f"{len(rps)} valores en {n_med} mediciones enviadas; máximo {max(rps) if rps else '?'}; "
                      f"último {rps[-1] if rps else '?'}",
                      bool(rps) and len(rps) == n_med and 4/PPR*.9 <= max(rps) <= 4/PPR*1.1 and rps[-1] == 0, ev))
+        # Las latencias medidas llegan a la API y se devuelven igual (fase 1).
+        enviados = [p["cuerpo"]["evento"] for p in posts if p["url"].endswith("/eventos")]
+        guardado = extra.get("evento_json", {}).get("evento", {})
+        claves = ("latencia_deteccion_ms", "latencia_activacion_ms")
+        lo, hi = rango_deteccion("lecturas_golpe")
+        res.append(r("API · tiempos de respuesta", f"el evento enviado y el guardado traen latencia_deteccion_ms ({lo}–{hi} ms en un golpe) y latencia_activacion_ms (0–50 ms)",
+                     f"enviado {[{k: e.get(k) for k in claves} for e in enviados[-1:]]}; GET /eventos → {[guardado.get(k) for k in claves]}",
+                     bool(enviados) and all(guardado.get(k) == enviados[-1].get(k) for k in claves)
+                     and guardado.get(claves[0]) is not None and lo <= guardado[claves[0]] <= hi
+                     and guardado.get(claves[1]) is not None and 0 <= guardado[claves[1]] < 50, ev))
         res.append(r("API · reintento", "respuesta perdida → reintento con el mismo JSON, ids y tiempos; la API responde 200",
                      txt or "sin reintentos", bool(ok_rep), ev))
     # Frecuencias y mismo JSON en todos los casos
@@ -449,6 +488,7 @@ def main():
                 (dest / "evento_desde_api.json").write_text(g.stdout, encoding="utf-8")
                 try:
                     j = json.loads(g.stdout)
+                    extra["evento_json"] = j
                     extra["evento_api"] = (f"GET /eventos/{eid} → tipo {j['evento']['tipo']}, gravedad {j['evento']['gravedad']}, "
                                            f"ubicacion {j['evento']['ubicacion']}, {len(j['mediciones'])} mediciones en la ventana")
                     extra["evento_api_ok"] = j["evento"]["ubicacion"] is None and len(j["mediciones"]) > 0

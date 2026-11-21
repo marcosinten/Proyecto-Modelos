@@ -1,4 +1,4 @@
-INICIO carro_rc Grupo 11 version=2026.11.21-cp2-umbral10 origen=simulado mpu_correccion=1 modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
+INICIO carro_rc Grupo 11 version=2026.11.21-cp2-latencias origen=simulado mpu_correccion=1 modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
 MPU WHO_AM_I=0x68 SMPLRT_DIV=3 CONFIG=0x02 ACCEL_CONFIG=0x18 (esperado 3, 0x02, 0x18) OK
 CAL mantén el carro quieto y horizontal 2 s
 RED escaneo: 1 redes
@@ -60,6 +60,7 @@ TEL n=50 t=987 ax=0.006 ay=0.004 az=9.846 roll=0.03 pitch=0.04 rps=0.00 k=1
 EST t=999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=50 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO heap_libre=200000 heap_bloque_max=110000 heap_min=180000
 DETECCION id=RC-ABCDEF-77AE0BF3-EV001 tipo_inicial=golpe motivo=lecturas_golpe t_ms=1007 inicio_condicion=1003 norma=26.45 roll=0.22 pitch=68.12
 ALERTA tipo=golpe t_det_ms=1007 t_det_us_arranque=3208000 LED=+0.223 ms BUZZER=+0.224 ms SERVO(orden)=+0.227 ms
+LATENCIA id=RC-ABCDEF-77AE0BF3-EV001 deteccion_ms=4.000 activacion_ms=0.005
 TEL n=51 t=1007 ax=24.542 ay=0.038 az=9.856 roll=0.22 pitch=68.12 rps=0.00 k=1
 TEL n=52 t=1027 ax=-0.042 ay=0.033 az=9.856 roll=0.19 pitch=-0.24 rps=0.00 k=1
 TEL n=53 t=1047 ax=0.006 ay=0.028 az=9.851 roll=0.16 pitch=0.04 rps=0.00 k=1
@@ -85,7 +86,7 @@ TEL n=72 t=1439 ax=-0.018 ay=0.033 az=9.827 roll=0.19 pitch=-0.10 rps=0.00 k=4
 TEL n=73 t=1459 ax=0.092 ay=-0.024 az=9.904 roll=-0.14 pitch=0.53 rps=0.00 k=4
 TEL n=74 t=1467 ax=-0.018 ay=0.038 az=9.861 roll=0.22 pitch=-0.10 rps=0.00 k=1
 TEL n=75 t=1487 ax=-0.018 ay=-0.005 az=9.880 roll=-0.03 pitch=-0.10 rps=0.00 k=1
-EVENTO id=RC-ABCDEF-77AE0BF3-EV001 tipo=golpe gravedad=alta t_inicio=3 t_det=1007 t_act=1008 t_fin=1511 cierre=condicion_ausente
+EVENTO id=RC-ABCDEF-77AE0BF3-EV001 tipo=golpe gravedad=alta t_inicio=3 t_det=1007 t_act=1008 t_fin=1511 cierre=condicion_ausente lat_det_ms=4.000 lat_act_ms=0.005
 TEL n=76 t=1507 ax=-0.027 ay=0.009 az=9.832 roll=0.05 pitch=-0.16 rps=0.00 k=1
 TEL n=77 t=1527 ax=0.016 ay=0.024 az=9.870 roll=0.14 pitch=0.09 rps=0.00 k=1
 TEL n=78 t=1547 ax=0.078 ay=-0.043 az=9.832 roll=-0.25 pitch=0.45 rps=0.00 k=1

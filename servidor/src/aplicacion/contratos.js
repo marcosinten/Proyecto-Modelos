@@ -3,6 +3,9 @@ import { z } from 'zod';
 const id = z.string().regex(/^[A-Za-z0-9_-]{1,64}$/, 'Usa 1–64 letras, números, guiones o guiones bajos');
 const ms = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 const finito = z.number().finite();
+// Tiempo de respuesta en ms con decimales (medido con micros() en el firmware). Opcional: si falta,
+// la web y el Excel dicen «sin medir»; nunca se reemplaza por 0.
+const latencia = finito.min(0).max(60000).optional();
 export const sesionSchema = z.object({ id, origen: z.enum(['real', 'simulado']) }).strict();
 export const medicionSchema = z.object({
   numero: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER),
@@ -20,7 +23,9 @@ export const eventoBaseSchema = z.object({
   t_activacion_ms: ms.nullable(),
   ubicacion: z.object({
     latitud: finito.min(-90).max(90), longitud: finito.min(-180).max(180)
-  }).strict().nullable()
+  }).strict().nullable(),
+  latencia_deteccion_ms: latencia,
+  latencia_activacion_ms: latencia
 }).strict();
 export const eventoSchema = eventoBaseSchema.superRefine((e, ctx) => {
   const error = (path, message) => ctx.addIssue({ code: 'custom', path: [path], message });

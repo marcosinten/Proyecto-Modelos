@@ -17,7 +17,7 @@ import { PARAMETROS_FIRMWARE, PULSOS_POR_VUELTA, DIAMETRO_RUEDA_M, NOMBRE_RUEDA,
 import { NOTA_HORA, textoFechaHora, textoHora } from './hora.js';
 
 const AZUL = 'FF163C55', GRIS = 'FFF1F5F9', BORDE = 'FFCBD5E1', TEXTO_SUAVE = 'FF475569';
-const FMT = { entero: '0', decimal: '0.00', segundos: '0.000', grados: '0.0', coordenada: '0.000000' };
+const FMT = { entero: '0', decimal: '0.00', segundos: '0.000', grados: '0.0', coordenada: '0.000000', latencia: '0.000' };
 const aSegundos = ms => typeof ms === 'number' ? ms / 1000 : null;
 const oSinMedir = v => v ?? SIN_MEDIR;
 const conHora = ms => ms == null ? SIN_MEDIR : `${textoFechaHora(ms)} (${NOTA_HORA})`;
@@ -52,6 +52,8 @@ const COLUMNAS_EVENTOS = [
   ['latitud', '°', 'Celda vacía = ubicación no disponible'],
   ['longitud', '°', 'Celda vacía = ubicación no disponible'],
   ['respuesta_ms', 'ms', `t_activacion_ms − t_deteccion_ms; «${SIN_MEDIR}» si falta la activación`],
+  ['latencia_deteccion_ms', 'ms', `Medida en el firmware con micros(): primera lectura sobre el umbral → evento confirmado; «${SIN_MEDIR}» si no se reportó`],
+  ['latencia_activacion_ms', 'ms', `Medida en el firmware con micros(): evento confirmado → órdenes a LED, buzzer y servo; «${SIN_MEDIR}» si no se reportó`],
   ['duracion_ms', 'ms', 't_fin_ms − t_inicio_ms'],
   ['hora_aprox', '—', `Hora de la detección con el reloj de la API (${NOTA_HORA}); «${SIN_MEDIR}» sin hora de recepción`]
 ];
@@ -187,6 +189,8 @@ function hojasResumen(libro, paquete, { fuente = 'servidor' } = {}) {
     { clave: 'angulo', titulo: 'Ángulo máximo (°)', ancho: 14, formato: '0.0' },
     { clave: 'acel', titulo: 'Aceleración máxima (m/s²)', ancho: 16, formato: '0.0' },
     { clave: 'respuesta', titulo: 'Respuesta de la alarma (ms)', ancho: 16, formato: '0' },
+    { clave: 'lat_det', titulo: 'Tiempo de detección (ms)', ancho: 16, formato: FMT.latencia },
+    { clave: 'lat_act', titulo: 'Latencia de activación (ms)', ancho: 16, formato: FMT.latencia },
     { clave: 'frase', titulo: 'Qué pasó', ancho: 80 }
   ], r.detalle_eventos.map(d => ({
     evento: d.evento.id, tipo: NOMBRE_TIPO[d.evento.tipo] ?? d.evento.tipo,
@@ -194,7 +198,8 @@ function hojasResumen(libro, paquete, { fuente = 'servidor' } = {}) {
     inicio: s1(d.evento.t_inicio_ms), duracion: s1(d.duracion_ms),
     angulo: d.angulo_max ? r1(Math.abs(d.angulo_max.valor)) : SIN_MEDIR,
     acel: d.aceleracion_max ? r1(d.aceleracion_max.valor) : SIN_MEDIR,
-    respuesta: oSinMedir(d.respuesta_ms), frase: d.frase
+    respuesta: oSinMedir(d.respuesta_ms),
+    lat_det: oSinMedir(d.latencia_deteccion_ms), lat_act: oSinMedir(d.latencia_activacion_ms), frase: d.frase
   })));
 
   tabla(libro, 'Inclinaciones', [
@@ -242,12 +247,14 @@ function hojasTecnico(libro, paquete, { fuente = 'servidor', hojaEventos = 'Even
 
   tabla(libro, hojaEventos, COLUMNAS_EVENTOS.map(([clave]) => ({
     clave, ancho: Math.max(14, clave.length + 4),
-    formato: clave.endsWith('_ms') ? FMT.entero : clave === 'latitud' || clave === 'longitud' ? FMT.coordenada : undefined
+    formato: clave.startsWith('latencia_') ? FMT.latencia : clave.endsWith('_ms') ? FMT.entero : clave === 'latitud' || clave === 'longitud' ? FMT.coordenada : undefined
   })), p.eventos.map(({ ubicacion, ...e }) => ({
     ...Object.fromEntries(CAMPOS_EVENTO.map(k => [k, e[k]])),
     t_activacion_ms: oSinMedir(e.t_activacion_ms),
     latitud: ubicacion?.latitud ?? null, longitud: ubicacion?.longitud ?? null,
     respuesta_ms: e.t_activacion_ms == null ? SIN_MEDIR : e.t_activacion_ms - e.t_deteccion_ms,
+    latencia_deteccion_ms: oSinMedir(e.latencia_deteccion_ms),
+    latencia_activacion_ms: oSinMedir(e.latencia_activacion_ms),
     duracion_ms: e.t_fin_ms - e.t_inicio_ms,
     hora_aprox: conHora(horaDe(p.reloj, e.t_deteccion_ms))
   })));

@@ -16,6 +16,15 @@ export const NOMBRE_TIPO = { golpe: 'Golpe', inclinacion: 'Inclinación', vuelco
 export const aceleracionTotal = m => Math.hypot(m.ax, m.ay, m.az);
 const num = (v, d = 1) => v.toLocaleString('es-EC', { minimumFractionDigits: d, maximumFractionDigits: d });
 
+// Tiempos de respuesta que mide el firmware con micros() (fase 1). Si el evento no los trae (EV-001,
+// EV-002 y los eventos anteriores), son null y se muestran «sin medir»: nunca se cambian por 0.
+//   latencia_deteccion_ms:  primera lectura sobre el umbral → evento confirmado.
+//   latencia_activacion_ms: evento confirmado → órdenes enviadas a LED, buzzer y servo.
+export const latenciaDeteccion = e => e?.latencia_deteccion_ms ?? null;
+export const latenciaActivacion = e => e?.latencia_activacion_ms ?? null;
+// «4 ms», «152 ms», «0,005 ms» o «sin medir». Hasta 3 decimales: la activación dura microsegundos.
+export const textoLatencia = ms => ms == null ? SIN_MEDIR : `${ms.toLocaleString('es-EC', { maximumFractionDigits: 3 })} ms`;
+
 // Mismas convenciones que web/src/explanation.js.
 export function direccionRoll(roll) {
   if (Math.abs(roll) >= 135) return 'cerca de invertido';
@@ -124,6 +133,7 @@ export function analizarEvento(evento, mediciones) {
     mediciones: ventana.length,
     duracion_ms: evento.t_fin_ms - evento.t_inicio_ms,
     respuesta_ms: evento.t_activacion_ms == null ? null : evento.t_activacion_ms - evento.t_deteccion_ms,
+    latencia_deteccion_ms: latenciaDeteccion(evento), latencia_activacion_ms: latenciaActivacion(evento),
     angulo_max: angulo, aceleracion_max: acel, tiempo_sobre_umbral_ms: tiempoSobre
   };
   return { ...a, frase: fraseEvento(evento, a) };

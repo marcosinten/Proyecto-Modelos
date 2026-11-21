@@ -1,4 +1,4 @@
-INICIO carro_rc Grupo 11 version=2026.11.21-cp2-umbral10 origen=simulado mpu_correccion=1 modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
+INICIO carro_rc Grupo 11 version=2026.11.21-cp2-latencias origen=simulado mpu_correccion=1 modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
 MPU WHO_AM_I=0x68 SMPLRT_DIV=3 CONFIG=0x02 ACCEL_CONFIG=0x18 (esperado 3, 0x02, 0x18) OK
 CAL mantén el carro quieto y horizontal 2 s
 RED escaneo: 1 redes
@@ -67,6 +67,7 @@ TEL n=56 t=1103 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
 TEL n=57 t=1123 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
 DETECCION id=RC-ABCDEF-77AE0BF3-EV001 tipo_inicial=vuelco motivo=permanencia t_ms=1155 inicio_condicion=1003 norma=9.81 roll=90.00 pitch=0.00
 ALERTA tipo=vuelco t_det_ms=1155 t_det_us_arranque=3356000 LED=+0.223 ms BUZZER=+0.224 ms SERVO(orden)=+0.227 ms
+LATENCIA id=RC-ABCDEF-77AE0BF3-EV001 deteccion_ms=152.000 activacion_ms=0.005
 TEL n=58 t=1143 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
 TEL n=59 t=1163 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
 TEL n=60 t=1183 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
@@ -323,7 +324,7 @@ TEL n=304 t=6063 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
 TEL n=305 t=6083 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
 TEL n=306 t=6103 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
 TEL n=307 t=6123 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
-EVENTO id=RC-ABCDEF-77AE0BF3-EV001 tipo=vuelco gravedad=alta t_inicio=3 t_det=1155 t_act=1156 t_fin=6155 cierre=duracion_maxima
+EVENTO id=RC-ABCDEF-77AE0BF3-EV001 tipo=vuelco gravedad=alta t_inicio=3 t_det=1155 t_act=1156 t_fin=6155 cierre=duracion_maxima lat_det_ms=152.000 lat_act_ms=0.005
 TEL n=308 t=6143 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
 TEL n=309 t=6163 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0
 TEL n=310 t=6183 ax=0.000 ay=9.807 az=0.000 roll=90.00 pitch=0.00 rps=0.00 k=0

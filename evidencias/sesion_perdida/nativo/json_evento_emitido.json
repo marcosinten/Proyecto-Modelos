@@ -1,1 +1,1 @@
-{"version":1,"evento":{"id":"RC-ABCDEF-77AE0BF3-EV001","sesion_id":"RC-ABCDEF-77AE0BF3","tipo":"golpe","gravedad":"alta","estado":"confirmado","t_inicio_ms":4003,"t_fin_ms":5799,"t_deteccion_ms":5007,"t_activacion_ms":5008,"ubicacion":null}}
+{"version":1,"evento":{"id":"RC-ABCDEF-77AE0BF3-EV001","sesion_id":"RC-ABCDEF-77AE0BF3","tipo":"golpe","gravedad":"alta","estado":"confirmado","t_inicio_ms":4003,"t_fin_ms":5799,"t_deteccion_ms":5007,"t_activacion_ms":5008,"ubicacion":null,"latencia_deteccion_ms":4.000,"latencia_activacion_ms":0.005}}

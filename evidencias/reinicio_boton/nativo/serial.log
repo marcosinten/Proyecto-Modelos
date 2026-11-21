@@ -1,4 +1,4 @@
-INICIO carro_rc Grupo 11 version=2026.11.21-cp2-umbral10 origen=simulado mpu_correccion=1 modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
+INICIO carro_rc Grupo 11 version=2026.11.21-cp2-latencias origen=simulado mpu_correccion=1 modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
 MPU WHO_AM_I=0x68 SMPLRT_DIV=3 CONFIG=0x02 ACCEL_CONFIG=0x18 (esperado 3, 0x02, 0x18) OK
 CAL mantén el carro quieto y horizontal 2 s
 RED escaneo: 1 redes
@@ -60,6 +60,7 @@ TEL n=50 t=987 ax=0.006 ay=0.004 az=9.846 roll=0.03 pitch=0.04 rps=0.00 k=1
 EST t=999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=50 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO heap_libre=200000 heap_bloque_max=110000 heap_min=180000
 DETECCION id=RC-ABCDEF-77AE0BF3-EV001 tipo_inicial=golpe motivo=lecturas_golpe t_ms=1007 inicio_condicion=1003 norma=26.45 roll=0.22 pitch=68.12
 ALERTA tipo=golpe t_det_ms=1007 t_det_us_arranque=3208000 LED=+0.223 ms BUZZER=+0.224 ms SERVO(orden)=+0.227 ms
+LATENCIA id=RC-ABCDEF-77AE0BF3-EV001 deteccion_ms=4.000 activacion_ms=0.005
 TEL n=51 t=1007 ax=24.542 ay=0.038 az=9.856 roll=0.22 pitch=68.12 rps=0.00 k=1
 TEL n=52 t=1031 ax=24.561 ay=-0.015 az=9.803 roll=-0.09 pitch=68.24 rps=0.00 k=2
 TEL n=53 t=1047 ax=24.523 ay=0.028 az=9.851 roll=0.16 pitch=68.11 rps=0.00 k=1
@@ -99,7 +100,7 @@ TEL n=86 t=1715 ax=0.049 ay=0.048 az=9.827 roll=0.28 pitch=0.29 rps=0.00 k=3
 TEL n=87 t=1735 ax=-0.027 ay=0.024 az=9.856 roll=0.14 pitch=-0.16 rps=0.00 k=3
 TEL n=88 t=1743 ax=0.021 ay=-0.000 az=9.880 roll=-0.00 pitch=0.12 rps=0.00 k=0
 TEL n=89 t=1763 ax=-0.075 ay=-0.024 az=9.866 roll=-0.14 pitch=-0.44 rps=0.00 k=0
-EVENTO id=RC-ABCDEF-77AE0BF3-EV001 tipo=golpe gravedad=alta t_inicio=3 t_det=1007 t_act=1008 t_fin=1799 cierre=condicion_ausente
+EVENTO id=RC-ABCDEF-77AE0BF3-EV001 tipo=golpe gravedad=alta t_inicio=3 t_det=1007 t_act=1008 t_fin=1799 cierre=condicion_ausente lat_det_ms=4.000 lat_act_ms=0.005
 TEL n=90 t=1783 ax=0.064 ay=-0.110 az=9.846 roll=-0.64 pitch=0.37 rps=0.00 k=0
 TEL n=91 t=1815 ax=0.016 ay=-0.020 az=9.832 roll=-0.11 pitch=0.09 rps=0.00 k=3
 TEL n=92 t=1823 ax=-0.075 ay=0.019 az=9.880 roll=0.11 pitch=-0.44 rps=0.00 k=0
@@ -424,6 +425,7 @@ TEL n=400 t=7983 ax=0.025 ay=0.033 az=9.851 roll=0.19 pitch=0.15 rps=0.00 k=0
 EST t=7999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=400 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO heap_libre=200000 heap_bloque_max=110000 heap_min=180000
 DETECCION id=RC-ABCDEF-77AE0BF3-EV002 tipo_inicial=golpe motivo=lecturas_golpe t_ms=8011 inicio_condicion=8007 norma=26.39 roll=0.19 pitch=68.25
 ALERTA tipo=golpe t_det_ms=8011 t_det_us_arranque=10212000 LED=+0.223 ms BUZZER=+0.224 ms SERVO(orden)=+0.227 ms
+LATENCIA id=RC-ABCDEF-77AE0BF3-EV002 deteccion_ms=4.000 activacion_ms=0.005
 TEL n=401 t=8019 ax=24.523 ay=-0.043 az=9.775 roll=-0.25 pitch=68.27 rps=0.00 k=4
 TEL n=402 t=8039 ax=24.542 ay=-0.048 az=9.842 roll=-0.28 pitch=68.15 rps=0.00 k=4
 TEL n=403 t=8047 ax=24.537 ay=0.076 az=9.832 roll=0.44 pitch=68.16 rps=0.00 k=1
@@ -465,7 +467,7 @@ TEL n=437 t=8739 ax=0.021 ay=0.033 az=9.856 roll=0.19 pitch=0.12 rps=0.00 k=4
 TEL n=438 t=8743 ax=-0.027 ay=-0.005 az=9.856 roll=-0.03 pitch=-0.16 rps=0.00 k=0
 TEL n=439 t=8767 ax=-0.027 ay=0.019 az=9.870 roll=0.11 pitch=-0.16 rps=0.00 k=1
 TEL n=440 t=8783 ax=-0.008 ay=-0.096 az=9.856 roll=-0.56 pitch=-0.05 rps=0.00 k=0
-EVENTO id=RC-ABCDEF-77AE0BF3-EV002 tipo=golpe gravedad=alta t_inicio=7007 t_det=8011 t_act=8012 t_fin=8803 cierre=condicion_ausente
+EVENTO id=RC-ABCDEF-77AE0BF3-EV002 tipo=golpe gravedad=alta t_inicio=7007 t_det=8011 t_act=8012 t_fin=8803 cierre=condicion_ausente lat_det_ms=4.000 lat_act_ms=0.005
 TEL n=441 t=8815 ax=-0.061 ay=-0.000 az=9.856 roll=-0.00 pitch=-0.35 rps=0.00 k=3
 TEL n=442 t=8823 ax=-0.037 ay=0.009 az=9.846 roll=0.05 pitch=-0.22 rps=0.00 k=0
 TEL n=443 t=8847 ax=0.011 ay=0.028 az=9.861 roll=0.16 pitch=0.06 rps=0.00 k=1

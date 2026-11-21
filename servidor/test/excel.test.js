@@ -89,7 +89,8 @@ test('resumen de la sesión sintética: eventos por tipo, máximos y hora aproxi
   assert.equal(ev.length, 4);
   assert.deepEqual(ev[1].slice(0, 8), ['SINT-1-EV001', 'Inclinación', '10:00:05', 4, 4.7, 24.5, 9.8, 1]);
   assert.equal(ev[2][7], SIN_MEDIR, 'respuesta de la alarma ausente');
-  assert.equal(ev[3][8], 'Se volcó: llegó a 95,0° de lado (lado izquierdo elevado) y pasó 4,0 s sobre 90°.');
+  assert.deepEqual(ev[3].slice(8, 10), [SIN_MEDIR, SIN_MEDIR], 'tiempo de detección y latencia de activación sin medir');
+  assert.equal(ev[3].at(-1), 'Se volcó: llegó a 95,0° de lado (lado izquierdo elevado) y pasó 4,0 s sobre 90°.');
   const res = conceptos(libro.getWorksheet('Resumen'));
   assert.equal(res['Golpes'][1], 1); assert.equal(res['Vuelcos'][1], 1); assert.equal(res['Tramos inclinados'][1], 3);
   assert.match(res['Hora aproximada de inicio'][1], /10:00:00 \(aprox\. ±1 s\)/);

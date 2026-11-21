@@ -1,4 +1,4 @@
-INICIO carro_rc Grupo 11 version=2026.11.21-cp2-umbral10 origen=simulado mpu_correccion=1 modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
+INICIO carro_rc Grupo 11 version=2026.11.21-cp2-latencias origen=simulado mpu_correccion=1 modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
 MPU WHO_AM_I=0x68 SMPLRT_DIV=3 CONFIG=0x02 ACCEL_CONFIG=0x18 (esperado 3, 0x02, 0x18) OK
 CAL mantén el carro quieto y horizontal 2 s
 RED escaneo: 1 redes
@@ -77,6 +77,7 @@ TEL n=66 t=1315 ax=-0.023 ay=4.903 az=8.573 roll=29.77 pitch=-0.13 rps=0.00 k=3
 TEL n=67 t=1327 ax=0.044 ay=4.893 az=8.496 roll=29.94 pitch=0.26 rps=0.00 k=1
 DETECCION id=RC-ABCDEF-77AE0BF3-EV001 tipo_inicial=inclinacion motivo=permanencia t_ms=1347 inicio_condicion=1195 norma=9.81 roll=29.37 pitch=0.23
 ALERTA tipo=inclinacion t_det_ms=1347 t_det_us_arranque=3548000 LED=+0.223 ms BUZZER=+0.224 ms SERVO(orden)=+0.227 ms
+LATENCIA id=RC-ABCDEF-77AE0BF3-EV001 deteccion_ms=152.000 activacion_ms=0.005
 TEL n=68 t=1359 ax=-0.027 ay=4.946 az=8.506 roll=30.18 pitch=-0.16 rps=0.00 k=4
 TEL n=69 t=1371 ax=-0.066 ay=4.960 az=8.472 roll=30.35 pitch=-0.38 rps=0.00 k=2
 TEL n=70 t=1387 ax=0.088 ay=4.903 az=8.515 roll=29.93 pitch=0.51 rps=0.00 k=1
@@ -331,7 +332,7 @@ TEL n=311 t=6215 ax=0.054 ay=-0.039 az=9.823 roll=-0.23 pitch=0.32 rps=0.00 k=3
 TEL n=312 t=6239 ax=-0.042 ay=0.024 az=9.870 roll=0.14 pitch=-0.24 rps=0.00 k=4
 TEL n=313 t=6259 ax=-0.008 ay=-0.077 az=9.861 roll=-0.45 pitch=-0.05 rps=0.00 k=4
 TEL n=314 t=6275 ax=-0.047 ay=0.019 az=9.866 roll=0.11 pitch=-0.27 rps=0.00 k=3
-EVENTO id=RC-ABCDEF-77AE0BF3-EV001 tipo=vuelco gravedad=alta t_inicio=195 t_det=1347 t_act=1348 t_fin=6299 cierre=condicion_ausente
+EVENTO id=RC-ABCDEF-77AE0BF3-EV001 tipo=vuelco gravedad=alta t_inicio=195 t_det=1347 t_act=1348 t_fin=6299 cierre=condicion_ausente lat_det_ms=152.000 lat_act_ms=0.005
 TEL n=315 t=6295 ax=-0.003 ay=0.071 az=9.851 roll=0.42 pitch=-0.02 rps=0.00 k=3
 TEL n=316 t=6303 ax=0.044 ay=0.057 az=9.856 roll=0.33 pitch=0.26 rps=0.00 k=0
 TEL n=317 t=6339 ax=-0.018 ay=-0.005 az=9.861 roll=-0.03 pitch=-0.10 rps=0.00 k=4

@@ -93,6 +93,16 @@
               "type": "null"
             }
           ]
+        },
+        "latencia_deteccion_ms": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 60000
+        },
+        "latencia_activacion_ms": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 60000
         }
       },
       "required": [

@@ -10,7 +10,7 @@
 // Carro RC · Grupo 11 · ESP32 DevKit WROOM-32
 
 // Aparece en la línea INICIO del monitor serie: permite saber qué firmware tiene la placa.
-static const char VERSION_FIRMWARE[] = "2026.11.21-cp2-umbral10";
+static const char VERSION_FIRMWARE[] = "2026.11.21-cp2-latencias";
 
 #ifdef BANCO_NATIVO
 static const char ORIGEN_SESION[] = "simulado";
@@ -131,6 +131,9 @@ struct Evento {
   char id[64];
   uint8_t tipo;
   uint32_t t_inicio, t_fin, t_det, t_act;
+  // Tiempos de respuesta medidos con micros() (ver iniciarEpisodio), en milisegundos con decimales.
+  float lat_det_ms;  // primera lectura sobre el umbral → evento confirmado (contadores de permanencia)
+  float lat_act_ms;  // evento confirmado → órdenes enviadas a LED, buzzer y servo
 };
 
 // 240 caracteres para que la línea EST con el diagnóstico de memoria quepa entera.
@@ -402,6 +405,7 @@ static int64_t alarmaDesde_us = 0;
 static bool buzzerSonando = false;
 static bool ledEncendido = false;
 static uint8_t tipoPatronAlarma = TIPO_INCLINACION;
+static uint32_t usOrdenesEnviadas = 0;  // micros() justo después de ordenar LED, buzzer y servo
 
 static uint32_t activarAlarma(uint32_t t_det_ms, int64_t t_det_us, uint8_t tipo) {
   digitalWrite(PIN_LED, HIGH);
@@ -411,6 +415,7 @@ static uint32_t activarAlarma(uint32_t t_det_ms, int64_t t_det_us, uint8_t tipo)
   int64_t tBuzzer = esp_timer_get_time();
   servoAngulo(SERVO_ALERTA_DEG);
   int64_t tServo = esp_timer_get_time();
+  usOrdenesEnviadas = micros();  // las tres órdenes ya se dieron
 
   alarmaActiva = true;
   alarmaDesde_us = tServo;
@@ -472,10 +477,15 @@ static bool escalando = false;
 static int golpeSeguidas = 0;
 static uint32_t tGolpeIni = 0, tInclIni = 0;
 static bool inclinadoAntes = false;
+// micros() de la primera lectura que superó el umbral, para cada contador de permanencia.
+static uint32_t usInicioGolpe = 0, usInicioIncl = 0, usInicioEscalada = 0;
 
+// usPrimera: micros() de la primera lectura que superó el umbral de este evento.
 static void iniciarEpisodio(uint32_t t, int64_t t_us, uint8_t tipo, bool golpe,
                             bool vuelco, float norma, float roll, float pitch,
-                            const char* motivo) {
+                            const char* motivo, uint32_t usPrimera) {
+  // El evento queda confirmado en este instante: los contadores de permanencia se cumplieron.
+  uint32_t usConfirmado = micros();
   eventosCreados++;
   snprintf(evActual.id, sizeof(evActual.id), "%s-EV%03lu",
            sesionId, (unsigned long)eventosCreados);
@@ -491,9 +501,15 @@ static void iniciarEpisodio(uint32_t t, int64_t t_us, uint8_t tipo, bool golpe,
        evActual.id, nombreTipo(tipo), motivo, (unsigned long)t,
        (unsigned long)tCandidato, norma, roll, pitch);
   evActual.t_act = activarAlarma(t, t_us, vioVuelco ? (uint8_t)TIPO_VUELCO : vioGolpe ? (uint8_t)TIPO_GOLPE : tipo);
+  // Restas en 32 bits sin signo: dan bien aunque micros() haya dado la vuelta entre las dos lecturas.
+  evActual.lat_det_ms = (uint32_t)(usConfirmado - usPrimera) / 1000.0f;
+  evActual.lat_act_ms = (uint32_t)(usOrdenesEnviadas - usConfirmado) / 1000.0f;
+  logq("LATENCIA id=%s deteccion_ms=%.3f activacion_ms=%.3f", evActual.id,
+       evActual.lat_det_ms, evActual.lat_act_ms);
 }
 
-static void decidir(uint32_t t, int64_t t_us, float norma, float roll, float pitch) {
+// usLectura: micros() del momento en que se obtuvo esta lectura del MPU6050.
+static void decidir(uint32_t t, int64_t t_us, uint32_t usLectura, float norma, float roll, float pitch) {
   bool golpe = norma >= UMBRAL_GOLPE_MS2;
   bool inclinado = fabsf(roll) >= UMBRAL_INCLINACION_DEG
                 || fabsf(pitch) >= UMBRAL_INCLINACION_DEG;
@@ -521,12 +537,18 @@ static void decidir(uint32_t t, int64_t t_us, float norma, float roll, float pit
     case REPOSO:
     case CANDIDATO:
       if (golpe) {
-        if (golpeSeguidas++ == 0) tGolpeIni = t;
+        if (golpeSeguidas++ == 0) {
+          tGolpeIni = t;
+          usInicioGolpe = usLectura;
+        }
       } else {
         golpeSeguidas = 0;
       }
 
-      if (inclinado && !inclinadoAntes) tInclIni = t;
+      if (inclinado && !inclinadoAntes) {
+        tInclIni = t;
+        usInicioIncl = usLectura;
+      }
       inclinadoAntes = inclinado;
 
       if (!cond) {
@@ -540,13 +562,13 @@ static void decidir(uint32_t t, int64_t t_us, float norma, float roll, float pit
         golpeSeguidas = 0;
         inclinadoAntes = false;
         iniciarEpisodio(t, t_us, TIPO_GOLPE, true, vuelco, norma, roll, pitch,
-                        "lecturas_golpe");
+                        "lecturas_golpe", usInicioGolpe);
       } else if (inclinado && t - tInclIni >= PERMANENCIA_MS) {
         tCandidato = tInclIni;
         golpeSeguidas = 0;
         inclinadoAntes = false;
         iniciarEpisodio(t, t_us, vuelco ? (uint8_t)TIPO_VUELCO : (uint8_t)TIPO_INCLINACION,
-                        golpe, vuelco, norma, roll, pitch, "permanencia");
+                        golpe, vuelco, norma, roll, pitch, "permanencia", usInicioIncl);
       }
       break;
 
@@ -578,11 +600,12 @@ static void decidir(uint32_t t, int64_t t_us, float norma, float roll, float pit
                       : vioGolpe ? (uint8_t)TIPO_GOLPE : evActual.tipo;
         evActual.t_fin = t;
         tipoUltimoCerrado = evActual.tipo;
-        logq("EVENTO id=%s tipo=%s gravedad=%s t_inicio=%lu t_det=%lu t_act=%lu t_fin=%lu cierre=%s",
+        logq("EVENTO id=%s tipo=%s gravedad=%s t_inicio=%lu t_det=%lu t_act=%lu t_fin=%lu cierre=%s lat_det_ms=%.3f lat_act_ms=%.3f",
              evActual.id, nombreTipo(evActual.tipo), gravedadTipo(evActual.tipo),
              (unsigned long)evActual.t_inicio, (unsigned long)evActual.t_det,
              (unsigned long)evActual.t_act, (unsigned long)evActual.t_fin,
-             cond ? "duracion_maxima" : "condicion_ausente");
+             cond ? "duracion_maxima" : "condicion_ausente",
+             evActual.lat_det_ms, evActual.lat_act_ms);
         if (xQueueSend(colaEventos, &evActual, 0) != pdTRUE) {
           logq("EVENTO ERROR cola llena, %s solo queda en el registro", evActual.id);
         }
@@ -597,11 +620,12 @@ static void decidir(uint32_t t, int64_t t_us, float norma, float roll, float pit
           if (!escalando) {
             escalando = true;
             tCandidato = t;
+            usInicioEscalada = usLectura;
           }
           if (t - tCandidato >= PERMANENCIA_MS) {
             escalando = false;
             iniciarEpisodio(t, t_us, TIPO_VUELCO, golpe, true, norma, roll, pitch,
-                            "escalada_a_vuelco");
+                            "escalada_a_vuelco", usInicioEscalada);
           }
         } else {
           escalando = false;
@@ -688,7 +712,9 @@ static void tareaAdquisicion(void*) {
     ultimoCiclo = t_us;
 
     float x, y, z;
-    if (mpuAceleracion(x, y, z)) {
+    bool leida = mpuAceleracion(x, y, z);
+    uint32_t usLectura = micros();  // instante de esta lectura, para las latencias
+    if (leida) {
       ax = x - offX;
       ay = y - offY;
       az = z - offZ;
@@ -729,7 +755,7 @@ static void tareaAdquisicion(void*) {
     }
     rpsEraCero = (rps == 0);
 
-    decidir(t, t_us, norma, roll, pitch);
+    decidir(t, t_us, usLectura, norma, roll, pitch);
     cDec++;
     actualizarBuzzer(t_us);
 
@@ -866,14 +892,16 @@ static String jsonLote(const Muestra* m, int n) {
 }
 
 static String jsonEvento(const Evento& e) {
-  char b[480];
+  char b[560];
   snprintf(b, sizeof(b),
            "{\"version\":1,\"evento\":{\"id\":\"%s\",\"sesion_id\":\"%s\",\"tipo\":\"%s\",\"gravedad\":\"%s\","
            "\"estado\":\"confirmado\",\"t_inicio_ms\":%lu,\"t_fin_ms\":%lu,\"t_deteccion_ms\":%lu,"
-           "\"t_activacion_ms\":%lu,\"ubicacion\":null}}",
+           "\"t_activacion_ms\":%lu,\"ubicacion\":null,"
+           "\"latencia_deteccion_ms\":%.3f,\"latencia_activacion_ms\":%.3f}}",
            e.id, sesionId, nombreTipo(e.tipo), gravedadTipo(e.tipo),
            (unsigned long)e.t_inicio, (unsigned long)e.t_fin,
-           (unsigned long)e.t_det, (unsigned long)e.t_act);
+           (unsigned long)e.t_det, (unsigned long)e.t_act,
+           e.lat_det_ms, e.lat_act_ms);
   return String(b);
 }
 

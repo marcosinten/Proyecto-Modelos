@@ -67,6 +67,8 @@ BaseType_t xTaskCreatePinnedToCore(void (*fn)(void*), const char* nombre, uint32
 
 // ---- tiempo, GPIO, LEDC, sistema ----
 inline int64_t esp_timer_get_time() { return sim::ahora(); }
+// Como en el ESP32: microsegundos desde el arranque en 32 bits (da la vuelta a los ~71 min).
+inline unsigned long micros() { return (uint32_t)sim::ahora(); }
 void delay(uint32_t ms);
 void pinMode(int pin, int modo);
 void digitalWrite(int pin, int v);

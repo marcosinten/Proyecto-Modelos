@@ -1,4 +1,4 @@
-INICIO carro_rc Grupo 11 version=2026.11.21-cp2-umbral10 origen=simulado mpu_correccion=1 modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
+INICIO carro_rc Grupo 11 version=2026.11.21-cp2-latencias origen=simulado mpu_correccion=1 modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
 MPU WHO_AM_I=0x68 SMPLRT_DIV=3 CONFIG=0x02 ACCEL_CONFIG=0x18 (esperado 3, 0x02, 0x18) OK
 CAL mantén el carro quieto y horizontal 2 s
 RED escaneo: 1 redes
@@ -278,6 +278,7 @@ TEL n=250 t=4995 ax=0.001 ay=0.019 az=9.913 roll=0.11 pitch=0.01 rps=0.00 k=3
 EST t=4999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=16 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO heap_libre=200000 heap_bloque_max=110000 heap_min=180000
 DETECCION id=RC-ABCDEF-77AE0BF3-EV001 tipo_inicial=golpe motivo=lecturas_golpe t_ms=5007 inicio_condicion=5003 norma=26.44 roll=0.03 pitch=68.06
 ALERTA tipo=golpe t_det_ms=5007 t_det_us_arranque=7208000 LED=+0.223 ms BUZZER=+0.224 ms SERVO(orden)=+0.227 ms
+LATENCIA id=RC-ABCDEF-77AE0BF3-EV001 deteccion_ms=4.000 activacion_ms=0.005
 TEL n=251 t=5011 ax=24.547 ay=0.043 az=9.846 roll=0.25 pitch=68.14 rps=0.00 k=2
 TEL n=252 t=5027 ax=24.585 ay=0.014 az=9.899 roll=0.08 pitch=68.07 rps=0.00 k=1
 TEL n=253 t=5047 ax=24.547 ay=-0.005 az=9.818 roll=-0.03 pitch=68.20 rps=0.00 k=1
@@ -319,7 +320,7 @@ TEL n=286 t=5715 ax=0.025 ay=0.028 az=9.837 roll=0.17 pitch=0.15 rps=0.00 k=3
 TEL n=287 t=5723 ax=0.016 ay=0.043 az=9.813 roll=0.25 pitch=0.09 rps=0.00 k=0
 TEL n=288 t=5743 ax=0.059 ay=0.009 az=9.842 roll=0.05 pitch=0.34 rps=0.00 k=0
 TEL n=289 t=5767 ax=0.001 ay=0.052 az=9.846 roll=0.30 pitch=0.01 rps=0.00 k=1
-EVENTO id=RC-ABCDEF-77AE0BF3-EV001 tipo=golpe gravedad=alta t_inicio=4003 t_det=5007 t_act=5008 t_fin=5799 cierre=condicion_ausente
+EVENTO id=RC-ABCDEF-77AE0BF3-EV001 tipo=golpe gravedad=alta t_inicio=4003 t_det=5007 t_act=5008 t_fin=5799 cierre=condicion_ausente lat_det_ms=4.000 lat_act_ms=0.005
 TEL n=290 t=5787 ax=-0.013 ay=-0.005 az=9.846 roll=-0.03 pitch=-0.08 rps=0.00 k=1
 TEL n=291 t=5807 ax=0.035 ay=0.028 az=9.856 roll=0.16 pitch=0.20 rps=0.00 k=1
 TEL n=292 t=5823 ax=0.064 ay=-0.015 az=9.818 roll=-0.09 pitch=0.37 rps=0.00 k=0
@@ -344,9 +345,9 @@ TEL n=309 t=6163 ax=0.016 ay=0.028 az=9.813 roll=0.17 pitch=0.09 rps=0.00 k=0
 TEL n=310 t=6199 ax=0.011 ay=-0.005 az=9.866 roll=-0.03 pitch=0.06 rps=0.00 k=4
 RED POST /sesiones/RC-ABCDEF-77AE0BF3/mediciones lote numero 285-309 intento=1 bytes=3391 hash=2E54BA89 resultado=201 t_ms=6210
 TEL n=311 t=6215 ax=0.054 ay=-0.039 az=9.823 roll=-0.23 pitch=0.32 rps=0.00 k=3
-JSON evento {"version":1,"evento":{"id":"RC-ABCDEF-77AE0BF3-EV001","sesion_id":"RC-ABCDEF-77AE0BF3","tipo":"golpe","gravedad":"alta","estado":"confirmado","t_inicio_ms":4003,"t_fin_ms":5799,"t_deteccion_ms":5007,"t_activacion_ms":5008,"ubicacion":null}}
+JSON evento {"version":1,"evento":{"id":"RC-ABCDEF-77AE0BF3-EV001","sesion_id":"RC-ABCDEF-77AE0BF3","tipo":"golpe","gravedad":"alta","estado":"confirmado","t_inicio_ms":4003,"t_fin_ms":5799,"t_deteccion_ms":5007,"t_activacion_ms":5008,"ubicacion":null,"latencia_deteccion_ms":4.000,"latencia_activacion_ms":0.005}}
 TEL n=312 t=6239 ax=-0.042 ay=0.024 az=9.870 roll=0.14 pitch=-0.24 rps=0.00 k=4
-RED POST /eventos evento RC-ABCDEF-77AE0BF3-EV001 intento=1 bytes=241 hash=6CDEE88E resultado=201 t_ms=6245
+RED POST /eventos evento RC-ABCDEF-77AE0BF3-EV001 intento=1 bytes=302 hash=5B7586FC resultado=201 t_ms=6245
 TEL n=313 t=6259 ax=-0.008 ay=-0.077 az=9.861 roll=-0.45 pitch=-0.05 rps=0.00 k=4
 TEL n=314 t=6275 ax=-0.047 ay=0.019 az=9.866 roll=0.11 pitch=-0.27 rps=0.00 k=3
 DETECTOR listo t_ms=6299

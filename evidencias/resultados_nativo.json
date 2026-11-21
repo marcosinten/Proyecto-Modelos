@@ -56,6 +56,13 @@
     "evidencia": "evidencias/golpe/nativo/"
   },
   {
+    "prueba": "Tiempos de respuesta · medidos",
+    "criterio": "detección (umbral → confirmado) entre 3 y 9 ms; activación (confirmado → órdenes) entre 0 y 50 ms",
+    "observado": "RC-ABCDEF-77AE0BF3-EV001: motivo lecturas_golpe, latencia_deteccion_ms 4.000, latencia_activacion_ms 0.005",
+    "estado": "OK",
+    "evidencia": "evidencias/golpe/nativo/"
+  },
+  {
     "prueba": "Golpe · buzzer activo",
     "criterio": "120 ms en inclinación, 500 ms en golpe, continuo en vuelco, apagado al rearmar",
     "observado": "6 cambios de nivel; tramos intermedios 500–500 ms; nivel final 0",
@@ -80,6 +87,13 @@
     "prueba": "Alertas · latencia",
     "criterio": "LED, buzzer y orden del servo < 50 ms desde la detección",
     "observado": "firmware: LED +0.223 ms, buzzer +0.224 ms, servo +0.227 ms · señal virtual: LED +0.223 ms, buzzer +0.224 ms, pulso servo 1450 µs +0.227 ms",
+    "estado": "OK",
+    "evidencia": "evidencias/inclinacion/nativo/"
+  },
+  {
+    "prueba": "Tiempos de respuesta · medidos",
+    "criterio": "detección (umbral → confirmado) entre 150 y 159 ms; activación (confirmado → órdenes) entre 0 y 50 ms",
+    "observado": "RC-ABCDEF-77AE0BF3-EV001: motivo permanencia, latencia_deteccion_ms 152.000, latencia_activacion_ms 0.005",
     "estado": "OK",
     "evidencia": "evidencias/inclinacion/nativo/"
   },
@@ -112,6 +126,13 @@
     "evidencia": "evidencias/vuelco_costado/nativo/"
   },
   {
+    "prueba": "Tiempos de respuesta · medidos",
+    "criterio": "detección (umbral → confirmado) entre 150 y 159 ms; activación (confirmado → órdenes) entre 0 y 50 ms",
+    "observado": "RC-ABCDEF-77AE0BF3-EV001: motivo permanencia, latencia_deteccion_ms 152.000, latencia_activacion_ms 0.005",
+    "estado": "OK",
+    "evidencia": "evidencias/vuelco_costado/nativo/"
+  },
+  {
     "prueba": "Vuelco costado · buzzer activo",
     "criterio": "120 ms en inclinación, 500 ms en golpe, continuo en vuelco, apagado al rearmar",
     "observado": "2 cambios de nivel; tramos intermedios 5380–5380 ms; nivel final 0",
@@ -140,6 +161,13 @@
     "evidencia": "evidencias/vuelco_boca_abajo/nativo/"
   },
   {
+    "prueba": "Tiempos de respuesta · medidos",
+    "criterio": "detección (umbral → confirmado) entre 150 y 159 ms; activación (confirmado → órdenes) entre 0 y 50 ms",
+    "observado": "RC-ABCDEF-77AE0BF3-EV001: motivo permanencia, latencia_deteccion_ms 152.000, latencia_activacion_ms 0.005",
+    "estado": "OK",
+    "evidencia": "evidencias/vuelco_boca_abajo/nativo/"
+  },
+  {
     "prueba": "Vuelco boca abajo · buzzer activo",
     "criterio": "120 ms en inclinación, 500 ms en golpe, continuo en vuelco, apagado al rearmar",
     "observado": "2 cambios de nivel; tramos intermedios 4880–4880 ms; nivel final 0",
@@ -164,6 +192,13 @@
     "prueba": "Alertas · latencia",
     "criterio": "LED, buzzer y orden del servo < 50 ms desde la detección",
     "observado": "firmware: LED +0.223 ms, buzzer +0.224 ms, servo +0.227 ms · señal virtual: LED +0.223 ms, buzzer +0.224 ms, pulso servo 1450 µs +0.227 ms",
+    "estado": "OK",
+    "evidencia": "evidencias/inclinacion_a_vuelco/nativo/"
+  },
+  {
+    "prueba": "Tiempos de respuesta · medidos",
+    "criterio": "detección (umbral → confirmado) entre 150 y 159 ms; activación (confirmado → órdenes) entre 0 y 50 ms",
+    "observado": "RC-ABCDEF-77AE0BF3-EV001: motivo permanencia, latencia_deteccion_ms 152.000, latencia_activacion_ms 0.005",
     "estado": "OK",
     "evidencia": "evidencias/inclinacion_a_vuelco/nativo/"
   },
@@ -199,6 +234,13 @@
     "prueba": "Alertas · latencia",
     "criterio": "LED, buzzer y orden del servo < 50 ms desde la detección",
     "observado": "firmware: LED +0.223 ms, buzzer +0.224 ms, servo +0.227 ms · señal virtual: LED +0.223 ms, buzzer +0.224 ms, pulso servo 1450 µs +0.227 ms",
+    "estado": "OK",
+    "evidencia": "evidencias/golpe_corto/nativo/"
+  },
+  {
+    "prueba": "Tiempos de respuesta · medidos",
+    "criterio": "detección (umbral → confirmado) entre 3 y 9 ms; activación (confirmado → órdenes) entre 0 y 50 ms",
+    "observado": "RC-ABCDEF-77AE0BF3-EV001: motivo lecturas_golpe, latencia_deteccion_ms 4.000, latencia_activacion_ms 0.005",
     "estado": "OK",
     "evidencia": "evidencias/golpe_corto/nativo/"
   },
@@ -282,7 +324,7 @@
   {
     "prueba": "API · envío",
     "criterio": "sesión, lotes y evento aceptados por la API local (201/200)",
-    "observado": "17 POST; códigos [200, 201]; evento guardado: GET /eventos/RC-ABCDEF-1E1268CF-EV001 → tipo golpe, gravedad alta, ubicacion None, 90 mediciones en la ventana",
+    "observado": "17 POST; códigos [200, 201]; evento guardado: GET /eventos/RC-ABCDEF-09EDBAAF-EV001 → tipo golpe, gravedad alta, ubicacion None, 90 mediciones en la ventana",
     "estado": "OK",
     "evidencia": "evidencias/api/nativo/"
   },
@@ -301,9 +343,16 @@
     "evidencia": "evidencias/api/nativo/"
   },
   {
+    "prueba": "API · tiempos de respuesta",
+    "criterio": "el evento enviado y el guardado traen latencia_deteccion_ms (3–9 ms en un golpe) y latencia_activacion_ms (0–50 ms)",
+    "observado": "enviado [{'latencia_deteccion_ms': 4.0, 'latencia_activacion_ms': 0.005}]; GET /eventos → [4, 0.005]",
+    "estado": "OK",
+    "evidencia": "evidencias/api/nativo/"
+  },
+  {
     "prueba": "API · reintento",
     "criterio": "respuesta perdida → reintento con el mismo JSON, ids y tiempos; la API responde 200",
-    "observado": "/sesiones/RC-ABCDEF-1E1268CF/mediciones hash 67560B4D: API 201→200 (cuerpos idénticos); /eventos hash BCD77150: API 201→200 (cuerpos idénticos)",
+    "observado": "/sesiones/RC-ABCDEF-09EDBAAF/mediciones hash 67560B4D: API 201→200 (cuerpos idénticos); /eventos hash 9CE0C04E: API 201→200 (cuerpos idénticos)",
     "estado": "OK",
     "evidencia": "evidencias/api/nativo/"
   },

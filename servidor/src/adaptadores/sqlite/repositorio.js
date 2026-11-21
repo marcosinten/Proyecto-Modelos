@@ -1,5 +1,5 @@
 import { DatabaseSync } from 'node:sqlite';
-import { mkdirSync, readFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { ErrorApi } from '../../aplicacion/contratos.js';
 
@@ -9,9 +9,29 @@ const evento = r => r && ({
   id: r.id, sesion_id: r.sesion_id, tipo: r.tipo, gravedad: r.gravedad, estado: r.estado,
   t_inicio_ms: r.t_inicio_ms, t_fin_ms: r.t_fin_ms, t_deteccion_ms: r.t_deteccion_ms,
   t_activacion_ms: r.t_activacion_ms,
-  ubicacion: r.latitud === null ? null : { latitud: r.latitud, longitud: r.longitud }
+  ubicacion: r.latitud === null ? null : { latitud: r.latitud, longitud: r.longitud },
+  // Solo si se midieron: un evento sin el dato no lo lleva (igual que rueda_rps en las mediciones).
+  ...(r.latencia_deteccion_ms == null ? {} : { latencia_deteccion_ms: r.latencia_deteccion_ms }),
+  ...(r.latencia_activacion_ms == null ? {} : { latencia_activacion_ms: r.latencia_activacion_ms })
 });
 const conflicto = () => new ErrorApi(409, 'CONFLICTO', 'El identificador ya existe con datos diferentes');
+
+// Migraciones a partir de la 002: cada archivo .sql se aplica una sola vez, en orden, y queda anotado en
+// la tabla migraciones. La 001 sigue siendo el esquema base (CREATE TABLE IF NOT EXISTS) y no se edita.
+const CARPETA_MIGRACIONES = new URL('../../../db/migraciones/', import.meta.url);
+function aplicarMigraciones(db) {
+  db.exec('CREATE TABLE IF NOT EXISTS migraciones (nombre TEXT PRIMARY KEY, aplicada_ms INTEGER NOT NULL)');
+  const pendientes = readdirSync(CARPETA_MIGRACIONES).filter(n => /^\d{3}_.+\.sql$/.test(n) && !n.startsWith('001_')).sort();
+  for (const nombre of pendientes) {
+    if (db.prepare('SELECT 1 FROM migraciones WHERE nombre=?').get(nombre)) continue;
+    db.exec('BEGIN IMMEDIATE');
+    try {
+      db.exec(readFileSync(new URL(nombre, CARPETA_MIGRACIONES), 'utf8'));
+      db.prepare('INSERT INTO migraciones(nombre, aplicada_ms) VALUES (?,?)').run(nombre, Date.now());
+      db.exec('COMMIT');
+    } catch (e) { db.exec('ROLLBACK'); throw e; }
+  }
+}
 
 export function crearRepositorio(path) {
   if (path !== ':memory:') mkdirSync(dirname(path), { recursive: true });
@@ -25,6 +45,7 @@ export function crearRepositorio(path) {
   if (!columnas.some(c => c.name === 'rueda_pulsos')) db.exec('ALTER TABLE mediciones ADD COLUMN rueda_pulsos INTEGER');
   if (!db.prepare('PRAGMA table_info(sesiones)').all().some(c=>c.name==='ultima_recepcion_ms'))
     db.exec('ALTER TABLE sesiones ADD COLUMN ultima_recepcion_ms INTEGER');
+  aplicarMigraciones(db);
   const getSesion = id => {
     const s = db.prepare('SELECT id, origen FROM sesiones WHERE id=?').get(id);
     if (!s) throw new ErrorApi(404, 'SESION_NO_ENCONTRADA', 'Primero crea la sesión');
@@ -105,9 +126,10 @@ export function crearRepositorio(path) {
       getSesion(e.sesion_id);
       const previo = db.prepare('SELECT * FROM eventos WHERE id=?').get(e.id);
       if (previo) { if (!iguales(evento(previo), e)) throw conflicto(); return false; }
-      db.prepare('INSERT INTO eventos(id,sesion_id,tipo,gravedad,estado,t_inicio_ms,t_fin_ms,t_deteccion_ms,t_activacion_ms,latitud,longitud) VALUES (?,?,?,?,?,?,?,?,?,?,?)').run(
+      db.prepare('INSERT INTO eventos(id,sesion_id,tipo,gravedad,estado,t_inicio_ms,t_fin_ms,t_deteccion_ms,t_activacion_ms,latitud,longitud,latencia_deteccion_ms,latencia_activacion_ms) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)').run(
         e.id, e.sesion_id, e.tipo, e.gravedad, e.estado, e.t_inicio_ms, e.t_fin_ms,
-        e.t_deteccion_ms, e.t_activacion_ms, e.ubicacion?.latitud ?? null, e.ubicacion?.longitud ?? null
+        e.t_deteccion_ms, e.t_activacion_ms, e.ubicacion?.latitud ?? null, e.ubicacion?.longitud ?? null,
+        e.latencia_deteccion_ms ?? null, e.latencia_activacion_ms ?? null
       );
       return true;
     },

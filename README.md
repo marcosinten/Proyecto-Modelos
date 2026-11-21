@@ -41,7 +41,9 @@ El carro tiene **un solo sensor Hall (A3144), en la rueda trasera, con 1 imán**
 - En vivo el carro 3D se apoya en la carretera: plano sobre las ruedas, inclinado sobre su punto más bajo, volcado sobre el techo.
 - Interfaz adaptable a móvil, controles de teclado y diálogo de exportación.
 
-Las señales de simulación se generan matemáticamente y se evalúan con reglas experimentales. Deben calibrarse con el sensor. El tiempo de activación queda sin medir en nuevas corridas. EV-001 y EV-002 incluyen 20 ms como dato sintético de ejemplo.
+Las señales de simulación se generan matemáticamente y se evalúan con reglas experimentales. Deben calibrarse con el sensor. El tiempo de activación queda sin medir en las corridas simuladas. EV-001 y EV-002 incluyen 20 ms como dato sintético de ejemplo.
+
+**Tiempo de respuesta medido en el carro.** Desde el 21 de noviembre el firmware mide con `micros()` y envía en cada evento `latencia_deteccion_ms` (primera lectura sobre el umbral → evento confirmado) y `latencia_activacion_ms` (confirmación → órdenes a LED, buzzer y servo). Se ven en el detalle del evento, en «Explicar», en el Historial y en las dos descargas de Excel. Si un evento no los trae, aparece «sin medir».
 
 «Explicar» lee el paquete ya guardado en `GET /api/v1/eventos/:id` (o los ejemplos locales si la API no responde). No entrena ni consulta el árbol del cuaderno de IA, no reclasifica eventos y no modifica SQLite. La ventana del evento no es necesariamente el comienzo físico del incidente; las gráficas solo representan las muestras recibidas. La variación `|√(ax² + ay² + az²) − 9,81|` es un cálculo descriptivo, no una medida de fuerza de choque o causa. El origen simulado se marca explícitamente. Las corridas sin evento, como reposo y frenada sin incidente, no aparecen como eventos en el historial.
 

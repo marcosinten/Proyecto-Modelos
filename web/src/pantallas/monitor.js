@@ -6,7 +6,7 @@ import {crearVisor} from '../car.js';
 import {buscarSesiones} from '../selector.js';
 import {vueltasEntre} from '../telemetria.js';
 import {PULSOS_POR_VUELTA, POSICION_RUEDA_SENSOR, NOMBRE_RUEDA, distanciaM, CONSTANTES_INO} from '../../../compartido/parametros-firmware.js';
-import {analizarEvento, direccionRoll, direccionPitch, NOMBRE_TIPO} from '../../../compartido/exportacion.js';
+import {analizarEvento, direccionRoll, direccionPitch, NOMBRE_TIPO, textoLatencia, latenciaDeteccion, latenciaActivacion} from '../../../compartido/exportacion.js';
 import {htmlGraficas, htmlGraficasTecnicas, crearGraficas, actualizarGraficas, moverCursor, modoPresentacion} from '../graficas.js';
 import {icono} from '../iconos.js';
 import {PAUSA_MS, VENTANA_CONECTABLE_MS} from '../telemetria.js';
@@ -121,6 +121,7 @@ function pintarUltimo() {
  const guardado = app.liveActive || app.page === 'detalle';
  caja.innerHTML = `<div class="ultimo-linea"><span class="chip-evento" data-tipo="${escape(e.tipo)}">${escape(NOMBRE_TIPO[e.tipo] ?? e.tipo)}</span><span class="mono">${escape(horaSesion(e.t_deteccion_ms))}</span></div>
   <div class="ultimo-valor">${valor ?? '—'}<small>${escape(detalle)}</small></div>
+  <p class="ultimo-tiempos">Detección ${escape(textoLatencia(latenciaDeteccion(e)))} · activación ${escape(textoLatencia(latenciaActivacion(e)))}</p>
   ${guardado ? `<div class="ultimo-acciones"><a class="text-button boton-enlace small" href="#explicar/${escape(e.id)}">Explicar</a>${app.liveActive ? `<a class="text-button boton-enlace small" href="#sesion/${encodeURIComponent(app.current.sesion.id)}">Ver sesión</a>` : ''}</div>` : ''}`;
 }
 
@@ -147,7 +148,7 @@ export function pintarEventos() {
   const navegar = detalle || app.page === 'simulacion' ? '' : `<button class="text-button" data-event="${escape(e.id)}">Ver detalle</button>`;
   return `<li class="evento" data-tipo="${escape(e.tipo)}"><span><span class="chip-evento" data-tipo="${escape(e.tipo)}">${escape(NOMBRE_TIPO[e.tipo] ?? e.tipo)}</span></span>
    <div class="evento-texto"><strong>${escape(frase || `${NOMBRE_TIPO[e.tipo] ?? e.tipo} detectado a los ${seconds(e.t_deteccion_ms)} s de la sesión`)}</strong>
-   <small><span class="mono">${escape(horaSesion(e.t_deteccion_ms))}</span> · ${escape(e.id)} · ${s?.origen === 'real' ? 'real' : 'simulado'} · respuesta de la alarma ${e.t_activacion_ms == null ? 'sin medir' : (e.t_activacion_ms - e.t_deteccion_ms) + ' ms'}</small></div>
+   <small><span class="mono">${escape(horaSesion(e.t_deteccion_ms))}</span> · ${escape(e.id)} · ${s?.origen === 'real' ? 'real' : 'simulado'} · tiempo de detección ${escape(textoLatencia(latenciaDeteccion(e)))} · latencia de activación ${escape(textoLatencia(latenciaActivacion(e)))}</small></div>
    <div class="evento-acciones">${navegar}${app.page === 'simulacion' ? '' : `<button class="secondary small" data-explain="${escape(e.id)}" aria-label="Explicar evento ${escape(e.id)}">Explicar</button>`}</div></li>`;
  }).join('')}</ol>`;
  bindRows();
@@ -167,7 +168,7 @@ export function refreshData() {
    if (magnitude > peak) { peak = magnitude; app.impactTime = m.t_ms; }
   }
  }
- $('#result').innerHTML=e?`<div><strong>${escape(label[e.tipo]||e.tipo)} detectado</strong><small>Detección ${e.t_deteccion_ms} ms · activación ${e.t_activacion_ms??'sin medir'}${e.t_activacion_ms===null?'':' ms'} · gravedad ${escape(label[e.gravedad]??e.gravedad)}</small></div><div class="result-response"><strong>${e.t_activacion_ms===null?'—':e.t_activacion_ms-e.t_deteccion_ms+' ms'}</strong><small>Tiempo de respuesta</small></div><small>${e.ubicacion?escape(e.ubicacion.latitud+', '+e.ubicacion.longitud):'Sin ubicación disponible'}</small>`:'<div><strong>Sin incidente detectado</strong><small>Resultado de las reglas de esta corrida</small></div>';
+ $('#result').innerHTML=e?`<div><strong>${escape(label[e.tipo]||e.tipo)} detectado</strong><small>Detección ${e.t_deteccion_ms} ms · activación ${e.t_activacion_ms??'sin medir'}${e.t_activacion_ms===null?'':' ms'} · gravedad ${escape(label[e.gravedad]??e.gravedad)}</small></div><div class="result-response"><strong>${escape(textoLatencia(latenciaDeteccion(e)))}</strong><small>Tiempo de detección</small></div><div class="result-response"><strong>${escape(textoLatencia(latenciaActivacion(e)))}</strong><small>Latencia de activación</small></div><small>${e.ubicacion?escape(e.ubicacion.latitud+', '+e.ubicacion.longitud):'Sin ubicación disponible'}</small>`:'<div><strong>Sin incidente detectado</strong><small>Resultado de las reglas de esta corrida</small></div>';
  app.wheelTurnsBySample = [];
  let turns = 0;
  app.current.mediciones.forEach((m,i) => {

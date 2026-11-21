@@ -1,6 +1,6 @@
 import { explicarPaquete, moduloA, desviacionA, direccionRoll, direccionPitch } from './explanation.js';
 import { htmlGraficas, htmlGraficasTecnicas, crearGraficas, actualizarGraficas } from './graficas.js';
-import { analizarEvento } from '../../compartido/exportacion.js';
+import { analizarEvento, textoLatencia, latenciaDeteccion, latenciaActivacion } from '../../compartido/exportacion.js';
 import { imagenesCarro } from './minicarro.js';
 
 const escape = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -48,6 +48,14 @@ export function mostrarExplicacion(container, paquete, aviso = '') {
         : escape(lecturaPosterior + (muestraFinal ? ' ' + muestraFinal : ''))}</p>
       <div class="explicar-limites"><span><strong>Registrado:</strong> tipo, gravedad, estado y tiempos proceden del evento guardado; la gravedad es una etiqueta experimental, no una medida de daño.</span>
         <span><strong>Calculado:</strong> los picos, la frase y las gráficas salen solo de las lecturas disponibles.</span></div>
+    </section>
+    <section class="bloque" aria-labelledby="explain-tiempos">
+      <div class="bloque-cabecera"><h2 id="explain-tiempos">Tiempo de respuesta</h2><span class="ayuda">medido en el carro con micros()</span></div>
+      <div class="explicar-cifras">
+        <div class="cifra"><span>Tiempo de detección</span><strong>${escape(textoLatencia(latenciaDeteccion(e)))}</strong><p>Desde la primera lectura que superó el umbral hasta que el evento quedó confirmado (2 lecturas para un golpe, 150 ms para inclinación y vuelco).</p></div>
+        <div class="cifra"><span>Latencia de activación</span><strong>${escape(textoLatencia(latenciaActivacion(e)))}</strong><p>Desde la confirmación hasta que el ESP32 dio la orden al LED, al buzzer y al servo. No incluye el giro mecánico del servo ni la red.</p></div>
+      </div>
+      ${latenciaDeteccion(e) == null && latenciaActivacion(e) == null ? '<p class="grafica-nota">Este evento no trae los tiempos medidos: se guardó antes de la versión del firmware que los envía, o es un ejemplo.</p>' : ''}
     </section>
     <section class="bloque" aria-labelledby="explain-evidence">
       <div class="bloque-cabecera"><h2 id="explain-evidence">Lo que muestran las lecturas</h2><span class="ayuda">${muestras.length} ${muestras.length === 1 ? 'medición' : 'mediciones'} en esta ventana</span></div>

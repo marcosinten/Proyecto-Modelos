@@ -180,6 +180,7 @@ main { width: 100%; max-width: var(--ancho); margin: 0 auto; padding: var(--e5) 
 .ultimo-linea .mono { font-size: 14px; color: var(--texto-2); }
 .ultimo-valor { font-size: var(--t-numero); font-weight: 600; line-height: 1.15; letter-spacing: -.01em; }
 .ultimo-valor small { font-size: 14px; font-weight: 500; color: var(--texto-3); margin-left: 6px; letter-spacing: 0; }
+.ultimo-tiempos { margin: 4px 0 0; font-size: 13px; color: var(--texto-3); font-variant-numeric: tabular-nums; }
 .ultimo-acciones { display: flex; gap: var(--e1); flex-wrap: wrap; margin-left: -10px; }
 .ultimo-vacio { font-size: 14px; color: var(--texto-3); }
 
@@ -282,6 +283,7 @@ details[open] > summary::before { transform: rotate(45deg); }
 .result-strip { display: flex; flex-wrap: wrap; gap: var(--e4); align-items: center; padding: var(--e3) 0; border-top: 1px solid var(--borde); }
 .result-strip small { display: block; font-size: 13px; color: var(--texto-3); }
 .result-response { margin-left: auto; }
+.result-response + .result-response { margin-left: 16px; }
 .data-table { margin-top: var(--e3); }
 .event-actions { display: flex; gap: var(--e1); }
 
