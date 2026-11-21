@@ -1,6 +1,6 @@
 // Componente de gráficas compartido por En vivo, Detalle de evento, Detalle de sesión, Simulación y Explicar.
 //   Inclinación (°)            lateral (roll) y frontal (pitch); banda «Zona normal» de ±10° y referencias
-//                              punteadas en el umbral de inclinación (20°) y de vuelco (90°).
+//                              punteadas en el umbral de inclinación (10°, coincide con la banda) y de vuelco (90°).
 //   Aceleración total (m/s²)   √(ax²+ay²+az²) con el umbral de golpe y la referencia de 1 g.
 //   Rueda con sensor (vueltas) vueltas acumuladas y franja girando/detenida.
 //   Aceleración por eje        X, Y, Z (m/s², o g en el Detalle de sesión).
@@ -16,7 +16,7 @@ import { reducirMediciones } from '../../compartido/detalle-sesion.js';
 import { textoHora } from '../../compartido/hora.js';
 import { vueltasEntre } from './telemetria.js';
 
-export const ZONA_NORMAL_DEG = 10;   // banda «Zona normal» (pedido de diseño); el firmware marca inclinación a 20°
+export const ZONA_NORMAL_DEG = 10;   // banda «Zona normal»; igual al umbral de inclinación del firmware (10°)
 export const MAX_PUNTOS = 2000;      // por encima se dibuja la versión reducida (mín./máx. por cubo)
 const GRAVEDAD = 9.81;
 const HUECO_MS = 500;                // más separación entre muestras: la línea se corta (datos perdidos)

@@ -1,4 +1,4 @@
-INICIO carro_rc Grupo 11 version=2026.11.20-circuito-real origen=simulado mpu_correccion=1 modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=20 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
+INICIO carro_rc Grupo 11 version=2026.11.21-cp2-umbral10 origen=simulado mpu_correccion=1 modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
 MPU WHO_AM_I=0x68 SMPLRT_DIV=3 CONFIG=0x02 ACCEL_CONFIG=0x18 (esperado 3, 0x02, 0x18) OK
 CAL mantén el carro quieto y horizontal 2 s
 RED escaneo: 1 redes
@@ -218,6 +218,8 @@ TEL n=204 t=4079 ax=-2.967 ay=-0.010 az=9.827 roll=-0.06 pitch=-16.80 rps=4.00 k
 TEL n=205 t=4099 ax=-2.924 ay=0.057 az=9.870 roll=0.33 pitch=-16.50 rps=4.00 k=4
 TEL n=206 t=4111 ax=-2.996 ay=0.052 az=9.885 roll=0.30 pitch=-16.86 rps=4.00 k=2
 TEL n=207 t=4131 ax=-2.953 ay=-0.000 az=9.856 roll=-0.00 pitch=-16.68 rps=4.00 k=2
+DETECCION id=RC-ABCDEF-77AE0BF3-EV001 tipo_inicial=inclinacion motivo=permanencia t_ms=4155 inicio_condicion=4003 norma=10.18 roll=-0.11 pitch=-16.69
+ALERTA tipo=inclinacion t_det_ms=4155 t_det_us_arranque=6356000 LED=+0.223 ms BUZZER=+0.224 ms SERVO(orden)=+0.227 ms
 TEL n=208 t=4151 ax=-2.939 ay=0.009 az=9.904 roll=0.05 pitch=-16.53 rps=4.00 k=2
 TEL n=209 t=4167 ax=-2.977 ay=-0.010 az=9.851 roll=-0.06 pitch=-16.81 rps=4.00 k=1
 TEL n=210 t=4191 ax=-2.944 ay=-0.029 az=9.823 roll=-0.17 pitch=-16.68 rps=4.00 k=2
@@ -228,8 +230,6 @@ TEL n=214 t=4267 ax=-5.433 ay=0.081 az=9.875 roll=0.47 pitch=-28.82 rps=3.58 k=1
 TEL n=215 t=4283 ax=-5.457 ay=0.033 az=9.856 roll=0.19 pitch=-28.97 rps=3.34 k=0
 TEL n=216 t=4303 ax=-5.419 ay=-0.034 az=9.866 roll=-0.20 pitch=-28.78 rps=3.13 k=0
 TEL n=217 t=4327 ax=-5.410 ay=0.014 az=9.823 roll=0.08 pitch=-28.84 rps=2.95 k=1
-DETECCION id=RC-ABCDEF-77AE0BF3-EV001 tipo_inicial=inclinacion motivo=permanencia t_ms=4355 inicio_condicion=4203 norma=11.21 roll=0.08 pitch=-28.37
-ALERTA tipo=inclinacion t_det_ms=4355 t_det_us_arranque=6556000 LED=+0.223 ms BUZZER=+0.224 ms SERVO(orden)=+0.227 ms
 TEL n=218 t=4359 ax=-5.481 ay=-0.043 az=9.813 roll=-0.25 pitch=-29.19 rps=2.78 k=4
 TEL n=219 t=4367 ax=-5.386 ay=-0.082 az=9.827 roll=-0.48 pitch=-28.72 rps=2.64 k=1
 TEL n=220 t=4395 ax=-5.405 ay=-0.005 az=9.837 roll=-0.03 pitch=-28.79 rps=2.50 k=3
@@ -294,7 +294,6 @@ TEL n=276 t=5515 ax=-0.051 ay=-0.024 az=9.832 roll=-0.14 pitch=-0.30 rps=2.00 k=
 TEL n=277 t=5535 ax=-0.051 ay=-0.000 az=9.837 roll=-0.00 pitch=-0.30 rps=2.00 k=3
 TEL n=278 t=5547 ax=0.030 ay=-0.015 az=9.842 roll=-0.09 pitch=0.18 rps=2.00 k=1
 TEL n=279 t=5575 ax=0.011 ay=-0.039 az=9.827 roll=-0.23 pitch=0.06 rps=2.00 k=3
-EVENTO id=RC-ABCDEF-77AE0BF3-EV001 tipo=inclinacion gravedad=media t_inicio=3203 t_det=4355 t_act=4356 t_fin=5599 cierre=condicion_ausente
 TEL n=280 t=5583 ax=-0.013 ay=-0.005 az=9.856 roll=-0.03 pitch=-0.08 rps=2.00 k=0
 TEL n=281 t=5607 ax=-0.085 ay=0.004 az=9.827 roll=0.03 pitch=-0.49 rps=2.00 k=1
 TEL n=282 t=5635 ax=-0.051 ay=0.014 az=9.856 roll=0.08 pitch=-0.30 rps=2.00 k=3
@@ -305,6 +304,7 @@ TEL n=286 t=5715 ax=0.025 ay=0.028 az=9.837 roll=0.17 pitch=0.15 rps=2.00 k=3
 TEL n=287 t=5723 ax=0.016 ay=0.043 az=9.813 roll=0.25 pitch=0.09 rps=2.00 k=0
 TEL n=288 t=5743 ax=0.059 ay=0.009 az=9.842 roll=0.05 pitch=0.34 rps=2.00 k=0
 TEL n=289 t=5767 ax=0.001 ay=0.052 az=9.846 roll=0.30 pitch=0.01 rps=2.00 k=1
+EVENTO id=RC-ABCDEF-77AE0BF3-EV001 tipo=inclinacion gravedad=media t_inicio=3003 t_det=4155 t_act=4156 t_fin=5799 cierre=condicion_ausente
 TEL n=290 t=5787 ax=-0.013 ay=-0.005 az=9.846 roll=-0.03 pitch=-0.08 rps=2.00 k=1
 TEL n=291 t=5807 ax=0.035 ay=0.028 az=9.856 roll=0.16 pitch=0.20 rps=2.00 k=1
 TEL n=292 t=5823 ax=0.064 ay=-0.015 az=9.818 roll=-0.09 pitch=0.37 rps=2.00 k=0
@@ -316,12 +316,11 @@ TEL n=297 t=5931 ax=0.025 ay=-0.058 az=9.885 roll=-0.34 pitch=0.15 rps=2.00 k=2
 TEL n=298 t=5951 ax=-0.047 ay=-0.010 az=9.861 roll=-0.06 pitch=-0.27 rps=2.00 k=2
 TEL n=299 t=5967 ax=0.025 ay=-0.039 az=9.837 roll=-0.23 pitch=0.15 rps=2.00 k=1
 TEL n=300 t=5983 ax=0.107 ay=0.009 az=9.894 roll=0.05 pitch=0.62 rps=2.00 k=0
-EST t=5999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=224 err_i2c=0 anillo=300 perdidas=0 log_perdidas=0 wifi=1 estado=BLOQUEO heap_libre=200000 heap_bloque_max=110000 heap_min=180000
+EST t=6003 f_adq=250.0 f_dec=250.0 f_tel=49.8 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=224 err_i2c=0 anillo=300 perdidas=0 log_perdidas=0 wifi=1 estado=BLOQUEO heap_libre=200000 heap_bloque_max=110000 heap_min=180000
 TEL n=301 t=6011 ax=-0.032 ay=-0.020 az=9.870 roll=-0.11 pitch=-0.19 rps=2.00 k=2
 TEL n=302 t=6035 ax=-0.013 ay=0.052 az=9.894 roll=0.30 pitch=-0.08 rps=2.00 k=3
 TEL n=303 t=6059 ax=0.040 ay=0.048 az=9.861 roll=0.28 pitch=0.23 rps=2.00 k=4
 TEL n=304 t=6079 ax=-0.066 ay=-0.043 az=9.880 roll=-0.25 pitch=-0.38 rps=2.00 k=4
-DETECTOR listo t_ms=6099
 TEL n=305 t=6083 ax=0.049 ay=0.043 az=9.866 roll=0.25 pitch=0.29 rps=2.00 k=0
 TEL n=306 t=6111 ax=-0.003 ay=0.033 az=9.851 roll=0.19 pitch=-0.02 rps=2.00 k=2
 TEL n=307 t=6127 ax=0.006 ay=-0.063 az=9.842 roll=-0.36 pitch=0.04 rps=2.00 k=1
@@ -332,6 +331,7 @@ TEL n=311 t=6215 ax=0.054 ay=-0.039 az=9.823 roll=-0.23 pitch=0.32 rps=2.00 k=3
 TEL n=312 t=6239 ax=-0.042 ay=0.024 az=9.870 roll=0.14 pitch=-0.24 rps=2.00 k=4
 TEL n=313 t=6259 ax=-0.008 ay=-0.077 az=9.861 roll=-0.45 pitch=-0.05 rps=2.00 k=4
 TEL n=314 t=6275 ax=-0.047 ay=0.019 az=9.866 roll=0.11 pitch=-0.27 rps=2.00 k=3
+DETECTOR listo t_ms=6299
 TEL n=315 t=6295 ax=-0.003 ay=0.071 az=9.851 roll=0.42 pitch=-0.02 rps=2.00 k=3
 TEL n=316 t=6303 ax=0.044 ay=0.057 az=9.856 roll=0.33 pitch=0.26 rps=2.00 k=0
 TEL n=317 t=6339 ax=-0.018 ay=-0.005 az=9.861 roll=-0.03 pitch=-0.10 rps=2.00 k=4
@@ -368,7 +368,7 @@ TEL n=347 t=6939 ax=-0.008 ay=-0.029 az=9.870 roll=-0.17 pitch=-0.05 rps=1.50 k=
 TEL n=348 t=6951 ax=0.121 ay=-0.039 az=9.846 roll=-0.23 pitch=0.70 rps=1.50 k=2
 TEL n=349 t=6963 ax=0.025 ay=-0.010 az=9.885 roll=-0.06 pitch=0.15 rps=1.50 k=0
 TEL n=350 t=6991 ax=-0.037 ay=-0.005 az=9.846 roll=-0.03 pitch=-0.22 rps=1.50 k=2
-EST t=6999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=224 err_i2c=0 anillo=350 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO heap_libre=200000 heap_bloque_max=110000 heap_min=180000
+EST t=7003 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=224 err_i2c=0 anillo=350 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO heap_libre=200000 heap_bloque_max=110000 heap_min=180000
 TEL n=351 t=7003 ax=0.054 ay=-0.034 az=9.942 roll=-0.20 pitch=0.31 rps=1.50 k=0
 TEL n=352 t=7035 ax=0.030 ay=-0.029 az=9.846 roll=-0.17 pitch=0.18 rps=1.50 k=3
 TEL n=353 t=7047 ax=0.068 ay=0.062 az=9.837 roll=0.36 pitch=0.40 rps=1.50 k=1
@@ -419,7 +419,7 @@ TEL n=397 t=7923 ax=-0.066 ay=-0.015 az=9.904 roll=-0.09 pitch=-0.38 rps=1.50 k=
 TEL n=398 t=7955 ax=0.059 ay=-0.000 az=9.837 roll=-0.00 pitch=0.34 rps=1.50 k=3
 TEL n=399 t=7967 ax=-0.003 ay=-0.020 az=9.846 roll=-0.11 pitch=-0.02 rps=1.50 k=1
 TEL n=400 t=7983 ax=0.025 ay=0.033 az=9.851 roll=0.19 pitch=0.15 rps=1.50 k=0
-EST t=8003 f_adq=250.0 f_dec=250.0 f_tel=49.8 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=224 err_i2c=0 anillo=400 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO heap_libre=200000 heap_bloque_max=110000 heap_min=180000
+EST t=8003 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=224 err_i2c=0 anillo=400 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO heap_libre=200000 heap_bloque_max=110000 heap_min=180000
 TEL n=401 t=8003 ax=-0.047 ay=0.019 az=9.823 roll=0.11 pitch=-0.27 rps=1.46 k=0
 TEL n=402 t=8027 ax=-0.013 ay=0.038 az=9.880 roll=0.22 pitch=-0.08 rps=1.42 k=1
 TEL n=403 t=8043 ax=-0.061 ay=-0.063 az=9.870 roll=-0.36 pitch=-0.35 rps=1.38 k=0
@@ -440,6 +440,7 @@ TEL n=415 t=8295 ax=-0.023 ay=-0.029 az=9.823 roll=-0.17 pitch=-0.13 rps=0.00 k=
 TEL n=416 t=8311 ax=-0.070 ay=-0.020 az=9.913 roll=-0.11 pitch=-0.41 rps=0.00 k=2
 TEL n=417 t=8327 ax=0.011 ay=-0.000 az=9.823 roll=-0.00 pitch=0.06 rps=0.00 k=1
 TEL n=418 t=8351 ax=0.044 ay=-0.020 az=9.827 roll=-0.11 pitch=0.26 rps=0.00 k=2
+REARME t_ms=8367 alarma=apagada detector=REPOSO eventos=1
 TEL n=419 t=8363 ax=0.078 ay=0.057 az=9.818 roll=0.33 pitch=0.45 rps=0.00 k=0
 TEL n=420 t=8383 ax=0.021 ay=0.067 az=9.837 roll=0.39 pitch=0.12 rps=0.00 k=0
 TEL n=421 t=8403 ax=-0.085 ay=0.014 az=9.880 roll=0.08 pitch=-0.49 rps=0.00 k=0

@@ -25,12 +25,10 @@ Las fuentes IBM Plex Sans/Mono y los iconos se instalan con npm (`@fontsource/ib
 
 ## Decisiones que conviene conocer
 
-- **Zona normal ±10° y umbral de 20°.** La banda «Zona normal», la pirámide 3D y el cuadrado 2D usan ±10°
-  (`ZONA_NORMAL_DEG` en `graficas.js`). El firmware marca una inclinación desde 20°
-  (`UMBRAL_INCLINACION_DEG`), y el estado «Inclinado» de la pantalla usa ese mismo valor. Por eso las
-  gráficas dibujan también una línea punteada en 20° («Umbral de inclinación»). Entre 10° y 20° el carro
-  sale de la zona normal pero todavía no genera un evento. Para que la banda coincida con el firmware,
-  basta con cambiar `ZONA_NORMAL_DEG` a 20.
+- **Zona normal ±10° y umbral de 10°.** La banda «Zona normal», la pirámide 3D y el cuadrado 2D usan ±10°
+  (`ZONA_NORMAL_DEG` en `graficas.js`). Desde el 21 de noviembre el firmware marca una inclinación desde 10°
+  (`UMBRAL_INCLINACION_DEG`, antes 20°), así que la banda y el umbral coinciden: salir de la zona normal
+  durante 150 ms genera un evento. El estado «Inclinado» de la pantalla usa el mismo valor.
 - **Contraste.** Donde un color pedido no llega a 3:1 (líneas) o a 4,5:1 (texto) sobre blanco, se usa su
   variante oscura sin cambiar el tono:
   - Las líneas de evento de inclinación van en #B54708. El punto mantiene #F79009 con borde oscuro.

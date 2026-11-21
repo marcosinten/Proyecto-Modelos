@@ -133,6 +133,10 @@ def escenarios():
     for dt, gx in perfil:  # perfil escalonado del caso "frenada" de web/src/simulation.js (pico -7 m/s²)
         L.imu(4000 + dt, gx, 0, 1)
     ultimo = L.pulsos(6000, 1.5, 2)
+    # A -7 m/s² el ángulo aparente (≈ 36°) supera el umbral de inclinación: el firmware da una
+    # «inclinación aparente» y la alarma queda activa hasta el rearme. Se rearma antes de comprobar que
+    # las salidas quedan apagadas (sin rearme, el resultado dependía de la fase del parpadeo).
+    L.rearme(ultimo + 1000)
     L.en(ultimo + 1500, "mark", "fin frenada")
     salidas_apagadas(L, ultimo + 1500)
     res.append(L)

@@ -60,7 +60,9 @@
   9534.011 ms  set-control hall_sim.pressed = 1
   9554.011 ms  set-control hall_sim.pressed = 0
  10320.224 ms  HTTP POST #2 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
- 11034.011 ms  MARCA fin frenada
- 11034.011 ms  expect-pin led1:A = 0 -> leído 0 OK
- 11034.011 ms  expect-pin esp:D27 = 0 -> leído 0 OK
- 11034.011 ms  FIN escenario fallos=0
+ 10534.011 ms  set-control btn_rearme.pressed = 1
+ 10685.911 ms  set-control btn_rearme.pressed = 0
+ 11037.811 ms  MARCA fin frenada
+ 11037.811 ms  expect-pin led1:A = 0 -> leído 0 OK
+ 11037.811 ms  expect-pin esp:D27 = 0 -> leído 0 OK
+ 11037.811 ms  FIN escenario fallos=0

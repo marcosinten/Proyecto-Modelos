@@ -7,7 +7,7 @@ import { horaAproximadaMs } from './hora.js';
 export const SIN_MEDIR = 'sin medir';
 export const GRAVEDAD = 9.81;
 export const RUEDA_MINIMA_RPS = 0.01;         // mismo criterio que el monitor para decir «girando»
-export const UMBRAL_TRAMO_DEG = CONSTANTES_INO.UMBRAL_INCLINACION_DEG; // 20°
+export const UMBRAL_TRAMO_DEG = CONSTANTES_INO.UMBRAL_INCLINACION_DEG; // 10°
 export const UNIR_HUECOS_MS = 200;            // huecos menores se unen al mismo tramo
 export const TRAMO_MINIMO_MS = 150;           // tramos más cortos se descartan
 const HUECO_TELEMETRIA_MS = 500;              // más separación entre muestras = datos perdidos
@@ -51,7 +51,7 @@ export function tramos(mediciones, condicion, { unirMs = UNIR_HUECOS_MS, minMs =
 
 const inclinada = (m, umbral = UMBRAL_TRAMO_DEG) => Math.abs(m.roll_deg) >= umbral || Math.abs(m.pitch_deg) >= umbral;
 
-// Tramos con |roll| o |pitch| >= 20°, con su máximo (eje, valor con signo e instante).
+// Tramos con |roll| o |pitch| >= 10° (umbral del firmware), con su máximo (eje, valor con signo e instante).
 export function tramosInclinacion(mediciones, opciones) {
   return tramos(mediciones, m => inclinada(m), opciones).map(({ muestras, ...t }) => {
     let pico = null;
@@ -115,7 +115,7 @@ export function analizarEvento(evento, mediciones) {
   const roll = pico(ventana, m => m.roll_deg), pitch = pico(ventana, m => m.pitch_deg);
   const angulo = !roll ? null : Math.abs(roll.valor) >= Math.abs(pitch.valor) ? { eje: 'lateral', ...roll } : { eje: 'frontal', ...pitch };
   const acel = pico(ventana, aceleracionTotal);
-  // Tiempo sobre el umbral dentro de la ventana: inclinación (20°) o vuelco (|roll| >= 90°).
+  // Tiempo sobre el umbral dentro de la ventana: inclinación (10°) o vuelco (|roll| >= 90°).
   const sobre = evento.tipo === 'vuelco'
     ? tramos(ventana, m => Math.abs(m.roll_deg) >= CONSTANTES_INO.UMBRAL_VUELCO_DEG, { minMs: 0 })
     : tramos(ventana, m => inclinada(m), { minMs: 0 });

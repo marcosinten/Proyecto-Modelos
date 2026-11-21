@@ -36,7 +36,7 @@
   },
   {
     "prueba": "Frenada · inclinación aparente",
-    "criterio": "A -7 m/s² el ángulo acelerométrico supera 20°: inclinación, sin golpe ni vuelco",
+    "criterio": "A -7 m/s² el ángulo acelerométrico supera 10°: inclinación, sin golpe ni vuelco",
     "observado": "ax mínima -7.11 m/s², |a| máx 12.13 m/s², |pitch| máx 36.0°; rueda_rps 4/s→4.00–4.00, 2/s→2.00–2.00, 1,5/s→1.50–1.50; detecciones 1",
     "estado": "OK",
     "evidencia": "evidencias/frenada/nativo/"
@@ -156,7 +156,7 @@
   {
     "prueba": "Inclinacion a vuelco · clasificación",
     "criterio": "un solo evento 'vuelco', gravedad alta",
-    "observado": "detecciones 1, eventos 1: vuelco/alta t_inicio=295 t_det=1447 t_act=1448 t_fin=6299 cierre=condicion_ausente; clasificación inicial inclinacion → final vuelco",
+    "observado": "detecciones 1, eventos 1: vuelco/alta t_inicio=195 t_det=1347 t_act=1348 t_fin=6299 cierre=condicion_ausente; clasificación inicial inclinacion → final vuelco",
     "estado": "OK",
     "evidencia": "evidencias/inclinacion_a_vuelco/nativo/"
   },
@@ -170,7 +170,7 @@
   {
     "prueba": "Inclinacion a vuelco · buzzer activo",
     "criterio": "120 ms en inclinación, 500 ms en golpe, continuo en vuelco, apagado al rearmar",
-    "observado": "8 cambios de nivel; tramos intermedios 92–120 ms; nivel final 0",
+    "observado": "8 cambios de nivel; tramos intermedios 120–120 ms; nivel final 0",
     "estado": "OK",
     "evidencia": "evidencias/inclinacion_a_vuelco/nativo/"
   },
@@ -282,7 +282,7 @@
   {
     "prueba": "API · envío",
     "criterio": "sesión, lotes y evento aceptados por la API local (201/200)",
-    "observado": "17 POST; códigos [200, 201]; evento guardado: GET /eventos/RC-ABCDEF-083ECFF2-EV001 → tipo golpe, gravedad alta, ubicacion None, 90 mediciones en la ventana",
+    "observado": "17 POST; códigos [200, 201]; evento guardado: GET /eventos/RC-ABCDEF-1E1268CF-EV001 → tipo golpe, gravedad alta, ubicacion None, 90 mediciones en la ventana",
     "estado": "OK",
     "evidencia": "evidencias/api/nativo/"
   },
@@ -303,7 +303,7 @@
   {
     "prueba": "API · reintento",
     "criterio": "respuesta perdida → reintento con el mismo JSON, ids y tiempos; la API responde 200",
-    "observado": "/sesiones/RC-ABCDEF-083ECFF2/mediciones hash 67560B4D: API 201→200 (cuerpos idénticos); /eventos hash 86F6F9C2: API 201→200 (cuerpos idénticos)",
+    "observado": "/sesiones/RC-ABCDEF-1E1268CF/mediciones hash 67560B4D: API 201→200 (cuerpos idénticos); /eventos hash BCD77150: API 201→200 (cuerpos idénticos)",
     "estado": "OK",
     "evidencia": "evidencias/api/nativo/"
   },

@@ -10,7 +10,7 @@
 // Carro RC · Grupo 11 · ESP32 DevKit WROOM-32
 
 // Aparece en la línea INICIO del monitor serie: permite saber qué firmware tiene la placa.
-static const char VERSION_FIRMWARE[] = "2026.11.20-circuito-real";
+static const char VERSION_FIRMWARE[] = "2026.11.21-cp2-umbral10";
 
 #ifdef BANCO_NATIVO
 static const char ORIGEN_SESION[] = "simulado";
@@ -56,7 +56,8 @@ static const uint32_t I2C_ESPERA_MAX_LECTURAS = 1250;
 #endif
 
 static const float UMBRAL_GOLPE_MS2 = 16.0f;
-static const float UMBRAL_INCLINACION_DEG = 20.0f;
+// Decisión del equipo (21 nov): la inclinación se detecta desde 10° (antes 20°).
+static const float UMBRAL_INCLINACION_DEG = 10.0f;
 static const float UMBRAL_VUELCO_DEG = 90.0f;
 static const uint32_t PERMANENCIA_MS = 150;
 static const int LECTURAS_GOLPE = 2;

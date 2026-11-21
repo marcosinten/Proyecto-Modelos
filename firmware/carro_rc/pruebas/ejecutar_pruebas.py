@@ -26,6 +26,8 @@ ESC = FW / "escenarios"
 EVID = RAIZ / "evidencias"
 # Pulsos por vuelta del firmware: las expectativas de rueda_rps se derivan de este valor.
 PPR = int(re.search(r"PULSOS_POR_VUELTA\s*=?\s*(\d+)", (FW / "carro_rc.ino").read_text(encoding="utf-8")).group(1))
+# Umbral de inclinación del firmware (°): el criterio de la frenada se deriva de este valor.
+UMBRAL_INCL = float(re.search(r"UMBRAL_INCLINACION_DEG\s*=\s*([0-9.]+)", (FW / "carro_rc.ino").read_text(encoding="utf-8")).group(1))
 
 # Sensor modelado con error de cero y ruido típicos del MPU6050 para que la
 # calibración se compruebe de verdad (Wokwi entrega valores exactos).
@@ -235,10 +237,10 @@ def evaluar(caso, d, vcd, ev, extra):
         for nombre, a, b in (("4/s", 2500, 4000), ("2/s", 5000, 6000), ("1,5/s", 6700, 7400)):
             v = [m["rps"] for m in tel if a <= m["t"] <= b]
             fases[nombre] = f"{min(v):.2f}–{max(v):.2f}" if v else "?"
-        res.append(r("Frenada · inclinación aparente", "A -7 m/s² el ángulo acelerométrico supera 20°: inclinación, sin golpe ni vuelco",
+        res.append(r("Frenada · inclinación aparente", f"A -7 m/s² el ángulo acelerométrico supera {UMBRAL_INCL:g}°: inclinación, sin golpe ni vuelco",
                      f"ax mínima {minax:.2f} m/s², |a| máx {maxn:.2f} m/s², |pitch| máx {maxp:.1f}°; "
                      f"rueda_rps 4/s→{fases['4/s']}, 2/s→{fases['2/s']}, 1,5/s→{fases["1,5/s"]}; detecciones {len(dets)}",
-                     len(eventos)==1 and eventos[0][1]=="inclinacion" and maxn<16 and maxp>=20 and minax < -6.5, ev))
+                     len(eventos)==1 and eventos[0][1]=="inclinacion" and maxn<16 and maxp>=UMBRAL_INCL and minax < -6.5, ev))
     elif caso in ("golpe", "golpe_corto", "inclinacion", "vuelco_costado", "vuelco_boca_abajo", "inclinacion_a_vuelco"):
         esperado = {"golpe": "golpe", "golpe_corto": "golpe", "inclinacion": "inclinacion"}.get(caso, "vuelco")
         grav = "media" if esperado == "inclinacion" else "alta"

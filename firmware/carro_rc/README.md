@@ -8,7 +8,7 @@ pulsador de rearme. La guía de montaje está en [`docs/CONEXION-ESP32.md`](../.
 `carro_rc.ino` se escribió con los requisitos de la entrega y se ajustó el 16 de noviembre a los materiales comprados:
 
 - **Reglas y umbrales del equipo** (`web/src/simulation.js`) sin cambios: golpe si |a| ≥ 16 m/s²;
-  inclinación si |roll| o |pitch| ≥ 20°; vuelco si |roll| ≥ 90°. La inclinación y el vuelco deben durar 150 ms.
+  inclinación si |roll| o |pitch| ≥ 10° (desde el 21 de noviembre; antes 20°); vuelco si |roll| ≥ 90°. La inclinación y el vuelco deben durar 150 ms.
   El golpe se confirma con `LECTURAS_GOLPE = 2` lecturas seguidas de 250 Hz por encima del umbral (entre 4 y 8 ms
   de señal), porque un choque dura pocos milisegundos; una sola lectura alta se descarta como ruido. Gravedad
   alta para golpe y vuelco, media para inclinación. En la detección se aplica la misma prioridad que en la
