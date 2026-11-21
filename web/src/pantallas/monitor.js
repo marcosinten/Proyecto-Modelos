@@ -19,6 +19,13 @@ import {openExport, descargar} from './exportar.js';
 import {simulationForm, bindSimulation} from './simulacion.js';
 import {connectLive} from './vivo.js';
 
+// Estado del detector que envía el firmware en cada medición (fase 5, docs/MODELO.md).
+export const ESTADO_DETECTOR = {
+ normal: ['Normal', 'ninguna lectura supera los umbrales'],
+ alerta: ['Alerta', 'superó un umbral; contando la permanencia'],
+ emergencia: ['Emergencia', 'evento confirmado; LED, buzzer y servo activados'],
+ rearme: ['Rearme', 'evento cerrado; espera 1 s sin condición para volver a Normal']
+};
 const uno = v => v.toLocaleString('es-EC', {minimumFractionDigits: 1, maximumFractionDigits: 1});
 const dos = v => v.toLocaleString('es-EC', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 const ATRIBUCION = 'Modelo 3D: <a href="https://sketchfab.com/3d-models/oldsmobile-cutlass-supreme-sedan-71-78f76d386a4341b0b71745bdc50fd5ab" target="_blank" rel="noopener noreferrer">Barbo</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · adaptado al visor';
@@ -41,6 +48,7 @@ export function dashboard() {
    <span class="etiqueta-tarjeta">Estado del carro</span>
    <div class="chip-estado" id="estado-carro" data-estado="sin-datos" aria-live="polite"><span id="estado-icono">${icono('sin-datos')}</span><strong id="estado-texto">—</strong></div>
    <p class="estado-detalle" id="estado-detalle"></p>
+   <p class="estado-detector" id="estado-detector" hidden><span class="etiqueta-detector">Detector</span><strong id="detector-nombre"></strong><span id="detector-detalle"></span></p>
   </section>
   <section class="tarjeta t-conexion" aria-label="Conexión y sesión">
    <div class="tarjeta-cabecera"><span class="etiqueta-tarjeta">Conexión y sesión</span><span class="chip" id="origin">Datos simulados</span></div>
@@ -226,6 +234,10 @@ export function update(drawCharts=true){
  if ($('#estado-carro').dataset.estado !== estado) { $('#estado-carro').dataset.estado = estado; $('#estado-icono').innerHTML = icono(estado); }
  $('#estado-texto').textContent = est.texto;
  $('#estado-detalle').textContent = app.liveActive && app.stale ? 'Último dato recibido; la conexión está atrasada' : est.detalle;
+ // Estado del detector (solo si la medición lo trae: las anteriores a la fase 5 no lo tienen).
+ const det = ESTADO_DETECTOR[m.estado];
+ $('#estado-detector').hidden = !det;
+ if (det) { $('#estado-detector').dataset.estado = m.estado; $('#detector-nombre').textContent = det[0]; $('#detector-detalle').textContent = det[1]; }
  if (!app.liveActive) ponerConexion(app.page === 'detalle' ? 'Reproducción de datos guardados' : app.page === 'simulacion' ? 'Simulación en esta página' : 'Demostración con datos simulados', 'demo');
 
  const rueda = m.rueda_rps == null ? 'Sin dato' : app.liveActive && app.stale ? 'Sin datos recientes' : m.rueda_rps > 0.01 ? 'Girando' : 'Detenida';

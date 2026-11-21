@@ -131,6 +131,22 @@ try {
   const bajados = (await readdir(dir)).filter(n => /\.(png|xlsx)$/.test(n)).sort();
   assert.deepEqual(bajados, ['resultados-pico.png', 'resultados-simulacion-vs-prototipo.xlsx']);
 
+  // Fase 5: estado del detector en En vivo (la última medición llega en «emergencia»).
+  const idEstado = 'RC-PRUEBA-ESTADO';
+  await post('/sesiones', {sesion: {id: idEstado, origen: 'real'}});
+  await post(`/sesiones/${idEstado}/mediciones`, {mediciones: Array.from({length: 50}, (_, i) => ({numero: i + 1, t_ms: (i + 1) * 20,
+    ax: 0, ay: 0, az: 9.81, roll_deg: i > 40 ? 30 : 0, pitch_deg: 0, estado: i > 47 ? 'emergencia' : i > 40 ? 'alerta' : 'normal'}))});
+  await tab.goto(url + '#historial');
+  await tab.goto(url + '#monitor');
+  await tab.waitForSelector('#live-mode', {timeout: 15000});
+  await tab.click('#live-mode');
+  await tab.type('#live-form input', idEstado);
+  await tab.click('#connect-session');
+  await tab.waitForFunction(() => document.querySelector('#detector-nombre')?.textContent === 'Emergencia', {timeout: 15000});
+  assert.equal(await tab.$eval('#estado-detector', e => e.hidden), false);
+  await pause(1200);
+  await tab.screenshot({path: join(salida, 'en-vivo-estado-detector.png'), clip: {x: 0, y: 0, width: 1440, height: 900}});
+
   assert.deepEqual(errores, [], 'la página no debe lanzar errores');
   console.log(`Sin errores de página. Capturas en ${salida}`);
 } finally {

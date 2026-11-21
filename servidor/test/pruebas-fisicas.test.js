@@ -74,3 +74,15 @@ test('GET /pruebas: máximos de la sesión, sus eventos y también las sesiones 
   assert.deepEqual(pruebas[2].eventos, [], 'sesión sin accidente: sirve para contar falsas alarmas');
   assert.equal(pruebas[1].pico_aceleracion_ms2, null, 'sin mediciones no se inventa un pico');
 });
+
+test('fase 5: estado del detector opcional en cada medición', async t => {
+  const { request, sesion } = await entorno(t);
+  await sesion('RC-E');
+  const lote = [{ ...medicion(1, 0), estado: 'normal' }, { ...medicion(2, 20), estado: 'emergencia' }, medicion(3, 0)];
+  assert.equal((await request('/sesiones/RC-E/mediciones', { version: 1, mediciones: lote })).status, 201);
+  assert.equal((await request('/sesiones/RC-E/mediciones', { version: 1, mediciones: lote })).status, 200, 'reintento idéntico');
+  const guardadas = (await request('/sesiones/RC-E/mediciones')).data.mediciones;
+  assert.deepEqual(guardadas.map(m => m.estado), ['normal', 'emergencia', undefined], 'sin estado: el campo no aparece');
+  assert.equal((await request('/sesiones/RC-E/mediciones', { version: 1, mediciones: [{ ...medicion(4, 0), estado: 'pendiente' }] })).status, 400);
+  assert.equal((await request('/sesiones/RC-E/mediciones', { version: 1, mediciones: [{ ...medicion(2, 20), estado: 'rearme' }] })).status, 409, 'mismo número con otro estado');
+});

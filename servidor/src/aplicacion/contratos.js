@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+export const ESTADOS_DETECTOR = ['normal', 'alerta', 'emergencia', 'rearme'];
 const id = z.string().regex(/^[A-Za-z0-9_-]{1,64}$/, 'Usa 1–64 letras, números, guiones o guiones bajos');
 const ms = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 const finito = z.number().finite();
@@ -12,7 +13,9 @@ export const medicionSchema = z.object({
   t_ms: ms, ax: finito, ay: finito, az: finito,
   roll_deg: finito.min(-180).max(180), pitch_deg: finito.min(-90).max(90),
   rueda_rps: finito.min(0).max(1000).optional(),
-  rueda_pulsos: z.number().int().min(0).max(0xffffffff).optional()
+  rueda_pulsos: z.number().int().min(0).max(0xffffffff).optional(),
+  // Fase 5: estado del detector del firmware en el instante de la medición (docs/MODELO.md).
+  estado: z.enum(ESTADOS_DETECTOR).optional()
 }).strict();
 export const eventoBaseSchema = z.object({
   id, sesion_id: id,

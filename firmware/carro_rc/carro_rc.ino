@@ -10,7 +10,7 @@
 // Carro RC · Grupo 11 · ESP32 DevKit WROOM-32
 
 // Aparece en la línea INICIO del monitor serie: permite saber qué firmware tiene la placa.
-static const char VERSION_FIRMWARE[] = "2026.11.21-cp2-ajuste";
+static const char VERSION_FIRMWARE[] = "2026.11.21-cp2-estados";
 
 #ifdef BANCO_NATIVO
 static const char ORIGEN_SESION[] = "simulado";
@@ -137,6 +137,7 @@ struct Muestra {
   uint32_t t_ms;
   float ax, ay, az, roll, pitch, rps;
   uint32_t pulsos;
+  uint8_t estado;  // estado del detector (EstadoDet) en el instante de esta lectura
 };
 
 enum TipoEvento : uint8_t {
@@ -485,16 +486,28 @@ static float corregirAngulo(float angulo, float limite) {
   return a > limite ? limite : a < -limite ? -limite : a;
 }
 
-// Detección por episodios
-
-enum EstadoDet { REPOSO, CANDIDATO, EPISODIO, BLOQUEO };
-static EstadoDet estadoDet = REPOSO;
+// Detección: máquina de estados del detector (docs/MODELO.md tiene el diagrama)
+//
+//   NORMAL      ninguna lectura supera los umbrales.
+//   ALERTA      una lectura superó un umbral y se cuenta la permanencia (2 lecturas para el golpe,
+//               150 ms para inclinación y vuelco). Si la condición desaparece antes, vuelve a NORMAL.
+//   EMERGENCIA  evento confirmado: LED, buzzer y servo activados y evento abierto. Puede pasar de
+//               inclinación a golpe o vuelco. Se cierra (y se envía) tras 500 ms sin condición o a los 5 s.
+//   REARME      evento cerrado: el detector espera 1 s sin condición antes de volver a NORMAL, para no
+//               duplicar el mismo accidente. Si aparece un vuelco nuevo sostenido, abre otra EMERGENCIA.
+//
+// La alarma física (LED, buzzer y servo) NO depende de este estado: sigue activa hasta que se pulsa el
+// botón de rearme, aunque el detector ya esté en REARME o NORMAL.
+enum EstadoDet : uint8_t { NORMAL, ALERTA, EMERGENCIA, REARME };
+static EstadoDet estadoDet = NORMAL;
 static uint32_t tCandidato = 0, tUltimaCond = 0;
 static uint32_t eventosCreados = 0;
 static Evento evActual;
 static bool vioGolpe = false, vioVuelco = false;
 static uint8_t tipoUltimoCerrado = TIPO_GOLPE;
-static const char* nombresEstado[] = {"REPOSO", "CANDIDATO", "EPISODIO", "BLOQUEO"};
+static const char* nombresEstado[] = {"NORMAL", "ALERTA", "EMERGENCIA", "REARME"};
+// Los mismos nombres en minúsculas para el campo opcional "estado" de cada medición enviada a la API.
+static const char* estadosJson[] = {"normal", "alerta", "emergencia", "rearme"};
 
 static bool escalando = false;
 static int golpeSeguidas = 0;
@@ -518,7 +531,7 @@ static void iniciarEpisodio(uint32_t t, int64_t t_us, uint8_t tipo, bool golpe,
   vioGolpe = golpe;
   vioVuelco = vuelco;
   tUltimaCond = t;
-  estadoDet = EPISODIO;
+  estadoDet = EMERGENCIA;  // ALERTA (o REARME, si es una escalada a vuelco) → EMERGENCIA
 
   logq("DETECCION id=%s tipo_inicial=%s motivo=%s t_ms=%lu inicio_condicion=%lu norma=%.2f roll=%.2f pitch=%.2f",
        evActual.id, nombreTipo(tipo), motivo, (unsigned long)t,
@@ -557,8 +570,8 @@ static void decidir(uint32_t t, int64_t t_us, uint32_t usLectura, float norma, f
   bool cond = golpe || inclinado;
 
   switch (estadoDet) {
-    case REPOSO:
-    case CANDIDATO:
+    case NORMAL:
+    case ALERTA:
       if (golpe) {
         if (golpeSeguidas++ == 0) {
           tGolpeIni = t;
@@ -575,11 +588,11 @@ static void decidir(uint32_t t, int64_t t_us, uint32_t usLectura, float norma, f
       inclinadoAntes = inclinado;
 
       if (!cond) {
-        estadoDet = REPOSO;
+        estadoDet = NORMAL;  // ALERTA → NORMAL: la condición desapareció antes de confirmarse
         break;
       }
 
-      estadoDet = CANDIDATO;
+      estadoDet = ALERTA;  // NORMAL → ALERTA: hay una lectura sobre el umbral; se cuenta la permanencia
       if (golpe && golpeSeguidas >= LECTURAS_GOLPE) {
         tCandidato = tGolpeIni;
         golpeSeguidas = 0;
@@ -595,7 +608,7 @@ static void decidir(uint32_t t, int64_t t_us, uint32_t usLectura, float norma, f
       }
       break;
 
-    case EPISODIO:
+    case EMERGENCIA:
       if (cond) {
         tUltimaCond = t;
         if (golpe && !vioGolpe) {
@@ -632,11 +645,11 @@ static void decidir(uint32_t t, int64_t t_us, uint32_t usLectura, float norma, f
         if (xQueueSend(colaEventos, &evActual, 0) != pdTRUE) {
           logq("EVENTO ERROR cola llena, %s solo queda en el registro", evActual.id);
         }
-        estadoDet = BLOQUEO;
+        estadoDet = REARME;  // EMERGENCIA → REARME: evento cerrado y en la cola de envío
       }
       break;
 
-    case BLOQUEO:
+    case REARME:
       if (cond) {
         tUltimaCond = t;
         if (vuelco && tipoUltimoCerrado != TIPO_VUELCO) {
@@ -656,7 +669,7 @@ static void decidir(uint32_t t, int64_t t_us, uint32_t usLectura, float norma, f
       } else {
         escalando = false;
         if (t - tUltimaCond >= REARME_DETECTOR_MS) {
-          estadoDet = REPOSO;
+          estadoDet = NORMAL;  // REARME → NORMAL: 1 s sin condición, el detector vuelve a estar listo
           logq("DETECTOR listo t_ms=%lu", (unsigned long)t);
         }
       }
@@ -816,7 +829,7 @@ static void tareaAdquisicion(void*) {
     if (norma > picoNorma) {
       picoNorma = norma;
       picoIdx = enVentana;
-      pico = {0, t, ax, ay, az, roll, pitch, rps, pulsos};
+      pico = {0, t, ax, ay, az, roll, pitch, rps, pulsos, (uint8_t)estadoDet};
     }
     if (++enVentana == MUESTRAS_POR_TEL) {
       pico.numero = ++numeroTel;
@@ -899,7 +912,7 @@ static String jsonSesion() {
 
 static String jsonLote(const Muestra* m, int n) {
   String s;
-  s.reserve(40 + n * 164);
+  s.reserve(40 + n * 186);  // ~165 caracteres por medición con el campo "estado"
   s += "{\"version\":1,\"mediciones\":[";
   for (int i = 0; i < n; i++) {
     if (i) s += ',';
@@ -912,6 +925,7 @@ static String jsonLote(const Muestra* m, int n) {
     s += ",\"pitch_deg\":";     s += jsonNumero(m[i].pitch, 3);
     s += ",\"rueda_rps\":";     s += jsonNumero(fminf(fmaxf(m[i].rps, 0.0f), 1000.0f), 3);
     s += ",\"rueda_pulsos\":";  s += m[i].pulsos;
+    s += ",\"estado\":\"";      s += estadosJson[m[i].estado]; s += '"';
     s += '}';
   }
   s += "]}";

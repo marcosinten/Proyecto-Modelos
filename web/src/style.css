@@ -622,3 +622,11 @@ body.presentacion .avisos-evento { left: 50%; top: calc(var(--e5) + 72px + var(-
 tr.no-coincide td { background: var(--est-golpe-fondo); }
 .estado-vacio-resultados h2 { margin: 0 0 var(--e2); font-size: 18px; }
 @media (max-width: 900px) { .graficas-resultados { grid-template-columns: 1fr; } }
+
+/* Fase 5: estado del detector en la tarjeta «Estado del carro» */
+.estado-detector { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; margin: var(--e3) 0 0; padding-top: var(--e3); border-top: 1px solid var(--borde); font-size: 13px; color: var(--texto-2); }
+.estado-detector .etiqueta-detector { font-size: var(--t-etiqueta); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--texto-3); }
+.estado-detector strong { color: var(--texto); }
+.estado-detector[data-estado="alerta"] strong { color: var(--est-inclinado); }
+.estado-detector[data-estado="emergencia"] strong { color: var(--est-golpe); }
+.estado-detector[data-estado="rearme"] strong { color: var(--texto-2); }

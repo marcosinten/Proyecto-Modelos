@@ -19,7 +19,7 @@ assert db.execute('pragma foreign_key_check').fetchall() == []
 # Los datos viejos siguen siendo válidos: sin latencias medidas (NULL = «sin medir»).
 assert db.execute("select latencia_deteccion_ms, latencia_activacion_ms from eventos where id='EV-002'").fetchone() == (None, None)
 try:
-    db.execute("insert into mediciones values('INEXISTENTE',1,0,0,0,0,0,0)")
+    db.execute("insert into mediciones(sesion_id,numero,t_ms,ax,ay,az,roll_deg,pitch_deg) values('INEXISTENTE',1,0,0,0,0,0,0)")
 except sqlite3.IntegrityError:
     pass
 else:

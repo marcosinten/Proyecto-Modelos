@@ -324,7 +324,7 @@
   {
     "prueba": "API · envío",
     "criterio": "sesión, lotes y evento aceptados por la API local (201/200)",
-    "observado": "17 POST; códigos [200, 201]; evento guardado: GET /eventos/RC-ABCDEF-2694D101-EV001 → tipo golpe, gravedad alta, ubicacion None, 90 mediciones en la ventana",
+    "observado": "17 POST; códigos [200, 201]; evento guardado: GET /eventos/RC-ABCDEF-0FEC1EEF-EV001 → tipo golpe, gravedad alta, ubicacion None, 90 mediciones en la ventana",
     "estado": "OK",
     "evidencia": "evidencias/api/nativo/"
   },
@@ -350,9 +350,16 @@
     "evidencia": "evidencias/api/nativo/"
   },
   {
+    "prueba": "API · estado del detector",
+    "criterio": "cada medición lleva estado (normal/alerta/emergencia/rearme); el golpe pasa por emergencia y rearme; la API lo devuelve",
+    "observado": "550 mediciones; estados ['emergencia', 'normal', 'rearme']; con estado en GET /eventos: 90 de 90",
+    "estado": "OK",
+    "evidencia": "evidencias/api/nativo/"
+  },
+  {
     "prueba": "API · reintento",
     "criterio": "respuesta perdida → reintento con el mismo JSON, ids y tiempos; la API responde 200",
-    "observado": "/sesiones/RC-ABCDEF-2694D101/mediciones hash 67560B4D: API 201→200 (cuerpos idénticos); /eventos hash 2864F650: API 201→200 (cuerpos idénticos)",
+    "observado": "/sesiones/RC-ABCDEF-0FEC1EEF/mediciones hash 4B077217: API 201→200 (cuerpos idénticos); /eventos hash 54105134: API 201→200 (cuerpos idénticos)",
     "estado": "OK",
     "evidencia": "evidencias/api/nativo/"
   },

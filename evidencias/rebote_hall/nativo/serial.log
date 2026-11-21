@@ -1,4 +1,4 @@
-INICIO carro_rc Grupo 11 version=2026.11.21-cp2-ajuste origen=simulado mpu_correccion=1 ang_corr=0(m=1.000 b=0.000) modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
+INICIO carro_rc Grupo 11 version=2026.11.21-cp2-estados origen=simulado mpu_correccion=1 ang_corr=0(m=1.000 b=0.000) modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
 MPU WHO_AM_I=0x68 SMPLRT_DIV=3 CONFIG=0x02 ACCEL_CONFIG=0x18 (esperado 3, 0x02, 0x18) OK
 CAL mantén el carro quieto y horizontal 2 s
 RED escaneo: 1 redes
@@ -57,7 +57,7 @@ TEL n=47 t=939 ax=0.006 ay=-0.058 az=9.842 roll=-0.34 pitch=0.04 rps=0.00 k=4
 TEL n=48 t=947 ax=-0.003 ay=0.028 az=9.851 roll=0.16 pitch=-0.02 rps=0.00 k=1
 TEL n=49 t=963 ax=-0.027 ay=-0.048 az=9.861 roll=-0.28 pitch=-0.16 rps=0.00 k=0
 TEL n=50 t=987 ax=0.006 ay=0.004 az=9.846 roll=0.03 pitch=0.04 rps=0.00 k=1
-EST t=999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=50 perdidas=0 log_perdidas=0 wifi=0 estado=REPOSO heap_libre=200000 heap_bloque_max=110000 heap_min=180000
+EST t=999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=50 perdidas=0 log_perdidas=0 wifi=0 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
 TEL n=51 t=1011 ax=0.016 ay=0.076 az=9.875 roll=0.44 pitch=0.09 rps=0.00 k=2
 TEL n=52 t=1027 ax=-0.042 ay=0.033 az=9.856 roll=0.19 pitch=-0.24 rps=0.00 k=1
 TEL n=53 t=1047 ax=0.006 ay=0.028 az=9.851 roll=0.16 pitch=0.04 rps=0.00 k=1
@@ -108,7 +108,7 @@ TEL n=97 t=1935 ax=0.044 ay=-0.015 az=9.823 roll=-0.09 pitch=0.26 rps=4.00 k=3
 TEL n=98 t=1947 ax=0.011 ay=0.024 az=9.851 roll=0.14 pitch=0.06 rps=4.00 k=1
 TEL n=99 t=1975 ax=0.011 ay=0.048 az=9.851 roll=0.28 pitch=0.06 rps=4.00 k=3
 TEL n=100 t=1987 ax=-0.032 ay=-0.024 az=9.846 roll=-0.14 pitch=-0.19 rps=4.00 k=1
-EST t=1999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=100 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO heap_libre=200000 heap_bloque_max=110000 heap_min=180000
+EST t=1999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=100 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
 TEL n=101 t=2003 ax=-0.032 ay=-0.029 az=9.827 roll=-0.17 pitch=-0.19 rps=4.00 k=0
 TEL n=102 t=2031 ax=-0.037 ay=-0.000 az=9.856 roll=-0.00 pitch=-0.21 rps=4.00 k=2
 TEL n=103 t=2055 ax=-0.018 ay=0.014 az=9.851 roll=0.08 pitch=-0.10 rps=4.00 k=3
@@ -159,7 +159,7 @@ TEL n=147 t=2927 ax=-0.003 ay=-0.048 az=9.866 roll=-0.28 pitch=-0.02 rps=4.00 k=
 TEL n=148 t=2959 ax=-0.094 ay=0.043 az=9.827 roll=0.25 pitch=-0.55 rps=4.00 k=4
 TEL n=149 t=2975 ax=-0.023 ay=0.019 az=9.870 roll=0.11 pitch=-0.13 rps=4.00 k=3
 TEL n=150 t=2995 ax=-0.013 ay=0.043 az=9.823 roll=0.25 pitch=-0.08 rps=4.00 k=3
-EST t=2999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=150 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO heap_libre=200000 heap_bloque_max=110000 heap_min=180000
+EST t=2999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=150 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
 TEL n=151 t=3019 ax=-0.051 ay=-0.000 az=9.837 roll=-0.00 pitch=-0.30 rps=4.00 k=4
 TEL n=152 t=3035 ax=0.030 ay=-0.043 az=9.827 roll=-0.25 pitch=0.18 rps=4.00 k=3
 TEL n=153 t=3047 ax=0.016 ay=0.086 az=9.899 roll=0.50 pitch=0.09 rps=4.00 k=1
@@ -210,7 +210,7 @@ TEL n=197 t=3939 ax=-0.023 ay=0.057 az=9.870 roll=0.33 pitch=-0.13 rps=4.00 k=4
 TEL n=198 t=3959 ax=0.016 ay=-0.024 az=9.851 roll=-0.14 pitch=0.09 rps=4.00 k=4
 TEL n=199 t=3975 ax=-0.037 ay=-0.077 az=9.837 roll=-0.45 pitch=-0.22 rps=4.00 k=3
 TEL n=200 t=3987 ax=0.040 ay=-0.067 az=9.875 roll=-0.39 pitch=0.23 rps=4.00 k=1
-EST t=3999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=200 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO heap_libre=200000 heap_bloque_max=110000 heap_min=180000
+EST t=3999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=200 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
 TEL n=201 t=4007 ax=0.021 ay=-0.005 az=9.885 roll=-0.03 pitch=0.12 rps=3.71 k=1
 TEL n=202 t=4031 ax=0.011 ay=0.004 az=9.851 roll=0.03 pitch=0.06 rps=3.46 k=2
 TEL n=203 t=4043 ax=0.073 ay=0.009 az=9.875 roll=0.05 pitch=0.42 rps=3.23 k=0
@@ -263,7 +263,7 @@ TEL n=247 t=4931 ax=-0.051 ay=0.014 az=9.808 roll=0.08 pitch=-0.30 rps=0.00 k=2
 TEL n=248 t=4959 ax=-0.023 ay=0.038 az=9.846 roll=0.22 pitch=-0.13 rps=0.00 k=4
 TEL n=249 t=4971 ax=0.011 ay=-0.015 az=9.842 roll=-0.09 pitch=0.06 rps=0.00 k=2
 TEL n=250 t=4995 ax=0.001 ay=0.019 az=9.913 roll=0.11 pitch=0.01 rps=0.00 k=3
-EST t=4999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=250 perdidas=0 log_perdidas=0 wifi=1 estado=REPOSO heap_libre=200000 heap_bloque_max=110000 heap_min=180000
+EST t=4999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=250 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
 TEL n=251 t=5007 ax=0.006 ay=0.004 az=9.880 roll=0.03 pitch=0.04 rps=0.00 k=1
 TEL n=252 t=5027 ax=0.068 ay=0.014 az=9.899 roll=0.08 pitch=0.40 rps=0.00 k=1
 TEL n=253 t=5059 ax=-0.003 ay=-0.039 az=9.842 roll=-0.23 pitch=-0.02 rps=0.00 k=4

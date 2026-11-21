@@ -428,6 +428,13 @@ def evaluar(caso, d, vcd, ev, extra):
                      bool(enviados) and all(guardado.get(k) == enviados[-1].get(k) for k in claves)
                      and guardado.get(claves[0]) is not None and lo <= guardado[claves[0]] <= hi
                      and guardado.get(claves[1]) is not None and 0 <= guardado[claves[1]] < 50, ev))
+        # Fase 5: estado del detector en cada medición enviada y guardado en la API.
+        estados = [m.get("estado") for m in muestras.values()]
+        guardadas = extra.get("evento_json", {}).get("mediciones", [])
+        res.append(r("API · estado del detector", "cada medición lleva estado (normal/alerta/emergencia/rearme); el golpe pasa por emergencia y rearme; la API lo devuelve",
+                     f"{len(estados)} mediciones; estados {sorted(set(map(str, estados)))}; con estado en GET /eventos: {sum(1 for m in guardadas if 'estado' in m)} de {len(guardadas)}",
+                     estados and all(e in ("normal", "alerta", "emergencia", "rearme") for e in estados)
+                     and {"normal", "emergencia", "rearme"} <= set(estados) and guardadas and all("estado" in m for m in guardadas), ev))
         res.append(r("API · reintento", "respuesta perdida → reintento con el mismo JSON, ids y tiempos; la API responde 200",
                      txt or "sin reintentos", bool(ok_rep), ev))
     # Frecuencias y mismo JSON en todos los casos

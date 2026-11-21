@@ -4,7 +4,7 @@ import { dirname } from 'node:path';
 import { ErrorApi } from '../../aplicacion/contratos.js';
 
 const iguales = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-const medicion = r => r && ({ numero: r.numero, t_ms: r.t_ms, ax: r.ax, ay: r.ay, az: r.az, roll_deg: r.roll_deg, pitch_deg: r.pitch_deg, ...(r.rueda_rps == null ? {} : { rueda_rps: r.rueda_rps }), ...(r.rueda_pulsos == null ? {} : { rueda_pulsos:r.rueda_pulsos }) });
+const medicion = r => r && ({ numero: r.numero, t_ms: r.t_ms, ax: r.ax, ay: r.ay, az: r.az, roll_deg: r.roll_deg, pitch_deg: r.pitch_deg, ...(r.rueda_rps == null ? {} : { rueda_rps: r.rueda_rps }), ...(r.rueda_pulsos == null ? {} : { rueda_pulsos:r.rueda_pulsos }), ...(r.estado == null ? {} : { estado: r.estado }) });
 const evento = r => r && ({
   id: r.id, sesion_id: r.sesion_id, tipo: r.tipo, gravedad: r.gravedad, estado: r.estado,
   t_inicio_ms: r.t_inicio_ms, t_fin_ms: r.t_fin_ms, t_deteccion_ms: r.t_deteccion_ms,
@@ -82,7 +82,7 @@ export function crearRepositorio(path) {
       const get = db.prepare('SELECT * FROM mediciones WHERE sesion_id=? AND numero=?');
       const antes = db.prepare('SELECT t_ms FROM mediciones WHERE sesion_id=? AND numero<? ORDER BY numero DESC LIMIT 1');
       const despues = db.prepare('SELECT t_ms FROM mediciones WHERE sesion_id=? AND numero>? ORDER BY numero LIMIT 1');
-      const insert = db.prepare('INSERT INTO mediciones(sesion_id,numero,t_ms,ax,ay,az,roll_deg,pitch_deg,rueda_rps,rueda_pulsos) VALUES (?,?,?,?,?,?,?,?,?,?)');
+      const insert = db.prepare('INSERT INTO mediciones(sesion_id,numero,t_ms,ax,ay,az,roll_deg,pitch_deg,rueda_rps,rueda_pulsos,estado) VALUES (?,?,?,?,?,?,?,?,?,?,?)');
       let insertadas = 0;
       db.exec('BEGIN IMMEDIATE');
       try {
@@ -92,7 +92,7 @@ export function crearRepositorio(path) {
           const a = antes.get(id, m.numero), d = despues.get(id, m.numero);
           if ((a && a.t_ms > m.t_ms) || (d && d.t_ms < m.t_ms))
             throw new ErrorApi(409, 'ORDEN_INVALIDO', 't_ms debe crecer o mantenerse al aumentar numero');
-          insert.run(id, m.numero, m.t_ms, m.ax, m.ay, m.az, m.roll_deg, m.pitch_deg, m.rueda_rps ?? null, m.rueda_pulsos ?? null);
+          insert.run(id, m.numero, m.t_ms, m.ax, m.ay, m.az, m.roll_deg, m.pitch_deg, m.rueda_rps ?? null, m.rueda_pulsos ?? null, m.estado ?? null);
           insertadas++;
         }
         if (insertadas) db.prepare('UPDATE sesiones SET ultima_recepcion_ms=? WHERE id=?').run(Date.now(),id);
