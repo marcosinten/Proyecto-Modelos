@@ -13,3 +13,8 @@ dist/
 /firmware/carro_rc/*.bak
 /firmware/carro_rc/py
 /servidor/.env
+
+# Carpeta generada por scripts/preparar_entrega.mjs (el RAR lo arma el equipo)
+/entrega/
+# Capturas con datos de PRUEBA de scripts/capturas-entrega.mjs
+/evidencias/entrega-cp2/capturas/

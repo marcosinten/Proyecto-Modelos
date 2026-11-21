@@ -1,76 +1,109 @@
-# Revisión del Grupo 11 — 10 de noviembre de 2026
+# Revisión del Grupo 11 — 21 de noviembre de 2026
+
+Componente Práctico 2 de Modelos y Simulación (UNEMI). Sistema de detección de accidentes en un carro RC:
+ESP32 DevKit V1 de 30 pines, MPU6050, buzzer activo, LED y servo SG90. El sensor Hall A3144 da un dato
+secundario. Backend Express + SQLite y web Vite + Three.js + Chart.js. Firmware en
+`firmware/carro_rc/carro_rc.ino` (PlatformIO, probado en Wokwi y en el banco nativo).
+
+> Este documento reemplaza la revisión del 10 de noviembre. Los cambios de la rama `entrega-cp2`, fase por
+> fase y explicados para la sustentación, están en `docs/CAMBIOS-2026-11-21.md`.
 
 ## Veredicto
-La solución es viable y cubre el núcleo del software solicitado. La entrega completa requiere todavía firmware, maqueta funcional, pruebas físicas, medición de respuesta, informe y presentación. La IA es una ampliación opcional: la ficha del Grupo 11 no la exige explícitamente.
+
+La solución cubre lo que pide la ficha. La **maqueta está montada y se probó alimentada con power bank**:
+detecta y activa LED, buzzer y servo en el propio ESP32, sin depender del Wi-Fi. Ya se miden los tiempos
+de respuesta, ya se pueden registrar pruebas físicas con su resultado esperado y hay una pantalla para
+comparar simulación y prototipo con métricas. Falta **hacer y registrar las pruebas físicas repetidas**,
+medir la calibración con transportador, y redactar el informe y la presentación.
 
 ## Contraste con la guía
+
 | Requisito | Situación verificable |
 |---|---|
-| Maqueta interactiva con ESP32 | Pendiente de montaje y firmware |
-| MPU6050 y respuesta automática | Contrato preparado; pendiente adquisición, calibración y control local |
-| Buzzer, LED y servo | Previsto y protocolo representado; pendiente actuación física |
-| Registrar variables, evento y gravedad | API y SQLite; gravedad experimental, no severidad de daño real |
-| Registrar tiempos de respuesta | Detección y activación con mismo reloj; activación real permanece null hasta que el dispositivo la reporte |
-| Reproducir escenarios | Cinco escenarios deterministas con parámetros ajustables |
-| Modelización matemática | Modelo cinemático y proyección gravitatoria descritos abajo |
-| Tablas, gráficas y análisis | Ejes, inclinaciones, magnitud total, umbral, muestras y exportación Excel |
-| Pruebas bajo condiciones diferentes | Automatizadas en software; pendiente repetición física |
-| Informe técnico y presentación | Pendientes |
-| IA | Punto de integración documentado, modelo no integrado |
+| Maqueta interactiva con ESP32 | Montada y probada con power bank. Flasheo en la PC de Piero; firmware `2026.11.21-cp2-estados` listo para cargar |
+| MPU6050 y respuesta automática | Lectura y decisión a 250 Hz en el ESP32. Golpe ≥ 16 m/s² en 2 lecturas; inclinación ≥ 10° y vuelco ≥ 90° sostenidos 150 ms. LED, buzzer y servo se activan localmente |
+| Buzzer, LED y servo | Activos en la maqueta. Patrones por tipo; servo a 90° con la alarma (sin giro de 180° al rearmar); el botón apaga la alarma y, mantenido 3 s, reinicia el ESP32 |
+| Registrar variables, evento y gravedad | API y SQLite: mediciones a 50 Hz con el estado del detector, y eventos con tipo, gravedad experimental, tiempos y latencias |
+| Registrar tiempos de respuesta | **Medidos con `micros()` en el ESP32**: `latencia_deteccion_ms` (umbral → confirmado) y `latencia_activacion_ms` (confirmado → órdenes). Visibles en la web y en Excel |
+| Reproducir escenarios | Seis escenarios sintéticos (reposo, marcha, frenada, impacto, inclinación y vuelco) con los parámetros del firmware; 16 casos en el banco nativo y 11 en Wokwi |
+| Modelización matemática | `docs/MODELO.md`: variables, ecuaciones, contadores de permanencia, latencias y máquina de estados (Mermaid) |
+| Ajuste de curvas | `scripts/ajuste_curvas.py`: recta de mínimos cuadrados frente a grado 2 para la calibración del ángulo y el tiempo según el umbral. **Faltan los datos del transportador** |
+| Tablas, gráficas y análisis | Gráficas en vivo y en el detalle; pantalla **Resultados** con tabla simulado/observado, errores, matriz de confusión, métricas, PNG y Excel |
+| Pruebas bajo condiciones diferentes | Registro en la web (escenario esperado, repetición y nota). **Faltan al menos 3 repeticiones por escenario en la maqueta** |
+| Informe técnico y presentación | Pendientes. `node scripts/preparar_entrega.mjs` arma la carpeta de la entrega |
+| IA | Ampliación opcional: cuaderno `IA_carro_RC_v0.2.ipynb`, no integrado; la ficha no la exige |
 
 ## Modelo usado
-Escenarios de 10 s. Como en el firmware, el sensor se lee cada 4 ms (250 Hz) y las reglas se evalúan sobre esas lecturas; se publican 50 muestras por segundo, cada una la de mayor aceleración total de su grupo de 5. El avance sintético parte de una velocidad longitudinal de 2 m/s, con arranque y parada suaves. Estos parámetros son ilustrativos y deben ajustarse al carro real.
 
-Se utiliza s(u)=3u²−2u³ para transiciones suaves, con u limitado a [0,1]. La aceleración longitudinal a se calcula como derivada numérica de la velocidad. Para roll r y pitch p:
-- ax = a + g sen(p) (pitch positivo levanta la trompa)
-- ay = g sen(r) cos(p)
-- az = g cos(r) cos(p)
-- g = 9,81 m/s²
-- magnitud = raíz(ax²+ay²+az²)
-- rueda_rps = velocidad / (2π radio), radio sintético 0,03 m.
+Está en `docs/MODELO.md`. En resumen: el MPU6050 se lee cada 4 ms y las reglas se evalúan en cada
+lectura. Roll y pitch se calculan con el acelerómetro: φ = atan2(a_y, a_z) y θ = atan2(a_x, √(a_y² + a_z²)).
+Se publica a 50 Hz la lectura de mayor aceleración de cada grupo de cinco. El detector es una máquina de
+estados NORMAL → ALERTA → EMERGENCIA → REARME. La simulación usa la proyección de la gravedad
+a_x = a + g·sen θ, a_y = g·sen φ·cos θ, a_z = g·cos φ·cos θ y transiciones suaves s(u) = 3u² − 2u³.
 
-La magnitud incluye gravedad. Una lectura estática de 9,81 no implica desplazamiento. Los ángulos físicos deberán provenir de la estimación calibrada en el ESP32, preferiblemente combinando acelerómetro y giroscopio: durante golpes la aceleración dinámica contamina una inclinación calculada únicamente a partir del acelerómetro.
+## Resultados reproducibles de la simulación (parámetros actuales del firmware)
 
-El impacto dura aproximadamente 100 ms. Tiene su propio tiempo de permanencia, predeterminado 8 ms: 2 lecturas seguidas de 250 Hz, la misma regla que el firmware (LECTURAS_GOLPE), porque un choque real dura entre 5 y 20 ms. La inclinación y el vuelco usan otro contador, predeterminado 150 ms, también igual que el firmware. Un contador no hereda el tiempo de otro. El paquete actual resume un evento por corrida, con prioridad al vuelco confirmado. No reconstruye todavía una cronología de varios incidentes. La etiqueta de gravedad es experimental: impacto y vuelco alta, inclinación media.
+| Escenario | Resultado | Pico total m/s² | Máximo roll | Detección | Tiempo de detección |
+|---|---|---:|---:|---:|---:|
+| Reposo | Sin incidente | 9,81 | 0° | — | — |
+| Marcha normal | Sin incidente | 10,26 | 0° | — | — |
+| Frenada | Sin incidente | 10,94 | 0° | — | — |
+| Impacto | Golpe | 31,51 | 0° | 4916 ms | 4 ms |
+| Inclinación | Inclinación | 10,26 | 42° | 1776 ms | 152 ms |
+| Vuelco | Vuelco | 10,26 | 180° | 4652 ms | 152 ms (empieza como inclinación a los 3940 ms) |
 
-## Resultados reproducibles con parámetros predeterminados
-| Escenario | Resultado | Pico total m/s² | Máximo roll | Detección |
-|---|---|---:|---:|---|
-| Normal | Sin incidente | 10,26 | 0° | — |
-| Frenada | Sin incidente | 10,94 | 0° | — |
-| Impacto | Golpe | 30,42 | 0° | 4940 ms |
-| Inclinación | Sin incidente, umbral 60° | 10,26 | 42° | — |
-| Vuelco | Vuelco | 10,26 | 180° | 4660 ms |
+Con 20° de umbral la inclinación sintética de 42° también se detectaba, pero más tarde. Con 10°, el
+detector avisa antes. El costo son las **inclinaciones aparentes**: el banco nativo, con el firmware real,
+detecta una en la frenada a −7 m/s², porque el ángulo calculado con el acelerómetro llega a 36°. La
+simulación no la predice, porque usa el ángulo real del carro. Las pruebas físicas de frenada y marcha
+dirán cuántas falsas alarmas da la maqueta.
 
-Al bajar a 30° el umbral de inclinación, el escenario de 42° sí activa la detección. Al elevar a 100 m/s² el umbral de impacto, o exigir 2000 ms de permanencia de impacto, ese golpe se filtra. Los parámetros cambian la detección, no las muestras generadas.
+## Verificación automática (21 de noviembre)
 
-La gráfica de magnitud compara la señal con el umbral y la referencia gravitatoria. El gráfico de ángulos ayuda a distinguir inclinación y vuelco. Todas las vistas consultan el mismo instante.
+- `npm test`: 82 pruebas (contrato, API, persistencia y migraciones, Excel, latencias, registro de
+  pruebas, resultados y métricas, simulación).
+- `npm run build` y `python3 scripts/verificar_bd.py` (4 migraciones; EV-001 y EV-002 siguen válidos).
+- Banco nativo (`firmware/carro_rc/pruebas/ejecutar_pruebas.py --api …`): 54 de 54, con latencias de
+  detección de 4 ms (golpe) y 152 ms (inclinación y vuelco), activación < 50 ms, y latencias y estado
+  recibidos por la API (`evidencias/RESULTADOS_NATIVO.md`).
+- Compilación PlatformIO: RAM 16,2 %, flash 81,1 %.
+- Wokwi: `ejecutar_wokwi.py` tiene las mismas comprobaciones nuevas. **Falta volver a ejecutarlo** con
+  `WOKWI_CLI_TOKEN`: `evidencias/RESULTADOS_WOKWI.md` es del firmware anterior.
 
-## Correcciones realizadas
-- Marcha normal y golpe comienzan nivelados, sin oscilación lateral artificial.
-- Las cuatro ruedas conservan pivotes separados y usan su radio individual cuando falta el dato Hall.
-- El giro se calcula a partir de vueltas acumuladas cuando existe rueda_rps. Pausar o retroceder devuelve la misma pose.
-- En simulación el avance sigue esas vueltas y se detiene cuando la rueda se detiene.
-- En modo real el modelo conserva su posición en la escena y muestra giro de ruedas e inclinación. No representa posición geográfica.
-- El monitor en vivo consulta también eventos. No recorta a 1000 muestras lo exportado.
-- Pueden guardarse sesiones sin accidente, necesarias para evaluar falsas alarmas.
-- El contrato conserva mediciones antiguas sin Hall y agrega rueda_rps como dato opcional.
-- La base existente recibe una columna opcional al abrirla. Hacer copia antes de actualizar.
-- npm run dev carga servidor/.env. Vite adjunta la clave de API desde el proceso servidor al proxy local sin exponerla como variable VITE.
-- La carretera es geometría recta generada en código. El archivo de carretera curvo se conserva pero no se carga.
+## Pendiente
+
+1. Flashear `entrega-cp2` en la maqueta y confirmar en el monitor serie la línea
+   `INICIO … version=2026.11.21-cp2-estados … inclinacion=10 deg`.
+2. Pruebas físicas: al menos 3 repeticiones de cada escenario (reposo, marcha, frenada, golpe,
+   inclinación ≥ 10° y vuelco), registradas en En vivo. Luego exportar Resultados (Excel y PNG).
+3. Calibración con transportador (`datos/calibracion_angulo.csv`), `python3 scripts/ajuste_curvas.py` y,
+   si la recta sirve, activar `CORRECCION_ANGULO` en `config_local.h`.
+4. Repetir Wokwi con token y tomar las capturas de pantalla manuales.
+5. Informe (PDF) y presentación (PPT) en `entrega/Comp_Practico2_Grupo11_MyS/informe` y `presentacion`.
 
 ## Límites que se deben declarar
-Las señales son sintéticas, sin ruido ni modelo de suspensión o colisión mecánica. No son evidencia de precisión física ni un conjunto suficiente para evaluar una IA real. La frecuencia de 50 Hz puede perder detalles de impactos más cortos: el firmware debe evaluar una frecuencia mayor según pruebas del sensor y transmitir en lotes.
 
-Hall mide rotación, incluso si una rueda patina o gira en el aire. Un sensor de un canal no distingue marcha atrás. Los tramos con huecos mayores de 0,5 s no se integran para evitar inventar vueltas. El monitor consulta cada 500 ms: no es sincronización instantánea. El código conserva los datos completos en memoria, por lo que las pruebas físicas deben ser cortas.
-
-Los archivos históricos conservan sus valores originales. Las correcciones del modelo se aplican a corridas nuevas. No hay todavía aleatorización reproducible de escenarios ni evaluación física. La revisión gráfica en un navegador real sigue pendiente; las pruebas del visor usan geometría real de Three.js y renderizador sustituido.
+- Ángulo solo con el acelerómetro: al acelerar, frenar o girar el ángulo es aparente. El modo «carro en
+  movimiento» existe en el firmware, pero está desactivado.
+- `latencia_activacion_ms` mide la orden del ESP32, no el giro mecánico del servo ni el sonido. La red no
+  interviene en la alarma.
+- Sin GPS: `ubicacion` es siempre `null`; nunca se inventa (0, 0).
+- El Hall mide una rueda y no distingue el sentido. Es un dato secundario.
+- La gravedad (`baja`, `media`, `alta`) es una etiqueta experimental, no una medida de daño.
+- Las señales simuladas son ideales e ilustrativas. Pocas repeticiones físicas dan métricas con mucha
+  incertidumbre; hay que decir siempre cuántas repeticiones hubo (n).
 
 ## Fuentes y relación con el proyecto
-- Guía entregada, ficha Grupo 11 e instrucciones generales. Pide integración, modelos, pruebas y respuesta automática, no impone Unity.
-- Aslam et al. (2024), https://doi.org/10.1155/2024/4719669. Usa GPS para velocidad, ADXL345 para inclinación, SW-420 para vibración y Unity para visualización. Es referencia de arquitectura y representación, no un circuito idéntico al MPU6050 propuesto aquí.
-- Analog Devices, AN-1057, https://www.analog.com/en/resources/app-notes/an-1057.html. Explica proyección de gravedad y límites de estimación de inclinación con aceleración dinámica.
+
+- Guía entregada, ficha del Grupo 11 e instrucciones generales. Piden integración, modelos, pruebas y
+  respuesta automática; no imponen Unity.
+- Aslam et al. (2024), https://doi.org/10.1155/2024/4719669. Usa GPS para la velocidad, ADXL345 para la
+  inclinación, SW-420 para la vibración y Unity para la visualización. Sirve de referencia de arquitectura
+  y de representación, no es un circuito idéntico al del MPU6050.
+- Analog Devices, AN-1057, https://www.analog.com/en/resources/app-notes/an-1057.html. Explica la
+  proyección de la gravedad y los límites de estimar la inclinación con aceleración dinámica.
 
 ## Reproducción
-Desde la raíz: npm test, npm run build y node scripts/check-viewer.mjs.
-La suite comprueba contrato HTTP, persistencia, reintentos, Excel y cada escenario, incluidos umbrales modificados.
+
+Desde la raíz: `npm test`, `npm run build`, `python3 scripts/verificar_bd.py`, `pio run -d firmware/carro_rc`
+y `python3 firmware/carro_rc/pruebas/ejecutar_pruebas.py --api http://127.0.0.1:3000` (con la API encendida).

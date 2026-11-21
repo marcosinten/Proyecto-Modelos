@@ -47,6 +47,14 @@ Las señales de simulación se generan matemáticamente y se evalúan con reglas
 
 «Explicar» lee el paquete ya guardado en `GET /api/v1/eventos/:id` (o los ejemplos locales si la API no responde). No entrena ni consulta el árbol del cuaderno de IA, no reclasifica eventos y no modifica SQLite. La ventana del evento no es necesariamente el comienzo físico del incidente; las gráficas solo representan las muestras recibidas. La variación `|√(ax² + ay² + az²) − 9,81|` es un cálculo descriptivo, no una medida de fuerza de choque o causa. El origen simulado se marca explícitamente. Las corridas sin evento, como reposo y frenada sin incidente, no aparecen como eventos en el historial.
 
+## Entrega CP2 (21 de noviembre)
+
+- **Pruebas físicas:** Monitor → En vivo → conectar la sesión real → «Registrar prueba física» (escenario esperado, repetición, nota). Una sesión = una repetición; mantener el botón de rearme 3 s para la siguiente.
+- **Resultados** (menú lateral): simulación frente a prototipo por escenario, matriz de confusión, métricas, gráficas en PNG y Excel.
+- **Ajuste de curvas:** `python3 scripts/ajuste_curvas.py` con `datos/calibracion_angulo.csv` y `datos/tiempos_deteccion.csv` → `evidencias/ajuste_curvas/`.
+- **Modelo:** `docs/MODELO.md`. **Qué cambió y cómo explicarlo:** `docs/CAMBIOS-2026-11-21.md`. **Estado de la entrega:** `docs/REVISION-DOCENTE.md`.
+- **Carpeta de la entrega:** `node scripts/preparar_entrega.mjs` → `entrega/Comp_Practico2_Grupo11_MyS/` (el RAR lo arma el equipo).
+
 ## Corrección del aporte de base de datos
 
 Se conservaron las tres muestras de EV-002 / SES-002 a 1000, 1500 y 2200 ms. Se adaptaron el nombre `numero`, la versión numérica 1, las etiquetas en minúsculas y el `sesion_id` del evento. Se mapeó `CRITICA` a `alta`, el nivel máximo del contrato actual.
