@@ -35,6 +35,14 @@ export const eventoSchema = eventoBaseSchema.superRefine((e, ctx) => {
   if (e.t_activacion_ms !== null && (e.t_activacion_ms < e.t_deteccion_ms || e.t_activacion_ms > e.t_fin_ms))
     error('t_activacion_ms', 'Debe estar entre la detección y el fin de la ventana');
 });
+// Fase 2: registro de una prueba física sobre una sesión real. prueba: null quita el registro.
+export const ESCENARIOS_PRUEBA = ['reposo', 'marcha', 'frenada', 'golpe', 'inclinacion', 'vuelco'];
+export const pruebaSchema = z.object({
+  escenario_esperado: z.enum(ESCENARIOS_PRUEBA),
+  repeticion: z.number().int().min(1).max(1000),
+  nota: z.string().trim().max(500).optional()
+}).strict();
+export const registrarPruebaSchema = z.object({ version: z.literal(1), prueba: pruebaSchema.nullable() }).strict();
 export const crearSesionSchema = z.object({ version: z.literal(1), sesion: sesionSchema }).strict();
 export const loteSchema = z.object({ version: z.literal(1), mediciones: z.array(medicionSchema).min(1).max(1000) }).strict();
 export const crearEventoSchema = z.object({ version: z.literal(1), evento: eventoSchema }).strict();

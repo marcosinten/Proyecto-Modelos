@@ -25,6 +25,7 @@ async function rellenar(id, datos, valid) {
   return [...antes, ...datos];
 }
 import {loadEvents, refrescarRecientes} from './historial.js';
+import {montarRegistroPrueba} from './prueba-fisica.js';
 
 export const tipoAviso={golpe:'Golpe',inclinacion:'Inclinación',vuelco:'Vuelco'};
 
@@ -53,6 +54,7 @@ export async function connectLive(id){
  let reset=true, lastRecepcion=null, markerKey='', eventoVisto;
  app.reiniciarVivo=()=>{if(valid())reset=true;};
  $('#live-notices').replaceChildren();
+ montarRegistroPrueba(session,valid);
  const descartadas=new Set();
  // 1b: otra sesión real «Recibiendo» más reciente (p. ej. el ESP32 se reinició). Solo avisa; no cambia sola.
  async function vigilar(){

@@ -133,6 +133,46 @@ export function crearRepositorio(path) {
       );
       return true;
     },
+    // ---- Fase 2: registro de pruebas físicas (una sesión real = una repetición) ----
+    obtenerPrueba(sesionId) {
+      getSesion(sesionId);
+      const p = db.prepare('SELECT escenario_esperado, repeticion, nota, registrada_ms FROM pruebas_fisicas WHERE sesion_id=?').get(sesionId);
+      return p ? { ...p } : null;
+    },
+    // Crea o corrige el registro. Devuelve 'creada', 'actualizada' o 'sin_cambios'.
+    registrarPrueba(sesionId, p) {
+      const sesion = getSesion(sesionId);
+      if (sesion.origen !== 'real') throw new ErrorApi(409, 'SESION_NO_REAL', 'Solo se registran pruebas físicas en sesiones reales del ESP32');
+      const nota = p.nota ?? '';
+      const otra = db.prepare('SELECT sesion_id FROM pruebas_fisicas WHERE escenario_esperado=? AND repeticion=? AND sesion_id<>?').get(p.escenario_esperado, p.repeticion, sesionId);
+      if (otra) throw new ErrorApi(409, 'REPETICION_USADA', `La repetición ${p.repeticion} de ${p.escenario_esperado} ya está en la sesión ${otra.sesion_id}. Usa otro número o corrige esa sesión.`);
+      const previa = db.prepare('SELECT escenario_esperado, repeticion, nota FROM pruebas_fisicas WHERE sesion_id=?').get(sesionId);
+      if (previa && previa.escenario_esperado === p.escenario_esperado && previa.repeticion === p.repeticion && previa.nota === nota) return 'sin_cambios';
+      db.prepare(`INSERT INTO pruebas_fisicas(sesion_id, escenario_esperado, repeticion, nota, registrada_ms) VALUES (?,?,?,?,?)
+        ON CONFLICT(sesion_id) DO UPDATE SET escenario_esperado=excluded.escenario_esperado, repeticion=excluded.repeticion,
+          nota=excluded.nota, registrada_ms=excluded.registrada_ms`).run(sesionId, p.escenario_esperado, p.repeticion, nota, Date.now());
+      return previa ? 'actualizada' : 'creada';
+    },
+    quitarPrueba(sesionId) {
+      getSesion(sesionId);
+      return db.prepare('DELETE FROM pruebas_fisicas WHERE sesion_id=?').run(sesionId).changes > 0;
+    },
+    // Cada prueba con los máximos de TODAS sus mediciones y TODOS sus eventos (también si no hubo ninguno).
+    listarPruebas() {
+      const pruebas = db.prepare(`SELECT p.sesion_id, p.escenario_esperado, p.repeticion, p.nota, p.registrada_ms,
+          COUNT(m.numero) AS mediciones,
+          MAX(m.ax*m.ax + m.ay*m.ay + m.az*m.az) AS pico_cuadrado,
+          MAX(ABS(m.roll_deg)) AS max_roll_deg, MAX(ABS(m.pitch_deg)) AS max_pitch_deg
+        FROM pruebas_fisicas p LEFT JOIN mediciones m ON m.sesion_id = p.sesion_id
+        GROUP BY p.sesion_id ORDER BY p.escenario_esperado, p.repeticion`).all();
+      const eventosDe = db.prepare('SELECT * FROM eventos WHERE sesion_id=? ORDER BY t_deteccion_ms');
+      return pruebas.map(({ pico_cuadrado, ...p }) => ({
+        ...p,
+        // √(ax²+ay²+az²) máximo; null si la sesión no tiene mediciones.
+        pico_aceleracion_ms2: pico_cuadrado == null ? null : Math.sqrt(pico_cuadrado),
+        eventos: eventosDe.all(p.sesion_id).map(evento)
+      }));
+    },
     listarEventos(sesionId, limite, offset) {
       const filas = sesionId
         ? db.prepare('SELECT * FROM eventos WHERE sesion_id=? ORDER BY rowid DESC LIMIT ? OFFSET ?').all(sesionId, limite + 1, offset)

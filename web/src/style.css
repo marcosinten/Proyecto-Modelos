@@ -73,7 +73,7 @@ input:disabled { background: var(--superficie-2); color: var(--texto-2); }
   font-size: 12px; font-weight: 600; line-height: 1.3; white-space: nowrap; background: var(--superficie-2); color: var(--texto-2); border: 1px solid var(--borde);
 }
 .chip svg.icono { width: 14px; height: 14px; }
-.badge.success, .etiqueta[data-estado="ok"] { color: var(--est-normal); background: var(--est-normal-fondo); border-color: transparent; }
+.badge.success, .etiqueta[data-estado="ok"], .chip[data-estado="ok"] { color: var(--est-normal); background: var(--est-normal-fondo); border-color: transparent; }
 .badge.warning { color: var(--est-inclinado); background: var(--est-inclinado-fondo); border-color: transparent; }
 .badge.danger { color: var(--est-golpe); background: var(--est-golpe-fondo); border-color: transparent; }
 .badge.purple, .badge.neutral { color: var(--texto-2); }
@@ -598,3 +598,12 @@ body.presentacion .avisos-evento { left: 50%; top: calc(var(--e5) + 72px + var(-
   body.presentacion .aviso-evento { min-height: 44px; padding: 0 12px; }
   body.presentacion .aviso-evento strong { font-size: 13px; }
 }
+
+/* Fase 2: registro de una prueba física (En vivo) */
+.prueba-fisica { margin: 0 0 16px; display: grid; gap: 10px; }
+.prueba-form { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+.prueba-form label { display: grid; gap: 4px; font-size: 13px; color: var(--texto-2); }
+.prueba-form input[name="repeticion"] { width: 90px; }
+.prueba-form .prueba-nota { flex: 1 1 260px; }
+.prueba-form .prueba-nota input { width: 100%; }
+.prueba-fisica .ayuda { margin: 0; }

@@ -12,6 +12,9 @@ Base local: `http://127.0.0.1:3000/api/v1`. Todas las escrituras requieren JSON 
 | POST | `/sesiones/:id/mediciones` | `{version:1,mediciones:[...]}`. Hasta 1000 muestras y 512 KB. |
 | GET | `/sesiones/:id/mediciones` | Parámetros `despues_numero` (0), `limite` (200, máximo 1000). Devuelve `mediciones`, `hay_mas`, `siguiente_numero`, `version`, `sesion_id`. |
 | GET | `/sesiones/:id/ultima` | Última `medicion` (o `null`), `ahora_ms` y `ultima_recepcion_ms`. Con `ventana=N` (1–1000) incluye hasta N muestras recientes ordenadas, `recortada`, `ultimo_evento` y `eventos` por instante de detección. `despues_numero` limita las novedades y `desde_ms` define el comienzo de las marcas de eventos en el reloj de sesión. |
+| GET | `/sesiones/:id/prueba` | Registro de la prueba física de esa sesión: `{version:1,sesion_id,prueba}`; `prueba` es `null` si no se registró. |
+| POST | `/sesiones/:id/prueba` | `{version:1,prueba:{escenario_esperado,repeticion,nota?}}` crea (201) o corrige (200) el registro; `{version:1,prueba:null}` lo quita. Solo sesiones `real`. |
+| GET | `/pruebas` | Todas las pruebas registradas, ordenadas por escenario y repetición, con `mediciones`, `pico_aceleracion_ms2`, `max_roll_deg`, `max_pitch_deg` y `eventos` (lista vacía si no hubo accidente). |
 | POST | `/eventos` | `{version:1,evento:{...}}`. Guarda un evento final confirmado o cancelado. |
 | GET | `/eventos` | Listado por orden de inserción descendente. Filtro opcional `sesion_id`, `limite` (50, máximo 200), `offset` (0). Devuelve `eventos`, `hay_mas`, `siguiente_offset`, `version`. |
 | GET | `/eventos/:id` | `{version:1,sesion,evento,mediciones}` para reproducir y graficar. |
@@ -39,6 +42,18 @@ Si aparecen eventos nuevos mientras navegas el listado por offset, actualiza la 
 - `t_inicio_ms ≤ t_deteccion_ms ≤ t_fin_ms`. Si existe, `t_deteccion_ms ≤ t_activacion_ms ≤ t_fin_ms`. Los tiempos deben venir del **mismo reloj**. Si la activación se desconoce, enviar `null`.
 - `ubicacion`: `null` si no existe una posición GPS válida, o `{latitud:numero,longitud:numero}`. Rangos −90…90 y −180…180. Nunca inventar `(0,0)` para representar ausencia.
 - En el Excel, `respuesta_ms = t_activacion_ms - t_deteccion_ms`, vacío si se desconoce. Solo expresa los tiempos reportados por el emisor. No mide latencia Wi-Fi ni movimiento mecánico del servo. Registrar una orden de activación tampoco prueba que el actuador respondió físicamente.
+
+## Registro de pruebas físicas (desde el 21 nov)
+
+Una sesión real del ESP32 es **una repetición** de una prueba física. La persona registra en Monitor → En vivo lo que **espera** que pase; la API nunca lo deduce del detector.
+
+- `escenario_esperado`: `reposo`, `marcha`, `frenada`, `golpe`, `inclinacion` o `vuelco`. Los tres primeros no deberían generar eventos: si los generan, son falsas alarmas.
+- `repeticion`: entero de 1 a 1000. Dos sesiones no pueden tener el mismo escenario y número (409 `REPETICION_USADA`, con la sesión que ya lo usa).
+- `nota`: texto opcional de hasta 500 caracteres (se guardan sin espacios al principio ni al final).
+- Sesión simulada: 409 `SESION_NO_REAL`. Sesión inexistente: 404.
+- La respuesta del POST incluye `resultado`: `creada`, `actualizada` o `sin_cambios`, y la `prueba` guardada con `registrada_ms` (Unix ms de la API).
+- En SQLite: tabla `pruebas_fisicas` (migración `003_pruebas_fisicas.sql`), una fila por sesión. Quitar el registro no borra la sesión ni sus datos.
+- `GET /pruebas` calcula los máximos con **todas** las mediciones de la sesión (√(ax²+ay²+az²), |roll|, |pitch|); son `null` si la sesión no tiene mediciones.
 
 ## Escrituras y reintentos
 

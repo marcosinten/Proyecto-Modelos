@@ -78,6 +78,23 @@ try {
   await tab.waitForSelector('#explain-tiempos', {timeout: 15000});
   assert.match(await tab.$eval('#main', m => m.textContent), /Tiempo de detecciónsin medir/);
 
+  // Fase 2: registrar la prueba física al conectar la sesión real en En vivo.
+  await tab.goto(url + '#monitor');
+  await tab.waitForSelector('#live-mode', {timeout: 15000});
+  await tab.click('#live-mode');
+  await tab.type('#live-form input', id);
+  await tab.click('#connect-session');
+  await tab.waitForFunction(() => document.querySelector('#prueba-fisica') && !document.querySelector('#prueba-fisica').hidden && document.querySelector('#prueba-estado'), {timeout: 15000});
+  assert.equal(await tab.$eval('#prueba-estado', e => e.textContent), 'Sin registrar');
+  await tab.select('#prueba-fisica select', 'inclinacion');
+  await tab.type('#prueba-fisica input[name="nota"]', 'PRUEBA de captura, no es un dato físico');
+  await tab.click('#prueba-fisica button.primary');
+  await tab.waitForFunction(() => document.querySelector('#prueba-estado').textContent.includes('Inclinación'), {timeout: 10000});
+  const registrada = await (await fetch(`${base}/api/v1/sesiones/${id}/prueba`)).json();
+  assert.equal(registrada.prueba.escenario_esperado, 'inclinacion'); assert.equal(registrada.prueba.repeticion, 1);
+  await pause(1500);
+  await tab.screenshot({path: join(salida, 'en-vivo-registro-prueba.png'), clip: {x: 0, y: 0, width: 1440, height: 900}});
+
   assert.deepEqual(errores, [], 'la página no debe lanzar errores');
   console.log(`Sin errores de página. Capturas en ${salida}`);
 } finally {
