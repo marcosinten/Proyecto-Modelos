@@ -220,12 +220,15 @@ export function renderMonitor() {
  const desc=detail?`Sesión ${app.current.sesion.id} · reproducción de las mediciones guardadas`:simulation?'Prueba escenarios sintéticos con las mismas reglas que el firmware.':'Postura, golpes y rueda del carro, en vivo o con la demostración.';
  $('#main').innerHTML=`<div class="monitor">`+(detail?'<a class="back" href="#historial">Volver al historial</a>':'')+
   `<div class="page-heading"><div><h1>${escape(title)}</h1><p>${escape(desc)}</p></div><div class="page-actions">`+
-  (detail?`<a class="secondary boton-enlace" href="#explicar/${escape(app.current.evento.id)}">Explicar evento</a>`:'')+
+  (detail?`<a class="secondary boton-enlace" href="#sesion/${encodeURIComponent(app.current.sesion.id)}">Ver la sesión completa</a><a class="secondary boton-enlace" href="#explicar/${escape(app.current.evento.id)}">Explicar evento</a>`:'')+
   (!simulation&&!detail?`<div class="segmentado" role="group" aria-label="Fuente de datos"><button type="button" id="demo-mode" aria-pressed="true">Demostración</button><button type="button" id="live-mode" aria-pressed="false">En vivo</button></div>`:'')+
   `<button type="button" class="secondary" id="presentation-mode" aria-pressed="false">Modo presentación</button></div></div>`+
   (simulation?simulationForm():detail?'':`<form id="live-form" class="form-sesion" hidden><label>ID de la sesión <input name="session" placeholder="RC-… (monitor serie del ESP32)" required pattern="[A-Za-z0-9_\\-]{1,64}" autocomplete="off" spellcheck="false"></label><button class="primary" id="connect-session">Conectar</button><button type="button" class="secondary" id="find-session">Buscar sesiones</button></form><div id="live-notices"></div>`)+
   dashboard()+`</div>`;
- $('#export').onclick=openExport;
+ $('#export').onclick=()=>openExport();
+ // En el detalle de un evento la exportación es solo de ese evento: un botón con ese nombre
+ // (abre el diálogo con Resumen y Datos técnicos) para no confundirla con «Exportar sesión».
+ if(detail){$('#accion-resumen').hidden=true;$('#accion-tecnico').hidden=true;$('#export').textContent='Exportar solo este evento';$('#export').className='primary';}
  for (const f of ['resumen','tecnico']) $('#accion-'+f).onclick=e=>descargar(f, e.currentTarget);
  $('#presentation-mode').onclick=()=>presentacion(!app.presentacion);
  presentacion(!!app.presentacion);

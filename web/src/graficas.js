@@ -103,6 +103,10 @@ const dibujo = {
         ctx.fillText(texto, bx + 5, by + 8);
       }
     }
+    if (t.seleccion) {
+      ctx.fillStyle = 'rgba(37, 99, 235, 0.12)';
+      ctx.fillRect(t.seleccion[0], a.top, t.seleccion[1] - t.seleccion[0], a.bottom - a.top);
+    }
     if (t.cursor != null) {
       const px = x.getPixelForValue(t.cursor);
       if (px >= a.left && px <= a.right) {
@@ -176,12 +180,14 @@ export function crearGraficas(p = '', { onClick } = {}) {
 }
 
 // Serie con cortes donde faltan datos (más de HUECO_MS entre muestras) y suavizado opcional.
-function serie(mediciones, valor, suavizar = 1) {
+// Con marcados = true (mediciones ya reducidas, ver compartido/detalle-sesion.js) el corte lo indica m.corte.
+const hayHueco = (m, previa, marcados) => previa && (marcados ? m.corte : m.t_ms - previa.t_ms > HUECO_MS);
+function serie(mediciones, valor, suavizar = 1, marcados = false) {
   const out = [];
   let ventana = [];
   for (let i = 0; i < mediciones.length; i++) {
     const m = mediciones[i], previa = mediciones[i - 1];
-    if (previa && m.t_ms - previa.t_ms > HUECO_MS) { out.push({ x: (m.t_ms + previa.t_ms) / 2, y: null }); ventana = []; }
+    if (hayHueco(m, previa, marcados)) { out.push({ x: (m.t_ms + previa.t_ms) / 2, y: null }); ventana = []; }
     const v = valor(m);
     if (v == null || !Number.isFinite(v)) { out.push({ x: m.t_ms, y: null }); ventana = []; continue; }
     ventana.push(v); if (ventana.length > suavizar) ventana.shift();
@@ -196,14 +202,18 @@ export function vueltasAcumuladas(mediciones) {
 }
 
 // Actualiza los datasets en su sitio (sin recrear las gráficas) y devuelve los valores para los encabezados.
-export function actualizarGraficas(g, { mediciones, eventos = [], desde, hasta, cursor = null, umbralGolpe = CONSTANTES_INO.UMBRAL_GOLPE_MS2 }) {
+// reducidas = true: las mediciones ya vienen reducidas para dibujar (Detalle de sesión). No se suaviza
+// (el promedio entre puntos separados borraría los picos) y los cortes vienen marcados en m.corte.
+export function actualizarGraficas(g, { mediciones, eventos = [], desde, hasta, cursor = null, umbralGolpe = CONSTANTES_INO.UMBRAL_GOLPE_MS2, reducidas = false }) {
   const m = mediciones;
   const total = x => Math.hypot(x.ax, x.ay, x.az);
+  const suave = reducidas ? 1 : SUAVIZADO_MUESTRAS;
   const datos = {
-    angles: [serie(m, x => x.roll_deg, SUAVIZADO_MUESTRAS), serie(m, x => x.pitch_deg, SUAVIZADO_MUESTRAS)],
-    magnitude: [serie(m, total)],
-    wheel: [(() => { const v = vueltasAcumuladas(m); return serie(m.map((x, i) => ({ ...x, v: v[i] })), x => x.v); })()],
-    accel: [serie(m, x => x.ax), serie(m, x => x.ay), serie(m, x => x.az)]
+    angles: [serie(m, x => x.roll_deg, suave, reducidas), serie(m, x => x.pitch_deg, suave, reducidas)],
+    magnitude: [serie(m, total, 1, reducidas)],
+    // vueltas_acum (si viene) se calculó con todas las muestras antes de reducir: el total no depende del zoom.
+    wheel: [(() => { const v = m[0]?.vueltas_acum != null ? m.map(x => x.vueltas_acum) : vueltasAcumuladas(m); return serie(m.map((x, i) => ({ ...x, v: v[i] })), x => x.v, 1, reducidas); })()],
+    accel: [serie(m, x => x.ax, 1, reducidas), serie(m, x => x.ay, 1, reducidas), serie(m, x => x.az, 1, reducidas)]
   };
   let maxAng = 0, maxTotal = 0;
   for (const x of m) { maxAng = Math.max(maxAng, Math.abs(x.roll_deg), Math.abs(x.pitch_deg)); maxTotal = Math.max(maxTotal, total(x)); }
@@ -227,7 +237,7 @@ export function actualizarGraficas(g, { mediciones, eventos = [], desde, hasta, 
   // Franja de la rueda: tramos girando/detenida según rueda_rps.
   const franja = [];
   for (let i = 1; i < m.length; i++) {
-    const a = m[i - 1]; if (a.rueda_rps == null || m[i].t_ms - a.t_ms > HUECO_MS) continue;
+    const a = m[i - 1]; if (a.rueda_rps == null || hayHueco(m[i], a, reducidas)) continue;
     const gira = a.rueda_rps > RUEDA_MINIMA_RPS, ultimo = franja.at(-1);
     if (ultimo && ultimo.gira === gira && ultimo.hasta === a.t_ms) ultimo.hasta = m[i].t_ms;
     else franja.push({ desde: a.t_ms, hasta: m[i].t_ms, gira });
@@ -248,4 +258,34 @@ export function actualizarGraficas(g, { mediciones, eventos = [], desde, hasta, 
 // Solo mueve el cursor de reproducción (sin recalcular series).
 export function moverCursor(g, cursor) {
   for (const c of g.todas) { c.$tel.cursor = cursor; c.draw(); }
+}
+
+// Zoom arrastrando sobre cualquier gráfica: al soltar llama a alElegir(desde, hasta) en ms de sesión.
+// Un arrastre de menos de 8 px se trata como clic (lo maneja onClick de la gráfica).
+export function zoomArrastrando(g, alElegir) {
+  const quitar = [];
+  for (const chart of g.todas) {
+    const canvas = chart.canvas;
+    let inicio = null;
+    const x = e => e.clientX - canvas.getBoundingClientRect().left;
+    const abajo = e => { if (e.button !== 0) return; inicio = x(e); chart.$tel.seleccion = null; canvas.setPointerCapture?.(e.pointerId); };
+    const mover = e => {
+      if (inicio == null) return;
+      const a = chart.chartArea, px = Math.max(a.left, Math.min(a.right, x(e)));
+      chart.$tel.seleccion = Math.abs(px - inicio) >= 8 ? [Math.min(inicio, px), Math.max(inicio, px)] : null;
+      chart.draw();
+    };
+    const arriba = e => {
+      if (inicio == null) return;
+      const sel = chart.$tel.seleccion; inicio = null; chart.$tel.seleccion = null; chart.draw();
+      if (!sel) return;
+      const escala = chart.scales.x;
+      alElegir(escala.getValueForPixel(sel[0]), escala.getValueForPixel(sel[1]));
+    };
+    canvas.addEventListener('pointerdown', abajo); canvas.addEventListener('pointermove', mover);
+    canvas.addEventListener('pointerup', arriba); canvas.addEventListener('pointercancel', arriba);
+    canvas.style.cursor = 'crosshair'; canvas.style.touchAction = 'pan-y';
+    quitar.push(() => { canvas.removeEventListener('pointerdown', abajo); canvas.removeEventListener('pointermove', mover); canvas.removeEventListener('pointerup', arriba); canvas.removeEventListener('pointercancel', arriba); });
+  }
+  return () => quitar.forEach(f => f());
 }

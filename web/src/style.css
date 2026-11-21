@@ -345,6 +345,33 @@ body.presentacion .grafica-lienzo { height: 260px; }
   .cronologia li { grid-template-columns: 64px 1fr; }
 }
 
+/* Detalle de sesión */
+.detalle-sesion { min-width: 0; }
+.tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: var(--e3); margin-top: var(--e4); }
+.tarjetas > * { min-width: 0; }
+.tarjeta { display: grid; align-content: start; justify-items: start; gap: 2px; padding: var(--e3) var(--e4); background: var(--superficie);
+  border: 1px solid var(--linea); border-radius: var(--radio); text-align: left; white-space: normal; min-height: 0; font-weight: 400; }
+button.tarjeta { cursor: pointer; }
+button.tarjeta:hover:not(:disabled) { background: var(--acento-fondo); border-color: color-mix(in srgb, var(--acento) 35%, transparent); }
+.tarjeta strong { font-size: 24px; line-height: 1.2; font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: -.01em; overflow-wrap: anywhere; }
+.tarjeta small { font-size: 13px; color: var(--tinta-3); }
+.tarjetas + .grafica-nota { margin-top: var(--e2); }
+.evento-sesion { grid-template-columns: minmax(0, 1fr) auto; }
+.evento-salto { display: grid; grid-template-columns: 84px 110px minmax(0, 1fr); gap: var(--e3); align-items: center; width: 100%;
+  border: 0; background: transparent; padding: var(--e1) var(--e2); text-align: left; white-space: normal; font-weight: 400; min-height: 0; }
+.evento-salto:hover:not(:disabled) { background: var(--acento-fondo); }
+.evento-hora { display: grid; font-size: 14px; font-weight: 600; }
+.evento-hora small { font-size: 12px; font-weight: 400; color: var(--tinta-3); }
+.zoom { display: flex; flex-wrap: wrap; gap: var(--e1); }
+#ds-vista { margin-bottom: var(--e3); }
+#ds-lectura { margin-top: var(--e3); }
+@media (max-width: 640px) {
+  .tarjetas { grid-template-columns: 1fr 1fr; }
+  .tarjeta strong { font-size: 20px; }
+  .evento-sesion { grid-template-columns: 1fr; }
+  .evento-salto { grid-template-columns: 1fr; gap: 2px; }
+}
+
 .monitor { min-width: 0; }
 /* Los hijos de las rejillas pueden encoger: un lienzo medido a un ancho anterior no debe ensancharlos. */
 .vista > *, .estado > *, .lecturas > *, .graficas-lista > *, .explicar > *, .explicar-cifras > *, .datos-tecnicos > * { min-width: 0; }

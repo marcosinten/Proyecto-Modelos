@@ -1,9 +1,11 @@
 // Libros de Excel. Única implementación: la usan la web (navegador) y el servidor.
 // Quien llama entrega la clase ExcelJS para que este archivo no dependa de dónde está instalado.
 //
-// Dos exportaciones, para una sesión completa o para un evento:
+// Tres exportaciones, para una sesión completa o para un evento:
 //   RESUMEN (principal, sin muestras sueltas): Resumen, Eventos, Inclinaciones, Rueda.
 //   TÉCNICO (todo): Datos, Eventos, Parámetros del firmware, [Parámetros simulación], Columnas, Léeme, Metadatos.
+//   COMPLETO («Exportar sesión»): las hojas del resumen seguidas de las técnicas en un solo libro;
+//     la hoja Eventos del técnico se llama «Eventos (detalle)» para no chocar con la del resumen.
 // Compatibilidad con el cuaderno de IA (df_from_web_excel): Datos conserva en la fila 1 los nombres
 // del contrato sin unidades y Metadatos conserva campo/valor (servidor) y sesion/origen (web).
 //
@@ -144,9 +146,13 @@ function filasRueda(rueda) {
   ];
 }
 
-export function crearLibroResumen(ExcelJS, paquete, { fuente = 'servidor' } = {}) {
-  const libro = new ExcelJS.Workbook();
-  libro.creator = 'Grupo 11';
+const libroNuevo = ExcelJS => { const libro = new ExcelJS.Workbook(); libro.creator = 'Grupo 11'; return libro; };
+
+export function crearLibroResumen(ExcelJS, paquete, opciones = {}) {
+  return hojasResumen(libroNuevo(ExcelJS), paquete, opciones);
+}
+
+function hojasResumen(libro, paquete, { fuente = 'servidor' } = {}) {
   const r = resumenSesion(paquete);
   const pico = (p, unidad) => p ? [r1(p.valor), unidad, `A los ${s1(p.t_ms)} s de sesión · valor de mayor magnitud, con su signo`] : [SIN_MEDIR, '', 'Sin mediciones'];
   const titulo = r.alcance === 'evento' ? `Telemetría RC · Grupo 11 — Resumen del evento ${r.evento_id}` : 'Telemetría RC · Grupo 11 — Resumen de la sesión';
@@ -212,9 +218,18 @@ export function crearLibroResumen(ExcelJS, paquete, { fuente = 'servidor' } = {}
   return libro;
 }
 
-export function crearLibroTecnico(ExcelJS, paquete, { fuente = 'servidor' } = {}) {
-  const libro = new ExcelJS.Workbook();
-  libro.creator = 'Grupo 11';
+export function crearLibroTecnico(ExcelJS, paquete, opciones = {}) {
+  return hojasTecnico(libroNuevo(ExcelJS), paquete, opciones);
+}
+
+// Resumen + técnico en un solo libro (botón «Exportar sesión» del Detalle de sesión).
+export function crearLibroCompleto(ExcelJS, paquete, opciones = {}) {
+  const libro = libroNuevo(ExcelJS);
+  hojasResumen(libro, paquete, opciones);
+  return hojasTecnico(libro, paquete, { ...opciones, hojaEventos: 'Eventos (detalle)' });
+}
+
+function hojasTecnico(libro, paquete, { fuente = 'servidor', hojaEventos = 'Eventos' } = {}) {
   const p = normalizar(paquete);
 
   tabla(libro, 'Datos', [
@@ -225,7 +240,7 @@ export function crearLibroTecnico(ExcelJS, paquete, { fuente = 'servidor' } = {}
     { clave: 'rueda_pulsos', ancho: 13, formato: FMT.entero }
   ], p.mediciones);
 
-  tabla(libro, 'Eventos', COLUMNAS_EVENTOS.map(([clave]) => ({
+  tabla(libro, hojaEventos, COLUMNAS_EVENTOS.map(([clave]) => ({
     clave, ancho: Math.max(14, clave.length + 4),
     formato: clave.endsWith('_ms') ? FMT.entero : clave === 'latitud' || clave === 'longitud' ? FMT.coordenada : undefined
   })), p.eventos.map(({ ubicacion, ...e }) => ({
@@ -252,7 +267,7 @@ export function crearLibroTecnico(ExcelJS, paquete, { fuente = 'servidor' } = {}
 
   tabla(libro, 'Columnas', [{ clave: 'columna', ancho: 20 }, { clave: 'unidad', ancho: 12 }, { clave: 'descripcion', ancho: 90 }, { clave: 'hoja', ancho: 12 }], [
     ...COLUMNAS_DATOS.map(c => ({ ...c, hoja: 'Datos' })),
-    ...COLUMNAS_EVENTOS.map(([columna, unidad, descripcion]) => ({ columna, unidad, descripcion, hoja: 'Eventos' }))
+    ...COLUMNAS_EVENTOS.map(([columna, unidad, descripcion]) => ({ columna, unidad, descripcion, hoja: hojaEventos }))
   ]);
 
   const leeme = libro.addWorksheet('Léeme');
@@ -266,7 +281,7 @@ export function crearLibroTecnico(ExcelJS, paquete, { fuente = 'servidor' } = {}
     [`El firmware lee el sensor a ${1000 / CONSTANTES_INO.PERIODO_ADQ_MS} Hz y publica a ${1000 / (CONSTANTES_INO.PERIODO_ADQ_MS * CONSTANTES_INO.MUESTRAS_POR_TEL)} Hz: cada muestra de la hoja Datos es la lectura con mayor aceleración de una ventana de ${CONSTANTES_INO.PERIODO_ADQ_MS * CONSTANTES_INO.MUESTRAS_POR_TEL} ms (conserva los picos de golpe).`],
     [`rueda_pulsos es el contador acumulado de pulsos del sensor Hall desde el arranque del ESP32 (${PULSOS_POR_VUELTA} pulso(s) por vuelta). rueda_rps es la velocidad estimada por el firmware en vueltas/s y vale 0 tras ${CONSTANTES_INO.HALL_TIMEOUT_CERO_MS} ms sin pulsos. Hay un solo sensor, en la rueda ${POSICION_RUEDA_SENSOR}.`],
     ['t_ms: milisegundos desde el arranque del ESP32 (reloj del carro). Las horas «aprox. ±1 s» se reconstruyen con el reloj de la API: última recepción − (última medición − instante).'],
-    [`Los eventos (hoja Eventos) los clasifica el firmware con los parámetros de la hoja «Parámetros del firmware». La API los guarda tal como llegan; no recalcula umbrales.`],
+    [`Los eventos (hoja ${hojaEventos}) los clasifica el firmware con los parámetros de la hoja «Parámetros del firmware». La API los guarda tal como llegan; no recalcula umbrales.`],
     [`«${SIN_MEDIR}» significa que el dato no se reportó o no se conoce. No equivale a 0. Celdas vacías en rueda_rps o rueda_pulsos: sin dato.`],
     [`Sesión ${p.sesion.id} · origen ${p.sesion.origen} · ${p.mediciones.length} mediciones · ${p.eventos.length} evento(s) · exportado desde ${fuente}`]
   ].forEach(([texto, titulo], i) => {
@@ -300,7 +315,9 @@ export function crearLibroTecnico(ExcelJS, paquete, { fuente = 'servidor' } = {}
 }
 
 export function crearLibro(ExcelJS, paquete, { formato = 'tecnico', ...opciones } = {}) {
-  return formato === 'resumen' ? crearLibroResumen(ExcelJS, paquete, opciones) : crearLibroTecnico(ExcelJS, paquete, opciones);
+  if (formato === 'resumen') return crearLibroResumen(ExcelJS, paquete, opciones);
+  if (formato === 'completo') return crearLibroCompleto(ExcelJS, paquete, opciones);
+  return crearLibroTecnico(ExcelJS, paquete, opciones);
 }
 
 export async function crearExcel(ExcelJS, paquete, opciones) {
