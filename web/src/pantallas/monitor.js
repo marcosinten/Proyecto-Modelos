@@ -103,7 +103,7 @@ export const estadoConexion = (ultimaMs, ahora) => ultimaMs == null ? 'desconect
   : ahora - ultimaMs <= PAUSA_MS ? 'activa' : ahora - ultimaMs <= VENTANA_CONECTABLE_MS ? 'atrasada' : 'desconectada';
 
 // Hora del instante t de la sesión: hh:mm:ss con el reloj de la API (en vivo) o «12,3 s».
-export const horaSesion = t => { const h = app.liveActive ? horaDe(app.reloj, t) : null; return h == null ? `${seconds(t)} s` : textoHora(h); };
+export const horaSesion = t => { const h = app.liveActive ? horaDe(app.reloj, t) : null; return h == null ? `${(t / 1000).toLocaleString('es-EC', {maximumFractionDigits: 1})} s` : textoHora(h); };
 
 // Valor principal de un evento: ángulo máximo (inclinación, vuelco) o aceleración máxima (golpe).
 export function valorEvento(e, mediciones) {

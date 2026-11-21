@@ -416,6 +416,7 @@ dialog h2 { font-size: 18px; margin-bottom: var(--e1); padding-right: var(--e6);
 .explicar .bloque { margin-top: 0; }
 .explicar-graficas { margin-top: var(--e4); }
 .explicar-graficas .graficas-lista { gap: var(--e5); }
+.explicar-graficas .tecnico-graficas { grid-template-columns: minmax(0, 1fr); margin-top: var(--e5); }
 .explicar-resumen h2 { font-size: 20px; margin: var(--e2) 0; }
 .explicar-resumen p { max-width: 75ch; margin-top: var(--e2); line-height: 1.6; }
 .explicar-limites { margin-top: var(--e3); padding-top: var(--e3); border-top: 1px solid var(--borde); font-size: 13px; color: var(--texto-2); display: grid; gap: var(--e1); }
