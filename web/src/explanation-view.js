@@ -1,6 +1,7 @@
 import { explicarPaquete, moduloA, desviacionA, direccionRoll, direccionPitch } from './explanation.js';
 import { htmlGraficas, htmlGraficasTecnicas, crearGraficas, actualizarGraficas } from './graficas.js';
 import { analizarEvento } from '../../compartido/exportacion.js';
+import { imagenesCarro } from './minicarro.js';
 
 const escape = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const numero = (n, decimales = 2) => n.toLocaleString('es-EC', { maximumFractionDigits: decimales, minimumFractionDigits: decimales });
@@ -60,7 +61,8 @@ export function mostrarExplicacion(container, paquete, aviso = '') {
       <p class="grafica-nota">En el pico de aceleración total: X (delante/atrás) ${numero(picoTotal.ax)}, Y (lateral) ${numero(picoTotal.ay)}, Z (vertical) ${numero(picoTotal.az)} m/s². Lateral positivo eleva el lado izquierdo; frontal positivo eleva la trompa.</p>
       <p class="grafica-nota">La aceleración incluye la gravedad y no equivale por sí sola a velocidad, fuerza de choque ni causa. Los ángulos se estiman con el acelerómetro: un golpe puede alterar esa estimación. ${rueda.length ? `Máximo giro registrado: ${numero(picoRueda.rueda_rps)} vueltas/s a los ${segundo(picoRueda.t_ms)} s; el Hall mide una rueda, no el avance del carro.${rueda.length < muestras.length ? ` Hay dato de rueda en ${rueda.length} de ${muestras.length} lecturas; los huecos no significan rueda detenida.` : ''}` : 'No hay dato de rueda: su ausencia no significa que estuviera detenida.'}</p>
       ${disperso ? `<div class="aviso-bloque">Lecturas ${muestras.length < 5 ? 'escasas' : 'con intervalos sin datos'}${saltoMaximo ? ` (salto máximo: ${numero(saltoMaximo / 1000)} s)` : ''}. Los puntos no prueban qué ocurrió entre una muestra y otra.</div>` : ''}
-      <div class="explicar-graficas">${htmlGraficas('explain-', { valores: 'Máximo' })}${htmlGraficasTecnicas('explain-', { ejes: false, valores: 'Total' })}</div>`}
+      <div class="explicar-graficas">${htmlGraficas('explain-', { valores: 'Máximo' })}${htmlGraficasTecnicas('explain-', { ejes: false, valores: 'Total' })}
+        ${htmlGraficasTecnicas('explain-', { rueda: false, enG: true, marcas: true, valores: 'Máximo' })}</div>`}
     </section>
     <section class="bloque cronologia" aria-labelledby="explain-sequence">
       <h2 id="explain-sequence">Línea de tiempo</h2>
@@ -72,12 +74,39 @@ export function mostrarExplicacion(container, paquete, aviso = '') {
     </div>`;
 
   if (parcial) return () => {};
-  const g = crearGraficas('explain-');
+  const g = crearGraficas('explain-', { ejesEnG: true, marcas: true });
   const inicio = e.t_inicio_ms, fin = e.t_fin_ms;
-  const r = actualizarGraficas(g, { mediciones: muestras, eventos: [e], desde: inicio === fin ? inicio - 500 : inicio, hasta: inicio === fin ? fin + 500 : fin });
+  // Marcas A, B, C, D como en las figuras del artículo: inicio de las lecturas, detección, pico y última lectura.
+  const pico = e.tipo === 'golpe' ? picoTotal : Math.abs(picoRoll.roll_deg) >= Math.abs(picoPitch.pitch_deg) ? picoRoll : picoPitch;
+  const cerca = t => muestras.reduce((m, x) => Math.abs(x.t_ms - t) < Math.abs(m.t_ms - t) ? x : m, muestras[0]);
+  const puntos = [
+    { t: muestras[0].t_ms, que: 'Primera lectura de la ventana' },
+    { t: e.t_deteccion_ms, que: `Detección ${e.tipo === 'inclinacion' ? 'de la' : 'del'} ${tipo}`, tipo: e.tipo },
+    { t: pico.t_ms, que: e.tipo === 'golpe' ? 'Mayor aceleración total' : 'Mayor inclinación', tipo: e.tipo },
+    { t: muestras.at(-1).t_ms, que: 'Última lectura de la ventana' }
+  ].sort((a, b) => a.t - b.t).reduce((l, q) => {
+    // Dos instantes a menos de 40 ms (dos muestras) comparten letra.
+    const previo = l.at(-1);
+    if (previo && q.t - previo.t <= 40) { previo.que += ` y ${q.que.charAt(0).toLowerCase()}${q.que.slice(1)}`; previo.tipo ??= q.tipo; }
+    else l.push({ ...q });
+    return l;
+  }, []);
+  const marcas = puntos.map((q, i) => ({ ...q, letra: String.fromCharCode(65 + i), m: cerca(q.t), imagen: null }));
+  const r = actualizarGraficas(g, { mediciones: muestras, eventos: [e], desde: inicio === fin ? inicio - 500 : inicio, hasta: inicio === fin ? fin + 500 : fin, marcas });
+  const lista = container.querySelector('#explain-marcas-fuerza');
+  if (lista) {
+    lista.innerHTML = marcas.map(q => `<li><span class="letra-marca"${q.tipo ? ` data-tipo="${escape(q.tipo)}"` : ''}>${q.letra}</span><span><strong>${escape(q.que)}</strong> · ${segundo(q.t)} s · lateral ${numero(q.m.roll_deg, 1)}°, frontal ${numero(q.m.pitch_deg, 1)}° · X ${numero(q.m.ax / 9.81)} · Y ${numero(q.m.ay / 9.81)} · Z ${numero(q.m.az / 9.81)} g</span></li>`).join('');
+    lista.hidden = false;
+  }
+  requestAnimationFrame(() => {
+    if (!g.accel?.ctx) return;
+    imagenesCarro(marcas.map(q => ({ roll: q.m.roll_deg, pitch: q.m.pitch_deg }))).forEach((img, i) => { marcas[i].imagen = img; });
+    g.accel.draw();
+  });
   const pon = (id, texto) => { const el = container.querySelector('#explain-valor-' + id); if (el) el.textContent = texto; };
   pon('inclinacion', `${numero(picoRoll.roll_deg, 1)}° · ${numero(picoPitch.pitch_deg, 1)}°`);
   pon('golpe', `${numero(moduloA(picoTotal), 1)} m/s²`);
+  pon('ejes', `${numero(Math.max(...muestras.map(x => Math.max(Math.abs(x.ax), Math.abs(x.ay), Math.abs(x.az)))) / 9.81, 2)} g`);
   pon('rueda', r.conRueda ? `${numero(r.vueltas ?? 0, 1)} vueltas` : 'Sin dato');
   const resumen = container.querySelector('#explain-graph-summary');
   if (resumen) resumen.textContent = `Línea continua: lateral. Discontinua: frontal. La bandera marca la detección.`;

@@ -1,7 +1,8 @@
 // Pantalla Detalle de sesión (#sesion/<id>): 6 tarjetas de datos generales, gráficas de toda la sesión
-// (zoom arrastrando y rango 6 s · 30 s · 2 min · Sesión), pestañas Inclinación y aceleración / Rueda (Hall) /
-// Ejes (g), lista de eventos que salta a su instante, gráfica de postura 3D/2D (carga perezosa) y
-// «Exportar sesión» (libro completo: resumen + datos técnicos).
+// (zoom arrastrando y rango 6 s · 30 s · 2 min · Sesión), pestañas Inclinación y aceleración / Rueda (Hall),
+// lista de eventos que salta a su instante, «Fuerza por eje (g)» con las marcas A, B, C… y un carro en
+// miniatura con la postura de cada evento (como las figuras del artículo de referencia), gráfica de postura
+// 3D/2D (carga perezosa) y «Exportar sesión» (libro completo: resumen + datos técnicos).
 // Las gráficas dibujan como mucho ~1500 mediciones por vista (compartido/detalle-sesion.js): se conservan
 // los picos de aceleración y de ángulo de cada tramo, así un golpe nunca desaparece al alejar el zoom.
 import {app, $, escape, seconds, toast} from '../app.js';
@@ -13,11 +14,14 @@ import {analizarEvento, horaDe, NOMBRE_TIPO, aceleracionTotal, resumenRueda, SIN
 import {textoHora, NOTA_HORA} from '../../../compartido/hora.js';
 import {NOMBRE_RUEDA, POSICION_RUEDA_SENSOR, PULSOS_POR_VUELTA} from '../../../compartido/parametros-firmware.js';
 import {icono} from '../iconos.js';
+import {ANCHO_CARRO, imagenesCarro} from '../minicarro.js';
 
 const MAX_PUNTOS = 1500;           // mediciones dibujadas por vista
 const VENTANA_EVENTO_MS = 2000;    // margen alrededor de la ventana del evento al saltar a él
 const ZOOM_MINIMO_MS = 500;
 const RANGOS = [['6000', '6 s'], ['30000', '30 s'], ['120000', '2 min'], ['sesion', 'Sesión']];
+// A, B, … Z, AA, AB… (una letra por evento, en orden de tiempo).
+export const letraMarca = i => (i >= 26 ? letraMarca(Math.floor(i / 26) - 1) : '') + String.fromCharCode(65 + i % 26);
 const uno = v => v.toLocaleString('es-EC', {minimumFractionDigits: 1, maximumFractionDigits: 1});
 
 export function renderSesion(id) {
@@ -64,11 +68,11 @@ function pintar(paquete) {
   cifra('pitch', 'lateral', `${salto(d.max_roll, d.max_roll ? `${uno(Math.abs(d.max_roll.valor))}°` : '')}<span class="cifra-sep">/</span>${salto(d.max_pitch, d.max_pitch ? `${uno(Math.abs(d.max_pitch.valor))}°` : '')}`, 'Máximo lateral / frontal', 'Pulsa un valor para verlo')
  ].join('');
 
- const filas = eventos.map(e => {
+ const filas = eventos.map((e, i) => {
   const a = analizarEvento(e, mediciones), hora = horaDe(reloj, e.t_deteccion_ms);
   return `<li class="evento-sesion" data-tipo="${escape(e.tipo)}" data-id="${escape(e.id)}">
    <button type="button" class="evento-salto" data-evento="${escape(e.id)}" aria-label="Ver ${escape(NOMBRE_TIPO[e.tipo] ?? e.tipo)} de las ${escape(hora == null ? `${seconds(e.t_deteccion_ms)} s` : textoHora(hora))} en las gráficas">
-    <span class="evento-cabeza"><span class="chip-evento" data-tipo="${escape(e.tipo)}">${escape(NOMBRE_TIPO[e.tipo] ?? e.tipo)}</span><span class="mono evento-hora">${hora == null ? `${seconds(e.t_deteccion_ms)} s` : escape(textoHora(hora))}</span></span>
+    <span class="evento-cabeza"><span class="letra-marca" data-tipo="${escape(e.tipo)}" title="Marca en la gráfica de fuerza por eje">${letraMarca(i)}</span><span class="chip-evento" data-tipo="${escape(e.tipo)}">${escape(NOMBRE_TIPO[e.tipo] ?? e.tipo)}</span><span class="mono evento-hora">${hora == null ? `${seconds(e.t_deteccion_ms)} s` : escape(textoHora(hora))}</span></span>
     <span class="evento-frase">${escape(a.frase)}</span>
    </button>
    <button type="button" class="text-button small" data-exportar-evento="${escape(e.id)}">${icono('exportar')}Exportar solo este evento</button></li>`;
@@ -92,7 +96,7 @@ function pintar(paquete) {
   <div class="sesion-rejilla">
   <section class="tarjeta sesion-graficas" aria-labelledby="ds-t-graficas" id="ds-graficas">
    <header class="tarjeta-cabecera"><h2 id="ds-t-graficas" class="sr-only">Gráficas de toda la sesión</h2>
-    <div class="segmentado pestanas" role="tablist" aria-label="Gráficas">${tab('principal', 'Inclinación y aceleración', true)}${tab('rueda', 'Rueda (Hall)', false)}${tab('ejes', 'Ejes (g)', false)}</div>
+    <div class="segmentado pestanas" role="tablist" aria-label="Gráficas">${tab('principal', 'Inclinación y aceleración', true)}${tab('rueda', 'Rueda (Hall)', false)}</div>
     <div class="zoom"><button type="button" class="secondary small icon-button" id="ds-atras" aria-label="Tramo anterior">←</button>
      <div class="segmentado" id="ds-rango" role="group" aria-label="Rango de tiempo">${RANGOS.map(([v, t]) => `<button type="button" data-rango="${v}" aria-pressed="${v === 'sesion'}">${t}</button>`).join('')}</div>
      <button type="button" class="secondary small icon-button" id="ds-adelante" aria-label="Tramo siguiente">→</button></div>
@@ -100,13 +104,16 @@ function pintar(paquete) {
    <p class="ayuda" id="ds-vista" aria-live="polite"></p>
    <div role="tabpanel" id="ds-panel-principal" aria-labelledby="ds-tab-principal" class="ds-panel">${htmlGraficas('ds-', {valores: 'Máximo en la vista'})}</div>
    <div role="tabpanel" id="ds-panel-rueda" aria-labelledby="ds-tab-rueda" class="ds-panel" hidden>${htmlGraficasTecnicas('ds-', {valores: 'En la vista', ejes: false})}${estadisticasRueda}</div>
-   <div role="tabpanel" id="ds-panel-ejes" aria-labelledby="ds-tab-ejes" class="ds-panel" hidden>${htmlGraficasTecnicas('ds-', {valores: 'En la vista', rueda: false, enG: true})}</div>
    <output class="lectura-tecnica" id="ds-lectura"></output>
    <p class="grafica-nota">Arrastra sobre una gráfica para acercar ese tramo. Hasta ${MAX_PUNTOS.toLocaleString('es-EC')} puntos por vista, sin suavizado y conservando el mayor golpe y los ángulos extremos de cada tramo.</p>
   </section>
   <section class="tarjeta sesion-eventos" aria-labelledby="ds-t-eventos"><header class="tarjeta-cabecera"><h2 id="ds-t-eventos">Eventos <span class="chip">${eventos.length}</span></h2></header>
    ${eventos.length ? `<ol class="eventos-sesion">${filas}</ol>` : '<p class="vacio">El carro no guardó eventos en esta sesión.</p>'}</section>
   </div>
+  <section class="tarjeta sesion-fuerza" aria-label="Fuerza por eje en g con las marcas de los eventos" id="ds-fuerza">
+   ${htmlGraficasTecnicas('ds-', {valores: 'En la vista', rueda: false, enG: true, marcas: true})}
+   <p class="grafica-nota">Cada letra es un evento de la lista (${eventos.length ? `A${eventos.length > 1 ? `–${letraMarca(eventos.length - 1)}` : ''}` : 'sin eventos'}); el carro muestra la postura medida en su detección. Pulsa una letra para ver ese evento. Sigue el rango y el zoom de las gráficas de arriba · 1 g = 9,81 m/s² · en reposo Z marca 1 g.</p>
+  </section>
   <section class="tarjeta sesion-postura" aria-labelledby="ds-t-postura" id="ds-postura">
    <header class="tarjeta-cabecera"><div><h2 id="ds-t-postura">Postura durante la sesión</h2><p class="ayuda">X adelante · Y izquierda · Z arriba · cada punto es el eje «arriba» del carro</p></div>
     <div class="postura-controles"><div class="segmentado" role="group" aria-label="Tipo de gráfica"><button type="button" data-vista-postura="2d" aria-pressed="false">2D</button><button type="button" data-vista-postura="3d" aria-pressed="true">3D</button></div>
@@ -123,17 +130,34 @@ function pintar(paquete) {
  const conVueltas = mediciones.map((m, i) => ({...m, vueltas_acum: acumuladas[i]}));
  const t0 = mediciones[0].t_ms, t1 = Math.max(mediciones.at(-1).t_ms, t0 + 1);
  const fijos = eventos.map(e => e.t_deteccion_ms);
+ // Marcas A, B, C… de la gráfica de fuerza: una por evento, en su detección; el carro se dibuja después.
+ const enDeteccion = e => mediciones[Math.min(mediciones.length - 1, indiceDesde(mediciones, e.t_deteccion_ms))];
+ const marcas = eventos.map((e, i) => ({t: e.t_deteccion_ms, letra: letraMarca(i), tipo: e.tipo, id: e.id, imagen: null}));
  const vista = {desde: t0, hasta: t1, cursor: null};
 
- const g = crearGraficas('ds-', {ejesEnG: true, onClick(_e, puntos, chart) {
+ const g = crearGraficas('ds-', {ejesEnG: true, marcas: true, onClick(_e, puntos, chart) {
   if (!puntos.length) return;
   vista.cursor = chart.data.datasets[puntos[0].datasetIndex].data[puntos[0].index].x;
   moverCursor(g, vista.cursor); leer(vista.cursor);
  }});
  app.charts = g.todas;
  const soltarZoom = zoomArrastrando(g, (a, b) => mostrar(a, b));
+ // Letras y carros de la gráfica de fuerza (encima del área de datos, donde Chart.js no avisa clics):
+ // pulsar uno elige ese evento.
+ const marcaEn = e => {
+  const c = g.accel; if (!c?.chartArea) return null;
+  const r = lienzoFuerza.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+  if (y >= c.chartArea.top) return null;
+  return (c.$tel.marcasDibujadas ?? []).reduce((mejor, q) => { const d = Math.abs(q.x - x); return d <= (q.conCarro ? ANCHO_CARRO / 2 : q.r + 4) && (!mejor || d < mejor.d) ? {...q, d} : mejor; }, null);
+ };
+ const alPulsarMarca = e => { const m = marcaEn(e); if (m) elegirEvento(m.id, false); };
+ // Referencia propia al lienzo: al salir, main.js destruye las gráficas antes de llamar a app.alSalir.
+ const lienzoFuerza = g.accel.canvas;
+ const alPasarMarca = e => { lienzoFuerza.style.cursor = marcaEn(e) ? 'pointer' : 'crosshair'; };
+ lienzoFuerza.addEventListener('click', alPulsarMarca);
+ lienzoFuerza.addEventListener('pointermove', alPasarMarca);
  let postura = null, observador = null;
- app.alSalir = () => { soltarZoom(); observador?.disconnect(); postura?.destroy(); };
+ app.alSalir = () => { soltarZoom(); lienzoFuerza.removeEventListener('click', alPulsarMarca); lienzoFuerza.removeEventListener('pointermove', alPasarMarca); observador?.disconnect(); postura?.destroy(); };
 
  function leer(t) {
   const m = mediciones[Math.min(mediciones.length - 1, indiceDesde(mediciones, t))];
@@ -147,7 +171,7 @@ function pintar(paquete) {
   if (hasta - desde < ZOOM_MINIMO_MS) { const c = (desde + hasta) / 2; desde = c - ZOOM_MINIMO_MS / 2; hasta = c + ZOOM_MINIMO_MS / 2; }
   vista.desde = Math.max(t0, desde); vista.hasta = Math.min(t1, hasta); vista.cursor = cursor;
   const puntos = reducirMediciones(conVueltas, {desde: vista.desde, hasta: vista.hasta, maxPuntos: MAX_PUNTOS, fijos});
-  const r = actualizarGraficas(g, {mediciones: puntos, eventos, desde: vista.desde, hasta: vista.hasta, cursor, reducidas: true, reloj});
+  const r = actualizarGraficas(g, {mediciones: puntos, eventos, desde: vista.desde, hasta: vista.hasta, cursor, reducidas: true, reloj, marcas});
   // Valores del encabezado: máximos dentro de la vista (con todas las muestras, no solo las dibujadas).
   const i0 = indiceDesde(mediciones, vista.desde), i1 = indiceDesde(mediciones, vista.hasta + 1);
   let roll = 0, pitch = 0, total = 0, ejeMax = 0;
@@ -182,16 +206,17 @@ function pintar(paquete) {
  const activar = b => { for (const x of tabs) { const si = x === b; x.setAttribute('aria-selected', String(si)); x.setAttribute('aria-pressed', String(si)); x.tabIndex = si ? 0 : -1; $('#' + x.getAttribute('aria-controls')).hidden = !si; } };
  tabs.forEach((b, i) => { b.setAttribute('aria-pressed', String(i === 0)); b.onclick = () => activar(b); b.onkeydown = e => { const k = {ArrowRight: 1, ArrowLeft: -1}[e.key]; if (!k) return; const n = tabs[(i + k + tabs.length) % tabs.length]; activar(n); n.focus(); }; });
 
- const irA = (desde, hasta, cursor) => {
+ const irA = (desde, hasta, cursor, desplazar = true) => {
   mostrar(desde, hasta, cursor); leer(cursor);
-  $('#ds-graficas').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
+  if (desplazar) $('#ds-graficas').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
  };
- document.querySelectorAll('.evento-salto').forEach(b => b.onclick = () => {
-  const e = eventos.find(x => x.id === b.dataset.evento);
+ function elegirEvento(id, desplazar = true) {
+  const e = eventos.find(x => x.id === id); if (!e) return;
   document.querySelectorAll('.evento-sesion').forEach(li => li.classList.toggle('elegido', li.dataset.id === e.id));
   postura?.elegir(e.id);
-  irA(e.t_inicio_ms - VENTANA_EVENTO_MS, e.t_fin_ms + VENTANA_EVENTO_MS, e.t_deteccion_ms);
- });
+  irA(e.t_inicio_ms - VENTANA_EVENTO_MS, e.t_fin_ms + VENTANA_EVENTO_MS, e.t_deteccion_ms, desplazar);
+ }
+ document.querySelectorAll('.evento-salto').forEach(b => b.onclick = () => elegirEvento(b.dataset.evento));
  document.querySelectorAll('[data-ir]').forEach(b => b.onclick = () => {
   const x = Number(b.dataset.ir);
   irA(x - 5000, x + 5000, x);
@@ -204,6 +229,12 @@ function pintar(paquete) {
   openExport({version: 1, sesion, evento: e, mediciones: ventana});
  });
  mostrar(t0, t1, null);
+ // Carros en miniatura: un renderizador WebGL temporal, en el cuadro siguiente para no retrasar la pantalla.
+ if (marcas.length) requestAnimationFrame(() => {
+  if (app.page !== 'sesion' || !g.accel?.ctx) return;
+  imagenesCarro(eventos.map(e => { const m = enDeteccion(e); return {roll: m.roll_deg, pitch: m.pitch_deg}; })).forEach((img, i) => { marcas[i].imagen = img; });
+  g.accel.draw();
+ });
 
  // Postura 3D/2D: el módulo se carga cuando la tarjeta se acerca a la pantalla.
  let cargando = null;

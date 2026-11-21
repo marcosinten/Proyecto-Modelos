@@ -54,12 +54,13 @@ export function htmlGraficas(p = '', { valores = 'Ahora' } = {}) {
 }
 
 // Gráficas secundarias: vueltas de la rueda con sensor y aceleración por eje.
-export function htmlGraficasTecnicas(p = '', { valores = 'Ahora', ejes = true, rueda = true, enG = false } = {}) {
-  return `<div class="tecnico-graficas">
+// marcas = true: gráfica de fuerza por eje con las marcas A, B, C… y el carro en miniatura en cada una.
+export function htmlGraficasTecnicas(p = '', { valores = 'Ahora', ejes = true, rueda = true, enG = false, marcas = false } = {}) {
+  return `<div class="tecnico-graficas${marcas ? ' con-marcas' : ''}">
   ${rueda ? grafica(p, 'rueda', `${NOMBRE_RUEDA} (vueltas)`, `<p class="grafica-nota">${POSICION_RUEDA_SENSOR} · franja inferior: <span class="muestra muestra-gira"></span> girando · <span class="muestra muestra-quieta"></span> detenida</p>`,
     'wheel', 'Vueltas acumuladas de la rueda con sensor', valores) : ''}
-  ${ejes ? grafica(p, 'ejes', `Aceleración por eje (${enG ? 'g' : 'm/s²'})`, `<div class="leyenda" aria-hidden="true"><span><i style="color:var(--serie-x)"></i>X adelante</span><span><i style="color:var(--serie-y)"></i>Y izquierda</span><span><i style="color:var(--serie-z)"></i>Z arriba</span></div>`,
-    'accel', 'Aceleración por eje X, Y y Z', valores) : ''}
+  ${ejes ? grafica(p, 'ejes', marcas ? 'Fuerza por eje (g)' : `Aceleración por eje (${enG ? 'g' : 'm/s²'})`, `<div class="leyenda" aria-hidden="true"><span><i style="color:var(--serie-x)"></i>X adelante</span><span><i style="color:var(--serie-y)"></i>Y izquierda</span><span><i style="color:var(--serie-z)"></i>Z arriba</span></div>`,
+    'accel', 'Aceleración por eje X, Y y Z', valores, marcas ? `<ol class="marcas-fuerza" id="${p}marcas-fuerza" hidden></ol>` : '') : ''}
   </div>`;
 }
 
@@ -151,8 +152,10 @@ const dibujo = {
       const nombre = NOMBRE_TIPO[e.tipo] ?? e.tipo, hora = horaDeGrafica(chart, e.t_deteccion_ms) ?? `${seg(e.t_deteccion_ms)} s`;
       t.banderas.push({ texto: nombre, hora, x: px });
       const lx = Math.round(px) + .5;
-      ctx.strokeStyle = texto; ctx.lineWidth = 1; ctx.globalAlpha = .9;
-      ctx.beginPath(); ctx.moveTo(lx, a.top); ctx.lineTo(lx, a.bottom); ctx.stroke(); ctx.globalAlpha = 1;
+      if (!t.marcas?.length) {   // con marcas A, B, C… la línea la dibujan ellas
+        ctx.strokeStyle = texto; ctx.lineWidth = 1; ctx.globalAlpha = .9;
+        ctx.beginPath(); ctx.moveTo(lx, a.top); ctx.lineTo(lx, a.bottom); ctx.stroke(); ctx.globalAlpha = 1;
+      }
       // Punto sobre la serie con mayor |valor| en ese instante.
       let vy = null;
       chart.data.datasets.forEach((d, i) => {
@@ -185,6 +188,40 @@ const dibujo = {
         ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
         ctx.font = `600 ${tam}px ${FUENTE}`; ctx.fillStyle = texto; ctx.fillText(nombre, bx + 8, by + alto / 2 + .5);
         ctx.font = `500 ${tam}px ${MONO}`; ctx.fillStyle = css('--texto-2'); ctx.fillText(hora, bx + 8 + wTipo + 6, by + alto / 2 + .5);
+      }
+    }
+    // Marcas A, B, C… (gráfica de fuerza por eje): línea vertical del color del evento, letra en un círculo
+    // sobre el área y, encima, el carro en miniatura con la postura de ese instante. Si dos carros no caben
+    // uno junto al otro, se dibuja solo la letra (al acercar el zoom aparecen todos).
+    // t.marcasDibujadas queda con lo dibujado (clic sobre una marca y pruebas del navegador).
+    t.marcasDibujadas = [];
+    if (t.marcas?.length) {
+      const r = grande ? 11 : 10, yLetra = a.top - r - 6;
+      let finCarro = -Infinity;
+      const visibles = t.marcas.map(m => ({ m, px: x.getPixelForValue(m.t) })).filter(v => v.px >= a.left - 1 && v.px <= a.right + 1).sort((p, q) => p.px - q.px);
+      for (const [i, { m, px }] of visibles.entries()) {
+        const [color, texto] = m.tipo ? coloresEvento(m.tipo) : [css('--texto-3'), css('--texto-2')];
+        const lx = Math.round(px) + .5;
+        ctx.strokeStyle = texto; ctx.lineWidth = 1; ctx.globalAlpha = .85;
+        ctx.beginPath(); ctx.moveTo(lx, yLetra + r); ctx.lineTo(lx, a.bottom); ctx.stroke(); ctx.globalAlpha = 1;
+        // Si la marca siguiente está cerca, el carro se achica (hasta 55 %); los bordes de su recuadro son
+        // transparentes, así que pueden tocarse un poco. Más juntas que eso: solo la letra.
+        const img = m.imagen;
+        let conCarro = false;
+        if (img) {
+          const siguiente = visibles[i + 1]?.px ?? Infinity;
+          const escala = Math.min(1, (siguiente - px + 14) / 104, (px - finCarro + 14) * 2 / 104);
+          if (escala >= .55) {
+            const alto = 66 * escala, ancho = img.width / (img.height / alto);
+            ctx.drawImage(img, px - ancho / 2, yLetra - r - 2 - alto, ancho, alto);
+            finCarro = px + ancho / 2; conCarro = true;
+          }
+        }
+        ctx.beginPath(); ctx.arc(px, yLetra, r, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
+        ctx.lineWidth = 1.5; ctx.strokeStyle = color; ctx.stroke();
+        ctx.fillStyle = texto; ctx.font = `700 ${m.letra.length > 1 ? r - 1 : r + 2}px ${FUENTE}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(m.letra, px, yLetra + .5);
+        t.marcasDibujadas.push({ letra: m.letra, x: px, y: yLetra, r, conCarro, id: m.id });
       }
     }
     if (t.seleccion) {
@@ -230,7 +267,7 @@ function degradado(color) {
   };
 }
 
-function crear(canvas, datasets, { etiquetas = false, unidad = '', decimales = 1, yMin, onClick, relleno = true } = {}) {
+function crear(canvas, datasets, { etiquetas = false, unidad = '', decimales = 1, yMin, onClick, relleno = true, arriba = 6 } = {}) {
   const tinta3 = css('--texto-3'), rejilla = css('--rejilla', '#E8ECF3');
   const chart = new Chart(canvas, {
     type: 'line',
@@ -240,7 +277,7 @@ function crear(canvas, datasets, { etiquetas = false, unidad = '', decimales = 1
     plugins: [dibujo],
     options: {
       responsive: true, maintainAspectRatio: false, animation: false, parsing: false, normalized: true,
-      layout: { padding: { right: etiquetas ? 112 : 12, top: 6, left: 2 } },
+      layout: { padding: { right: etiquetas ? 112 : 12, top: arriba, left: 2 } },
       interaction: { mode: 'index', axis: 'x', intersect: false },
       onClick,
       plugins: {
@@ -276,8 +313,10 @@ function crear(canvas, datasets, { etiquetas = false, unidad = '', decimales = 1
   return chart;
 }
 
-// ejesEnG: la gráfica de ejes X/Y/Z en g (Detalle de sesión). En el resto queda en m/s².
-export function crearGraficas(p = '', { onClick, ejesEnG = false } = {}) {
+// ejesEnG: la gráfica de ejes X/Y/Z en g (Detalle de sesión y Explicar). En el resto queda en m/s².
+// marcas: deja sitio arriba de la gráfica de ejes para las letras A, B, C… y los carros en miniatura.
+export const ALTO_MARCAS = 104;
+export function crearGraficas(p = '', { onClick, ejesEnG = false, marcas = false } = {}) {
   const $ = id => document.getElementById(p + id);
   const roll = css('--serie-roll'), pitch = css('--serie-pitch'), total = css('--serie-total'), rueda = css('--serie-rueda');
   const g = {
@@ -292,8 +331,9 @@ export function crearGraficas(p = '', { onClick, ejesEnG = false } = {}) {
       { label: 'X adelante', $corto: 'X', borderColor: css('--serie-x'), borderWidth: 2, $ancho: 2 },
       { label: 'Y izquierda', $corto: 'Y', borderColor: css('--serie-y'), borderWidth: 2, $ancho: 2 },
       { label: 'Z arriba', $corto: 'Z', borderColor: css('--serie-z'), $colorTexto: css('--serie-z-texto'), borderWidth: 2, $ancho: 2 }
-    ], { etiquetas: true, unidad: ejesEnG ? ' g' : '', decimales: ejesEnG ? 2 : 1, onClick, relleno: false }) : null
+    ], { etiquetas: true, unidad: ejesEnG ? ' g' : '', decimales: ejesEnG ? 2 : 1, onClick, relleno: false, arriba: marcas ? ALTO_MARCAS : 6 }) : null
   };
+  if (g.accel && ejesEnG) g.accel.options.scales.y.ticks.callback = v => `${v.toLocaleString('es-EC', { maximumFractionDigits: 1 })} g`;
   g.todas = [g.angles, g.magnitude, g.wheel, g.accel].filter(Boolean);
   g.destroy = () => g.todas.forEach(c => c.destroy());
   // Las fuentes locales pueden terminar de cargar después del primer dibujo.
@@ -325,7 +365,8 @@ const extremos = (lista, f) => lista.reduce(([lo, hi], m) => { const v = f(m); r
 // reducidas = true: las mediciones ya vienen reducidas (Detalle de sesión, con m.corte y vueltas_acum).
 // Si no, y son más de MAX_PUNTOS, se reducen aquí (mín./máx. por cubo, conservando las detecciones).
 // reloj: { ultima_recepcion_ms, t_ultima_medicion_ms } para mostrar horas (eje, rótulos, tooltip).
-export function actualizarGraficas(g, { mediciones, eventos = [], desde, hasta, cursor = null, umbralGolpe = CONSTANTES_INO.UMBRAL_GOLPE_MS2, reducidas = false, reloj = null }) {
+// marcas: [{t, letra, tipo?, imagen?, id?}] para la gráfica de fuerza por eje (si se creó con marcas).
+export function actualizarGraficas(g, { mediciones, eventos = [], desde, hasta, cursor = null, umbralGolpe = CONSTANTES_INO.UMBRAL_GOLPE_MS2, reducidas = false, reloj = null, marcas = null }) {
   const todas = mediciones;
   const total = x => Math.hypot(x.ax, x.ay, x.az);
   let m = todas, marcados = reducidas;
@@ -383,7 +424,24 @@ export function actualizarGraficas(g, { mediciones, eventos = [], desde, hasta, 
     g.wheel.$tel.franja = franja; g.wheel.options.scales.y.max = Math.max(1, Math.ceil(maxV * 1.2));
     g.wheel.canvas.setAttribute('aria-label', `Vueltas acumuladas de la ${NOMBRE_RUEDA.toLowerCase()}: ${num(maxV)} al final del tramo.`);
   }
-  if (g.accel) g.accel.canvas.setAttribute('aria-label', `Aceleración por eje X (adelante), Y (izquierda) y Z (arriba) en ${g.ejesEnG ? 'g' : 'm/s²'}.`);
+  if (g.accel) {
+    g.accel.canvas.setAttribute('aria-label', `Aceleración por eje X (adelante), Y (izquierda) y Z (arriba) en ${g.ejesEnG ? 'g' : 'm/s²'}.${marcas?.length ? ` Marcas ${marcas.map(q => q.letra).join(', ')} en los eventos.` : ''}`);
+    if (g.ejesEnG) {
+      // Eje en g: al menos de −1,5 a 1,5 g (reposo: Z ≈ 1 g); se amplía en medios g si hay más.
+      let lo = 0, hi = 0;
+      for (const x of todas) { lo = Math.min(lo, x.ax, x.ay, x.az); hi = Math.max(hi, x.ax, x.ay, x.az); }
+      const y = g.accel.options.scales.y;
+      y.min = Math.min(-1.5, Math.floor(lo / GRAVEDAD * 2) / 2); y.max = Math.max(1.5, Math.ceil(hi / GRAVEDAD * 2) / 2);
+      y.ticks.stepSize = y.max - y.min > 6 ? 1 : .5; y.ticks.maxTicksLimit = 14;
+      const gris = css('--con-desconectada', '#98A2B3');
+      g.accel.$tel.lineasY = [
+        { valor: 1, color: gris, trazo: [2, 3] },   // el eje ya rotula «1 g» y «−1 g»
+        { valor: 0, color: css('--borde-fuerte', '#D0D5DD'), trazo: [] },
+        { valor: -1, color: gris, trazo: [2, 3] }
+      ];
+    }
+    if (marcas) g.accel.$tel.marcas = marcas;
+  }
   for (const [clave, chart] of Object.entries({ angles: g.angles, magnitude: g.magnitude, wheel: g.wheel, accel: g.accel })) {
     if (!chart) continue;
     chart.data.datasets.forEach((d, i) => { d.data = datos[clave][i]; d.pointRadius = m.length < 10 ? 3 : 0; d.pointBackgroundColor = d.borderColor; });

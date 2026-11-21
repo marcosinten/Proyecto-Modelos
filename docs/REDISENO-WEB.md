@@ -43,6 +43,28 @@ Las fuentes IBM Plex Sans/Mono y los iconos se instalan con npm (`@fontsource/ib
   valores tal como llegaron.
 - **Estabilizar bajo 9°.** No existía, así que no se agregó. En el 3D queda reservado `#escena-extra`.
 
+## Fuerza por eje (g) con marcas A, B, C…
+
+Es la gráfica de las figuras del artículo de referencia (`grafica_3d_o_2d.png`,
+`referencia_grafica3d_o2d_2.png`): fuerza en X, Y y Z en g contra el tiempo, con letras sobre los instantes
+importantes y un carro en miniatura con la postura medida en cada uno.
+
+- **Detalle de sesión.** Tarjeta propia debajo de las gráficas (antes era la pestaña «Ejes (g)»). Hay una
+  letra por evento, en el mismo orden que la lista de eventos, que muestra la misma letra. Sigue el rango y
+  el zoom de las gráficas de arriba. Pulsar una letra o su carro elige ese evento.
+- **Explicar evento.** Cuatro marcas: A, primera lectura de la ventana; B, detección; C, pico (mayor
+  aceleración total en un golpe, mayor inclinación en los demás); D, última lectura. Dos instantes a menos
+  de 40 ms comparten letra. Debajo hay una lista con la hora, los ángulos y X/Y/Z en g de cada marca.
+- **Carro en miniatura** (`web/src/minicarro.js`). Se dibuja con un renderizador WebGL temporal que se
+  libera al terminar, con la misma convención de ejes y orden de rotación que `car.js`. La vista es de tres
+  cuartos desde adelante y el encuadre se ajusta a cada postura. Sin WebGL se dibuja una vista frontal
+  girada por el roll. Si dos marcas están muy juntas, el carro se achica hasta el 55 %. Si ni así cabe,
+  queda solo la letra; al acercar el zoom aparece.
+- **Eje en g.** Va de −1,5 a 1,5 g como mínimo y se amplía en medios g. Tiene líneas en 1 g, 0 g y −1 g.
+  En reposo, Z marca 1 g.
+
+Capturas en `evidencias/rediseno-web/fuerza-por-eje/`.
+
 ## Pruebas
 
 `npm test`, `npm run test:monitor`, `node scripts/check-viewer.mjs` y `node scripts/check-scene.mjs`.

@@ -330,6 +330,18 @@ details[open] > summary::before { transform: rotate(45deg); }
 .evento-hora { font-size: 13px; color: var(--texto-2); }
 .evento-frase { font-size: 13.5px; color: var(--texto); line-height: 1.45; }
 .sesion-postura { margin-bottom: var(--e4); }
+/* Fuerza por eje (g) con marcas A, B, C… y carro en miniatura (figuras del artículo de referencia). */
+.sesion-fuerza { margin-bottom: var(--e4); }
+.sesion-fuerza .tecnico-graficas, .tecnico-graficas.con-marcas { grid-template-columns: minmax(0, 1fr); margin-bottom: var(--e3); }
+.con-marcas .grafica-lienzo { flex: none; height: 360px; }
+.letra-marca { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 4px; border-radius: 50%; border: 1.5px solid var(--ev-inclinacion);
+  background: var(--superficie); color: var(--ev-inclinacion-texto); font-size: 12px; font-weight: 700; flex: none; font-variant-numeric: tabular-nums; }
+.letra-marca:not([data-tipo]) { border-color: var(--texto-3); color: var(--texto-2); }
+.letra-marca[data-tipo="golpe"] { border-color: var(--ev-golpe); color: var(--ev-golpe-texto); }
+.letra-marca[data-tipo="vuelco"] { border-color: var(--ev-vuelco); color: var(--ev-vuelco-texto); }
+.marcas-fuerza { list-style: none; margin: var(--e3) 0 0; padding: 0; display: grid; gap: var(--e2); font-size: 13px; color: var(--texto-2); }
+.marcas-fuerza li { display: flex; gap: var(--e2); align-items: flex-start; }
+.marcas-fuerza strong { color: var(--texto); font-weight: 600; }
 .postura-controles { display: flex; align-items: center; gap: var(--e2); flex-wrap: wrap; }
 .postura { position: relative; height: 460px; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; background: #fff; display: grid; place-items: center; }
 .postura-lienzo { position: absolute; inset: 0; }
