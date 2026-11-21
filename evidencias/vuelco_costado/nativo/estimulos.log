@@ -1,18 +1,56 @@
   2200.678 ms  wait-serial 'CAL OK' OK
   2200.678 ms  wait-serial 'SESION id=' OK
-  2220.222 ms  WIFI desconectado
-  2320.222 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
+  2220.402 ms  WIFI desconectado
+  2320.402 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
+  3200.678 ms  set-control imu1.rotationX = 1500
+  3200.678 ms  set-control imu1.rotationY = -0
   3200.678 ms  set-control imu1.accelX = 0
-  3200.678 ms  set-control imu1.accelY = 1
-  3200.678 ms  set-control imu1.accelZ = 0
+  3200.678 ms  set-control imu1.accelY = 0.2588
+  3200.678 ms  set-control imu1.accelZ = 0.9659
+  3210.678 ms  set-control imu1.accelX = 0
+  3210.678 ms  set-control imu1.accelY = 0.5
+  3210.678 ms  set-control imu1.accelZ = 0.866
+  3220.678 ms  set-control imu1.accelX = 0
+  3220.678 ms  set-control imu1.accelY = 0.7071
+  3220.678 ms  set-control imu1.accelZ = 0.7071
+  3230.678 ms  set-control imu1.accelX = 0
+  3230.678 ms  set-control imu1.accelY = 0.866
+  3230.678 ms  set-control imu1.accelZ = 0.5
+  3240.678 ms  set-control imu1.accelX = 0
+  3240.678 ms  set-control imu1.accelY = 0.9659
+  3240.678 ms  set-control imu1.accelZ = 0.2588
+  3250.678 ms  set-control imu1.accelX = 0
+  3250.678 ms  set-control imu1.accelY = 1
+  3250.678 ms  set-control imu1.accelZ = 0
+  3260.678 ms  set-control imu1.rotationX = 0
+  3260.678 ms  set-control imu1.rotationY = 0
   3500.678 ms  expect-pin led1:A = 1 -> leído 1 OK
-  6820.222 ms  HTTP POST #1 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
+  6820.407 ms  HTTP POST #1 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
   8700.678 ms  set-control btn_rearme.pressed = 1
   8852.578 ms  set-control btn_rearme.pressed = 0
   9004.478 ms  expect-pin led1:A = 0 -> leído 0 OK
+ 10204.478 ms  set-control imu1.rotationX = -1500
+ 10204.478 ms  set-control imu1.rotationY = -0
  10204.478 ms  set-control imu1.accelX = 0
- 10204.478 ms  set-control imu1.accelY = 0
- 10204.478 ms  set-control imu1.accelZ = 1
- 10320.222 ms  HTTP POST #2 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
+ 10204.478 ms  set-control imu1.accelY = 0.9659
+ 10204.478 ms  set-control imu1.accelZ = 0.2588
+ 10214.478 ms  set-control imu1.accelX = 0
+ 10214.478 ms  set-control imu1.accelY = 0.866
+ 10214.478 ms  set-control imu1.accelZ = 0.5
+ 10224.478 ms  set-control imu1.accelX = 0
+ 10224.478 ms  set-control imu1.accelY = 0.7071
+ 10224.478 ms  set-control imu1.accelZ = 0.7071
+ 10234.478 ms  set-control imu1.accelX = 0
+ 10234.478 ms  set-control imu1.accelY = 0.5
+ 10234.478 ms  set-control imu1.accelZ = 0.866
+ 10244.478 ms  set-control imu1.accelX = 0
+ 10244.478 ms  set-control imu1.accelY = 0.2588
+ 10244.478 ms  set-control imu1.accelZ = 0.9659
+ 10254.478 ms  set-control imu1.accelX = 0
+ 10254.478 ms  set-control imu1.accelY = 0
+ 10254.478 ms  set-control imu1.accelZ = 1
+ 10264.478 ms  set-control imu1.rotationX = 0
+ 10264.478 ms  set-control imu1.rotationY = 0
+ 10320.407 ms  HTTP POST #2 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
  12704.478 ms  MARCA fin vuelco_costado
  12704.478 ms  FIN escenario fallos=0

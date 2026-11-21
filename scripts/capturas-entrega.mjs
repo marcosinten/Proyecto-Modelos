@@ -147,6 +147,24 @@ try {
   await pause(1200);
   await tab.screenshot({path: join(salida, 'en-vivo-estado-detector.png'), clip: {x: 0, y: 0, width: 1440, height: 900}});
 
+  // Filtro complementario: Simulación de frenada con el ángulo real (discontinuo) y el estimado.
+  await tab.goto(url + '#simulacion');
+  await tab.waitForSelector('#simulation-form', {timeout: 15000});
+  await tab.select('#simulation-form select[name="type"]', 'frenada');
+  await tab.click('#simulation-form button.primary');
+  await tab.waitForFunction(() => !document.querySelector('.leyenda-real')?.hidden, {timeout: 10000});
+  assert.match(await tab.$eval('#result', e => e.textContent), /Sin incidente/);
+  await pause(800);
+  assert.doesNotMatch(await tab.$eval('#ultimo-evento', e => e.textContent), /Vuelco/, 'Último evento corresponde a la corrida nueva');
+  await (await tab.$('.graficas-lista')).screenshot({path: join(salida, 'simulacion-frenada-real-y-estimado.png')});
+  await tab.goto(url + '#resultados');
+  await tab.waitForSelector('#t-frenada', {timeout: 15000});
+  const frenada = await tab.$eval('#t-frenada', h => h.closest('section').textContent);
+  assert.match(frenada, /Solo acelerómetro/); assert.match(frenada, /firmware/);
+  await (await tab.$('#t-frenada')).screenshot({path: join(salida, 'resultados-tabla-frenada-titulo.png')});
+  const seccion = await tab.$('section:has(#t-frenada)');
+  await seccion.screenshot({path: join(salida, 'resultados-tabla-frenada.png')});
+
   assert.deepEqual(errores, [], 'la página no debe lanzar errores');
   console.log(`Sin errores de página. Capturas en ${salida}`);
 } finally {

@@ -188,7 +188,8 @@ export function refreshData() {
  if (app.graficas) {
   const eventos = app.current.eventos ?? (app.current.evento ? [app.current.evento] : []);
   const r = actualizarGraficas(app.graficas, {mediciones: app.current.mediciones, eventos, desde: start(), hasta: end(),
-    cursor: app.liveActive ? null : app.position, umbralGolpe: app.current.parametros?.aceleracion, reloj: app.liveActive ? app.reloj : null});
+    cursor: app.liveActive ? null : app.position, umbralGolpe: app.current.parametros?.aceleracion, reloj: app.liveActive ? app.reloj : null,
+    reales: app.current.angulosReales ?? null});
   const max = app.current.mediciones.reduce((v,m)=>Math.max(v,Math.abs(m.roll_deg)),0);
   $('#graph-summary').textContent=app.current.mediciones.length?`Inclinación lateral máxima de ${max.toLocaleString('es-EC',{maximumFractionDigits:1})}° ${app.liveActive?'en la ventana':'en estas mediciones'}.`:'Sin mediciones todavía.';
   app.maxTotal = r.maxTotal;

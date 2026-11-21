@@ -47,7 +47,7 @@ const grafica = (p, id, titulo, sub, canvas, aria, valores, extra = '') => `
 // Gráficas principales: inclinación y aceleración total.
 export function htmlGraficas(p = '', { valores = 'Ahora' } = {}) {
   return `<div class="graficas-lista">
-  ${grafica(p, 'inclinacion', 'Inclinación (°)', `<div class="leyenda" aria-hidden="true"><span><i style="color:var(--serie-roll)"></i>Lateral (roll)</span><span><i style="color:var(--serie-pitch)"></i>Frontal (pitch)</span></div>`,
+  ${grafica(p, 'inclinacion', 'Inclinación (°)', `<div class="leyenda" aria-hidden="true"><span><i style="color:var(--serie-roll)"></i>Lateral (roll)</span><span><i style="color:var(--serie-pitch)"></i>Frontal (pitch)</span><span class="leyenda-real" hidden><i class="discontinua"></i>Ángulo real del modelo; la línea continua es el estimado (filtro complementario, como el ESP32)</span></div>`,
     'angles', 'Inclinación lateral y frontal en grados', valores, `<p class="sr-only" id="${p}graph-summary"></p>`)}
   ${grafica(p, 'golpe', 'Aceleración total (m/s²)', '', 'magnitude', 'Aceleración total en metros por segundo al cuadrado, con el umbral de golpe y la gravedad', valores)}
   </div>`;
@@ -323,7 +323,10 @@ export function crearGraficas(p = '', { onClick, ejesEnG = false, marcas = false
     ejesEnG,
     angles: $('angles') && crear($('angles'), [
       { label: 'Lateral (roll)', $corto: 'Lateral', borderColor: roll },
-      { label: 'Frontal (pitch)', $corto: 'Frontal', borderColor: pitch, $colorTexto: css('--serie-pitch-texto') }
+      { label: 'Frontal (pitch)', $corto: 'Frontal', borderColor: pitch, $colorTexto: css('--serie-pitch-texto') },
+      // Solo en Simulación: ángulo real del modelo (discontinuo) junto al estimado que usa el detector.
+      { label: 'Lateral real (modelo)', $corto: 'Lat. real', borderColor: roll, borderDash: [6, 4], borderWidth: 1.5, $ancho: 1.5, fill: false, backgroundColor: roll },
+      { label: 'Frontal real (modelo)', $corto: 'Fron. real', borderColor: pitch, borderDash: [6, 4], borderWidth: 1.5, $ancho: 1.5, fill: false, backgroundColor: pitch, $colorTexto: css('--serie-pitch-texto') }
     ], { etiquetas: true, unidad: '°', onClick }),
     magnitude: $('magnitude') && crear($('magnitude'), [{ label: 'Aceleración total', $corto: 'Total', borderColor: total }], { etiquetas: true, unidad: ' m/s²', yMin: 0, onClick }),
     wheel: $('wheel') && crear($('wheel'), [{ label: 'Vueltas', borderColor: rueda }], { etiquetas: true, unidad: '', yMin: 0, onClick }),
@@ -366,7 +369,8 @@ const extremos = (lista, f) => lista.reduce(([lo, hi], m) => { const v = f(m); r
 // Si no, y son más de MAX_PUNTOS, se reducen aquí (mín./máx. por cubo, conservando las detecciones).
 // reloj: { ultima_recepcion_ms, t_ultima_medicion_ms } para mostrar horas (eje, rótulos, tooltip).
 // marcas: [{t, letra, tipo?, imagen?, id?}] para la gráfica de fuerza por eje (si se creó con marcas).
-export function actualizarGraficas(g, { mediciones, eventos = [], desde, hasta, cursor = null, umbralGolpe = CONSTANTES_INO.UMBRAL_GOLPE_MS2, reducidas = false, reloj = null, marcas = null }) {
+// reales: [{t_ms, roll_deg, pitch_deg}] con el ángulo real del modelo (solo corridas de Simulación).
+export function actualizarGraficas(g, { mediciones, eventos = [], desde, hasta, cursor = null, umbralGolpe = CONSTANTES_INO.UMBRAL_GOLPE_MS2, reducidas = false, reloj = null, marcas = null, reales = null }) {
   const todas = mediciones;
   const total = x => Math.hypot(x.ax, x.ay, x.az);
   let m = todas, marcados = reducidas;
@@ -377,7 +381,8 @@ export function actualizarGraficas(g, { mediciones, eventos = [], desde, hasta, 
   }
   const factor = g.ejesEnG ? 1 / GRAVEDAD : 1;
   const datos = {
-    angles: [serie(m, x => x.roll_deg, marcados), serie(m, x => x.pitch_deg, marcados)],
+    angles: [serie(m, x => x.roll_deg, marcados), serie(m, x => x.pitch_deg, marcados),
+      reales ? serie(reales, x => x.roll_deg) : [], reales ? serie(reales, x => x.pitch_deg) : []],
     magnitude: [serie(m, total, marcados)],
     // vueltas_acum (si viene) se calculó con todas las muestras antes de reducir: el total no depende del zoom.
     wheel: [(() => { const v = m[0]?.vueltas_acum != null ? m.map(x => x.vueltas_acum) : vueltasAcumuladas(m); return serie(m.map((x, i) => ({ ...x, v: v[i] })), x => x.v, marcados); })()],
@@ -389,6 +394,8 @@ export function actualizarGraficas(g, { mediciones, eventos = [], desde, hasta, 
   const vuelco = CONSTANTES_INO.UMBRAL_VUELCO_DEG, incl = CONSTANTES_INO.UMBRAL_INCLINACION_DEG;
   const lim = maxAng >= vuelco ? 180 : maxAng > 45 ? 90 : 45;
   if (g.angles) {
+    const leyendaReal = g.angles.canvas.closest('.graficas-lista, .grafica, section')?.querySelector('.leyenda-real');
+    if (leyendaReal) leyendaReal.hidden = !reales;
     const y = g.angles.options.scales.y;
     y.min = -lim; y.max = lim; y.ticks.stepSize = lim === 45 ? 15 : lim === 90 ? 30 : 45;
     g.angles.$tel.bandas = [{ desde: -ZONA_NORMAL_DEG, hasta: ZONA_NORMAL_DEG, color: css('--zona-relleno', 'rgba(18,183,106,.08)'), borde: css('--zona-linea', 'rgba(18,183,106,.6)'), texto: 'Zona normal', colorTexto: css('--est-normal') }];

@@ -1,35 +1,35 @@
   2200.678 ms  wait-serial 'CAL OK' OK
   2200.678 ms  wait-serial 'SESION id=' OK
-  2220.222 ms  WIFI desconectado
-  2320.222 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
-  3835.222 ms  HTTP POST #1 http://host.wokwi.internal:3000/api/v1/sesiones -> 201
-  3870.222 ms  HTTP POST #2 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
-  3905.222 ms  HTTP POST #3 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
-  4400.222 ms  HTTP POST #4 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
-  4895.222 ms  HTTP POST #5 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
+  2220.402 ms  WIFI desconectado
+  2320.402 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
+  3835.402 ms  HTTP POST #1 http://host.wokwi.internal:3000/api/v1/sesiones -> 201
+  3870.402 ms  HTTP POST #2 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
+  3905.402 ms  HTTP POST #3 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
+  4400.402 ms  HTTP POST #4 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
+  4895.402 ms  HTTP POST #5 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
   5200.678 ms  api falsa reiniciar
-  5410.222 ms  HTTP POST #6 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 404
-  5445.222 ms  HTTP POST #7 http://host.wokwi.internal:3000/api/v1/sesiones -> 201
-  5480.222 ms  HTTP POST #8 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
-  5895.222 ms  HTTP POST #9 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
-  6410.222 ms  HTTP POST #10 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
-  6905.222 ms  HTTP POST #11 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
+  5410.402 ms  HTTP POST #6 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 404
+  5445.402 ms  HTTP POST #7 http://host.wokwi.internal:3000/api/v1/sesiones -> 201
+  5480.402 ms  HTTP POST #8 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
+  5895.402 ms  HTTP POST #9 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
+  6410.402 ms  HTTP POST #10 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
+  6905.402 ms  HTTP POST #11 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
   7200.678 ms  set-control imu1.accelX = 2.5
   7200.678 ms  set-control imu1.accelY = 0
   7200.678 ms  set-control imu1.accelZ = 1
-  7400.222 ms  HTTP POST #12 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
+  7400.402 ms  HTTP POST #12 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
   7500.678 ms  set-control imu1.accelX = 0
   7500.678 ms  set-control imu1.accelY = 0
   7500.678 ms  set-control imu1.accelZ = 1
-  7895.222 ms  HTTP POST #13 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
-  8410.222 ms  HTTP POST #14 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
-  8445.222 ms  HTTP POST #15 http://host.wokwi.internal:3000/api/v1/eventos -> 201
+  7895.402 ms  HTTP POST #13 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
+  8410.402 ms  HTTP POST #14 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
+  8445.402 ms  HTTP POST #15 http://host.wokwi.internal:3000/api/v1/eventos -> 201
   8700.678 ms  set-control btn_rearme.pressed = 1
   8852.578 ms  set-control btn_rearme.pressed = 0
-  8900.222 ms  HTTP POST #16 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
+  8900.402 ms  HTTP POST #16 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
   9204.478 ms  wait-serial '/eventos evento' OK
-  9395.222 ms  HTTP POST #17 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
-  9910.222 ms  HTTP POST #18 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
- 10405.222 ms  HTTP POST #19 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
- 10900.222 ms  HTTP POST #20 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
+  9395.402 ms  HTTP POST #17 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
+  9910.402 ms  HTTP POST #18 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
+ 10405.402 ms  HTTP POST #19 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
+ 10900.402 ms  HTTP POST #20 http://host.wokwi.internal:3000/api/v1/sesiones/RC-ABCDEF-77AE0BF3/mediciones -> 201
  11204.478 ms  FIN escenario fallos=0

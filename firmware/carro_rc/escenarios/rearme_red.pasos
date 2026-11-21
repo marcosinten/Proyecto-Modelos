@@ -4,16 +4,74 @@ wait SESION id=
 delay 3000.0
 write wifi off\n
 delay 1000
+set imu1 rotationX 1357.143
+set imu1 rotationY -0.0
+set imu1 accelX 0.0
+set imu1 accelY 0.2347
+set imu1 accelZ 0.9721
+delay 10
+set imu1 accelX 0.0
+set imu1 accelY 0.4562
+set imu1 accelZ 0.8899
+delay 10
+set imu1 accelX 0.0
+set imu1 accelY 0.6523
+set imu1 accelZ 0.758
+delay 10
+set imu1 accelX 0.0
+set imu1 accelY 0.8119
+set imu1 accelZ 0.5837
+delay 10
+set imu1 accelX 0.0
+set imu1 accelY 0.9262
+set imu1 accelZ 0.3769
+delay 10
+set imu1 accelX 0.0
+set imu1 accelY 0.9888
+set imu1 accelZ 0.149
+delay 10
 set imu1 accelX 0.0
 set imu1 accelY 0.9962
 set imu1 accelZ -0.0872
-delay 300
+delay 10
+set imu1 rotationX 0
+set imu1 rotationY 0
+delay 230
 expect led1 A 1
 delay 700
+set imu1 rotationX -1357.143
+set imu1 rotationY -0.0
+set imu1 accelX 0.0
+set imu1 accelY 0.9888
+set imu1 accelZ 0.149
+delay 10
+set imu1 accelX 0.0
+set imu1 accelY 0.9262
+set imu1 accelZ 0.3769
+delay 10
+set imu1 accelX 0.0
+set imu1 accelY 0.8119
+set imu1 accelZ 0.5837
+delay 10
+set imu1 accelX 0.0
+set imu1 accelY 0.6523
+set imu1 accelZ 0.758
+delay 10
+set imu1 accelX 0.0
+set imu1 accelY 0.4562
+set imu1 accelZ 0.8899
+delay 10
+set imu1 accelX 0.0
+set imu1 accelY 0.2347
+set imu1 accelZ 0.9721
+delay 10
 set imu1 accelX 0.0
 set imu1 accelY 0.0
 set imu1 accelZ 1.0
-delay 1000
+delay 10
+set imu1 rotationX 0
+set imu1 rotationY 0
+delay 930
 set btn_rearme pressed 1
 delay 200
 set btn_rearme pressed 0

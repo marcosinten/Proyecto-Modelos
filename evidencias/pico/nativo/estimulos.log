@@ -1,7 +1,7 @@
   2200.678 ms  wait-serial 'CAL OK' OK
   2200.678 ms  wait-serial 'SESION id=' OK
-  2220.222 ms  WIFI desconectado
-  2320.222 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
+  2220.402 ms  WIFI desconectado
+  2320.402 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
   3200.678 ms  set-control imu1.accelX = 3
   3200.678 ms  set-control imu1.accelY = 0
   3200.678 ms  set-control imu1.accelZ = 1

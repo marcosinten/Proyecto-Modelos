@@ -4,9 +4,12 @@ Salida por escenario:
   <nombre>.yaml  -> escenario de Wokwi (wokwi-cli --scenario)
   <nombre>.pasos -> mismos estímulos para el banco nativo (pruebas/nativo)
 
-Valores del MPU6050 en g, como los controles accelX/accelY/accelZ de Wokwi.
-Ángulos -> gravedad en ejes del vehículo:
+Valores del MPU6050 en g, como los controles accelX/accelY/accelZ de Wokwi, y giro en °/s
+(rotationX/rotationY). Ángulos -> gravedad en ejes del vehículo:
   ax = sin(pitch), ay = cos(pitch)·sin(roll), az = cos(pitch)·cos(roll)
+Un cambio de ángulo es un giro de duración finita: durante el giro el giroscopio marca la velocidad
+angular (rotationX = d(roll)/dt, rotationY = −d(pitch)/dt) y la gravedad cambia en pasos de 10 ms,
+como pasa con el carro real. El firmware estima el ángulo con un filtro complementario.
 Pulsos del Hall: el botón azul "hall_sim" pone GPIO32 en LOW como el A3144
 con imán delante (20 ms por imán). Rearme: botón verde "btn_rearme".
 
@@ -27,6 +30,7 @@ class Linea:
         self.eventos = []  # (t_ms, orden, paso)
         self.orden = 0
         self.inicio = [("wait", "CAL OK"), ("wait", "SESION id=")]
+        self.roll = self.pitch = 0.0  # orientación actual del carro (°)
 
     def en(self, t, *paso):
         self.orden += 1
@@ -37,9 +41,25 @@ class Linea:
         self.en(t, "set", "imu1", "accelY", round(y, 4))
         self.en(t, "set", "imu1", "accelZ", round(z, 4))
 
-    def angulos(self, t, roll, pitch=0.0):
+    def gravedad(self, t, roll, pitch):
         r, p = math.radians(roll), math.radians(pitch)
         self.imu(t, math.sin(p), math.cos(p) * math.sin(r), math.cos(p) * math.cos(r))
+
+    def angulos(self, t, roll, pitch=0.0, ms=None):
+        """Gira el carro desde la orientación actual hasta (roll, pitch) en `ms` milisegundos.
+        Por defecto, a unos 1500 °/s (dentro del rango de ±2000 °/s del giroscopio)."""
+        dr, dp = roll - self.roll, pitch - self.pitch
+        if ms is None:
+            ms = max(20, math.ceil(max(abs(dr), abs(dp)) / 1.5 / 10) * 10)
+        pasos = int(ms // 10)
+        self.en(t, "set", "imu1", "rotationX", round(dr / ms * 1000, 3))
+        self.en(t, "set", "imu1", "rotationY", round(-dp / ms * 1000, 3))
+        for k in range(1, pasos + 1):
+            f = k / pasos
+            self.gravedad(t + 10 * (k - 1), self.roll + dr * f, self.pitch + dp * f)
+        self.en(t + ms, "set", "imu1", "rotationX", 0)
+        self.en(t + ms, "set", "imu1", "rotationY", 0)
+        self.roll, self.pitch = roll, pitch
 
     def pulsos(self, t0, hz, segundos, ancho=20, rebote=None):
         """rebote=(sube_ms, baja_ms): tras el flanco de bajada, la salida sube y vuelve a bajar
@@ -133,10 +153,7 @@ def escenarios():
     for dt, gx in perfil:  # perfil escalonado del caso "frenada" de web/src/simulation.js (pico -7 m/s²)
         L.imu(4000 + dt, gx, 0, 1)
     ultimo = L.pulsos(6000, 1.5, 2)
-    # A -7 m/s² el ángulo aparente (≈ 36°) supera el umbral de inclinación: el firmware da una
-    # «inclinación aparente» y la alarma queda activa hasta el rearme. Se rearma antes de comprobar que
-    # las salidas quedan apagadas (sin rearme, el resultado dependía de la fase del parpadeo).
-    L.rearme(ultimo + 1000)
+    # Frenada sin incidente: el carro no gira (giroscopio en 0); solo cambia ax. Debe terminar SIN alarma.
     L.en(ultimo + 1500, "mark", "fin frenada")
     salidas_apagadas(L, ultimo + 1500)
     res.append(L)
@@ -169,9 +186,9 @@ def escenarios():
     res.append(L)
 
     L = Linea("vuelco_boca_abajo", "Boca abajo: az = -1 g (roll = 180°) durante 4 s; regreso; rearme.")
-    L.imu(1000, 0, 0, -1)
+    L.angulos(1000, 180)
     L.en(1300, "expect", "led1", "A", 1)
-    L.imu(5000, 0, 0, 1)
+    L.angulos(5000, 0)
     L.rearme(6000)
     L.en(6300, "expect", "led1", "A", 0)
     L.en(8000, "mark", "fin vuelco_boca_abajo")

@@ -100,11 +100,7 @@ delay 646.666
 set hall_sim pressed 1
 delay 20.0
 set hall_sim pressed 0
-delay 980.0
-set btn_rearme pressed 1
-delay 150.0
-set btn_rearme pressed 0
-delay 350.0
+delay 1480.0
 mark fin frenada
 expect led1 A 0
 expect esp D27 0

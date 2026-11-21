@@ -12,7 +12,12 @@ test('cinco escenarios, gravedad, parada, postura y detección coherentes',()=>{
   assert.equal(p.mediciones[0].rueda_rps,0);
   assert.equal(p.mediciones.at(-1).rueda_rps,0);
   assert.ok(p.mediciones.some(m=>m.rueda_rps>0));
-  if(type==='normal')assert(p.mediciones.every(m=>m.roll_deg===0&&m.pitch_deg===0&&Math.abs(m.az-9.81)<1e-9));
+  // Marcha normal: el carro no se inclina (ángulo real 0). El estimado, como el del firmware, ve unos grados
+  // aparentes por la aceleración del arranque, pero queda lejos del umbral de 10°.
+  if(type==='normal'){
+   assert(p.angulosReales.every(a=>a.roll_deg===0&&a.pitch_deg===0));
+   assert(p.mediciones.every(m=>m.roll_deg===0&&Math.abs(m.pitch_deg)<3&&Math.abs(m.az-9.81)<1e-9));
+  }
   if(type==='vuelco') {
    assert.equal(p.mediciones.at(-1).roll_deg,180);
    assert(Math.abs(p.mediciones.at(-1).az+9.81)<1e-9);
@@ -67,4 +72,21 @@ test('mismas reglas que el firmware: lecturas a 250 Hz y golpe con 2 lecturas',(
  // Inclinación y vuelco siguen necesitando 150 ms sostenidos.
  assert.equal(generarEscenario('inclinacion',16,30,150).evento.tipo,'inclinacion');
  assert.equal(generarEscenario('vuelco').evento.tipo,'vuelco');
+});
+
+test('frenada: solo acelerómetro da inclinación aparente; el filtro complementario del firmware no',()=>{
+ const frenada=alfa=>generarEscenario('frenada',16,10,150,8,{alfa});
+ const pitchMax=p=>Math.max(...p.mediciones.map(m=>Math.abs(m.pitch_deg)));
+ const soloAcel=frenada(0), filtro=frenada(0.999);
+ assert.equal(soloAcel.evento?.tipo,'inclinacion');
+ assert(pitchMax(soloAcel)>25,'el acelerómetro ve unos 26° aparentes');
+ assert.equal(filtro.evento,null);
+ assert(pitchMax(filtro)<5);
+ assert.equal(frenada(0.98).evento?.tipo,'inclinacion','α = 0,98 (τ ≈ 0,2 s) no alcanza');
+ // El ángulo real del modelo no cambia con α y es pequeño (cabeceo de 3,4°).
+ assert.deepEqual(soloAcel.angulosReales.map(a=>a.pitch_deg),filtro.angulosReales.map(a=>a.pitch_deg));
+ assert(Math.max(...filtro.angulosReales.map(a=>Math.abs(a.pitch_deg)))<4);
+ // Una inclinación real (con giro) se sigue detectando igual con el filtro.
+ assert.equal(generarEscenario('inclinacion',16,10,150,8).detecciones[0].latencia_deteccion_ms,152);
+ assert.throws(()=>generarEscenario('frenada',16,10,150,8,{alfa:1}));
 });

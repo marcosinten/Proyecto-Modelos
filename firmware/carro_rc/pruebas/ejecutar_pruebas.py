@@ -36,7 +36,9 @@ LECT_GOLPE = int(re.search(r"LECTURAS_GOLPE\s*=\s*(\d+)", _INO).group(1))
 
 # Sensor modelado con error de cero y ruido típicos del MPU6050 para que la
 # calibración se compruebe de verdad (Wokwi entrega valores exactos).
-SENSOR = ["--sesgo", "0.03,-0.02,0.04", "--ruido", "0.004"]
+# Giroscopio con error de cero de 1,5/−1,0/0,5 °/s (típico del MPU6050): sin restarlo, el filtro
+# complementario derivaría ≈ error·τ ≈ 6° con τ = 4 s. La calibración del arranque debe medirlo.
+SENSOR = ["--sesgo", "0.03,-0.02,0.04", "--ruido", "0.004", "--sesgo-giro", "1.5,-1.0,0.5"]
 CASOS = {
     "reposo": SENSOR, "marcha": SENSOR, "frenada": SENSOR, "golpe": SENSOR,
     # Exactamente en el umbral: verificar >=90° sin ruido. Los otros escenarios
@@ -46,14 +48,14 @@ CASOS = {
 }
 
 
-def compilar():
+def compilar(defines=(), nombre="banco"):
     build = NATIVO / "build"
     build.mkdir(exist_ok=True)
     shutil.copyfile(FW / "carro_rc.ino", build / "carro_rc.cpp")  # mismo código, sin cambios
-    salida = build / ("banco.exe" if os.name == "nt" else "banco")
+    salida = build / (f"{nombre}.exe" if os.name == "nt" else nombre)
     # Windows: zig c++ (pip install ziglang). Linux/macOS: g++ o clang++ del sistema.
     cxx = [sys.executable, "-m", "ziglang", "c++"] if os.name == "nt" else [shutil.which("g++") or shutil.which("clang++") or "c++", "-pthread"]
-    cmd = [*cxx, "-std=c++17", "-O1", "-DBANCO_NATIVO", f"-I{NATIVO / 'stubs'}",
+    cmd = [*cxx, "-std=c++17", "-O1", "-DBANCO_NATIVO", *[f"-D{d}" for d in defines], f"-I{NATIVO / 'stubs'}",
            "-include", str(NATIVO / "stubs" / "Arduino.h"), str(build / "carro_rc.cpp"),
            str(NATIVO / "sim.cpp"), "-o", str(salida)]
     r = subprocess.run(cmd, capture_output=True, text=True)
@@ -65,7 +67,7 @@ def compilar():
 
 # ---------------------------------------------------------------- lectura de registros
 RX = {
-    "tel": re.compile(r"^TEL n=(\d+) t=(\d+) ax=(\S+) ay=(\S+) az=(\S+) roll=(\S+) pitch=(\S+) rps=(\S+) k=(\d)"),
+    "tel": re.compile(r"^TEL n=(\d+) t=(\d+) ax=(\S+) ay=(\S+) az=(\S+) roll=(\S+) pitch=(\S+) rps=(\S+) k=(\d)(?: roll_acc=(\S+) pitch_acc=(\S+))?"),
     "est": re.compile(r"^EST t=(\d+) f_adq=(\S+) f_dec=(\S+) f_tel=(\S+) dt_min_us=(\d+) dt_max_us=(\d+) ciclo_max_us=(\d+)"),
     "alerta": re.compile(r"^ALERTA tipo=(\S+) t_det_ms=(\d+) t_det_us_arranque=(\d+) LED=\+(\S+) ms BUZZER=\+(\S+) ms SERVO\(orden\)=\+(\S+) ms"),
     "evento": re.compile(r"^EVENTO id=(\S+) tipo=(\S+) gravedad=(\S+) t_inicio=(\d+) t_det=(\d+) t_act=(\d+) t_fin=(\d+) cierre=(\S+)"),
@@ -76,6 +78,7 @@ RX = {
     "post": re.compile(r"^RED POST (\S+) (.+?) intento=(\d+) bytes=(\d+) hash=(\w+) resultado=(-?\d+) t_ms=(\d+)"),
     "sesion": re.compile(r"^SESION id=(\S+) origen=(\S+) t0_us_arranque=(\d+)"),
     "cal": re.compile(r"^CAL OK .*offsets=\((\S+), (\S+), (\S+)\)"),
+    "giro_cero": re.compile(r"^CAL OK .*giro_cero=\((\S+), (\S+), (\S+)\) dps"),
 }
 
 
@@ -90,7 +93,10 @@ def leer(serial):
     d["lineas"] = lineas
     d["t0"] = int(d["sesion"][0][2]) if d["sesion"] else 0
     d["tel"] = [dict(n=int(g[0]), t=int(g[1]), ax=float(g[2]), ay=float(g[3]), az=float(g[4]), roll=float(g[5]),
-                     pitch=float(g[6]), rps=float(g[7]), k=int(g[8])) for g in d["tel"]]
+                     pitch=float(g[6]), rps=float(g[7]), k=int(g[8]),
+                     # Ángulos solo con el acelerómetro (desde el filtro complementario); None en registros viejos.
+                     roll_acc=None if g[9] is None else float(g[9]), pitch_acc=None if g[10] is None else float(g[10]))
+                for g in d["tel"]]
     return d
 
 
@@ -231,6 +237,10 @@ def evaluar(caso, d, vcd, ev, extra):
         res.append(r("Reposo · ángulos", "roll y pitch en 0 ± 2°",
                      f"roll [{min(rs):+.2f}, {max(rs):+.2f}]°, pitch [{min(ps):+.2f}, {max(ps):+.2f}]°",
                      max(map(abs, rs + ps)) <= 2, ev))
+        gc = [float(v) for v in d["giro_cero"][0]] if d["giro_cero"] else None
+        res.append(r("Reposo · cero del giroscopio", "la calibración mide el error de cero 1,5/−1,0/0,5 °/s (± 0,1) y el ángulo estimado no deriva (roll y pitch en 0 ± 2°)",
+                     f"giro_cero medido {gc} °/s; roll [{min(rs):+.2f}, {max(rs):+.2f}]°, pitch [{min(ps):+.2f}, {max(ps):+.2f}]°",
+                     gc is not None and all(abs(a - b) <= .1 for a, b in zip(gc, (1.5, -1.0, 0.5))) and max(map(abs, rs + ps)) <= 2, ev))
         # Desde el inicio de la sesión (antes, el ESP32 arranca y los pines aún no están configurados)
         def tras_t0(senal):
             ult = [v for t, v in vcd[senal] if t <= d["t0"]][-1:]
@@ -261,14 +271,16 @@ def evaluar(caso, d, vcd, ev, extra):
         minax = min(m["ax"] for m in tel)
         maxn = max((m["ax"] ** 2 + m["ay"] ** 2 + m["az"] ** 2) ** .5 for m in tel)
         maxp = max(abs(m["pitch"]) for m in tel)
+        maxp_acc = max(abs(m["pitch_acc"]) for m in tel if m["pitch_acc"] is not None) if tel and tel[0]["pitch_acc"] is not None else None
         fases = {}
         for nombre, a, b in (("4/s", 2500, 4000), ("2/s", 5000, 6000), ("1,5/s", 6700, 7400)):
             v = [m["rps"] for m in tel if a <= m["t"] <= b]
             fases[nombre] = f"{min(v):.2f}–{max(v):.2f}" if v else "?"
-        res.append(r("Frenada · inclinación aparente", f"A -7 m/s² el ángulo acelerométrico supera {UMBRAL_INCL:g}°: inclinación, sin golpe ni vuelco",
-                     f"ax mínima {minax:.2f} m/s², |a| máx {maxn:.2f} m/s², |pitch| máx {maxp:.1f}°; "
-                     f"rueda_rps 4/s→{fases['4/s']}, 2/s→{fases['2/s']}, 1,5/s→{fases["1,5/s"]}; detecciones {len(dets)}",
-                     len(eventos)==1 and eventos[0][1]=="inclinacion" and maxn<16 and maxp>=UMBRAL_INCL and minax < -6.5, ev))
+        res.append(r("Frenada · sin falsa alarma", f"desaceleración hasta -7 m/s² sin giro: pitch estimado (filtro complementario) < {UMBRAL_INCL:g}°, sin detección ni alerta",
+                     f"ax mínima {minax:.2f} m/s², |a| máx {maxn:.2f} m/s², |pitch| máx estimado {maxp:.1f}° "
+                     f"(solo acelerómetro: {'?' if maxp_acc is None else f'{maxp_acc:.1f}'}°); "
+                     f"rueda_rps 4/s→{fases['4/s']}, 2/s→{fases['2/s']}, 1,5/s→{fases["1,5/s"]}; detecciones {len(dets)}, eventos {len(eventos)}",
+                     not eventos and not dets and maxn < 16 and maxp < UMBRAL_INCL and minax < -6.5, ev))
     elif caso in ("golpe", "golpe_corto", "inclinacion", "vuelco_costado", "vuelco_boca_abajo", "inclinacion_a_vuelco"):
         esperado = {"golpe": "golpe", "golpe_corto": "golpe", "inclinacion": "inclinacion"}.get(caso, "vuelco")
         grav = "media" if esperado == "inclinacion" else "alta"
@@ -451,6 +463,40 @@ def evaluar(caso, d, vcd, ev, extra):
     return res
 
 
+# ---------------------------------------------------------------- comparación del filtro
+def comparar_filtro():
+    """Frenada con el mismo firmware compilado con tres α: 0 (solo acelerómetro, como antes del filtro),
+    0,98 y 0,999 (valor del firmware). Escribe evidencias/frenada/comparacion_filtro.md (tabla para el informe)."""
+    filas = []
+    for alfa in ("0.0", "0.98", "0.999"):
+        banco = compilar([f"ALFA_COMPLEMENTARIO={alfa}f"], f"banco_alfa_{alfa.replace('.', '_')}")
+        dest = EVID / "frenada" / "comparacion" / f"alfa_{alfa}"
+        dest.mkdir(parents=True, exist_ok=True)
+        subprocess.run([str(banco), "--pasos", str(ESC / "frenada.pasos"), "--serial", str(dest / "serial.log"),
+                        "--diario", str(dest / "estimulos.log"), "--vcd", str(dest / "senales.vcd"), "--posts", str(dest / "posts.jsonl"),
+                        "--tmp", str(dest), "--limite-ms", "60000", *SENSOR], capture_output=True, text=True)
+        for f in ("post_cuerpo.json", "post_respuesta.json", "posts.jsonl", "senales.vcd"):
+            (dest / f).unlink(missing_ok=True)
+        d = leer(dest / "serial.log")
+        a = float(alfa)
+        tau = a * PERIODO / 1000 / (1 - a) if a < 1 else float("inf")
+        filas.append((alfa, tau, max(abs(m["pitch"]) for m in d["tel"]), max(abs(m["pitch_acc"]) for m in d["tel"]),
+                      len(d["det"]), d["det"][0][3] if d["det"] else None))
+    md = ["# Frenada: ángulo solo con acelerómetro frente a filtro complementario", "",
+          "Banco nativo, escenario `frenada` (ax hasta −0,714 g ≈ −7 m/s² durante ~1,3 s, sin giro), mismo firmware "
+          f"compilado con tres valores de `ALFA_COMPLEMENTARIO`. Umbral de inclinación {UMBRAL_INCL:g}°, permanencia {PERMANENCIA} ms, "
+          f"lecturas cada {PERIODO} ms. τ = α·dt/(1 − α).", "",
+          "| Cálculo del ángulo | α | τ (s) | Pitch máx. usado por el detector | Pitch máx. solo acelerómetro | ¿Alarma? | Detección |",
+          "|---|---:|---:|---:|---:|---|---:|"]
+    for alfa, tau, p, pa, n, t in filas:
+        nombre = "Solo acelerómetro" if float(alfa) == 0 else "Filtro complementario"
+        md.append(f"| {nombre} | {alfa} | {tau:.2f} | {p:.1f}° | {pa:.1f}° | {'sí (inclinación)' if n else 'no'} | {t + ' ms' if t else '—'} |")
+    md += ["", "Firmware entregado: α = 0,999. Registros en `evidencias/frenada/comparacion/`."]
+    (EVID / "frenada" / "comparacion_filtro.md").write_text("\n".join(md) + "\n", encoding="utf-8")
+    print("\n".join(md[4:]))
+    return filas
+
+
 # ---------------------------------------------------------------- principal
 def main():
     ap = argparse.ArgumentParser()
@@ -534,6 +580,13 @@ def main():
         todos.append(r("Reintentos sin API", "cada reintento envía el mismo JSON (mismo hash FNV-1a)",
                        "; ".join(f"{k} → {n} intentos, hashes {sorted(h)}" for k, (n, h) in list(rr.items())[:4]),
                        all(len(h) == 1 for _, h in rr.values()), "evidencias/*/nativo/serial.log (RED POST)"))
+    if not a.solo or "frenada" in a.solo:
+        filas = comparar_filtro()
+        sin_alarma_999 = [f for f in filas if f[0] == "0.999" and f[4] == 0]
+        con_alarma_0 = [f for f in filas if f[0] == "0.0" and f[4] > 0]
+        todos.append(r("Frenada · acelerómetro frente a filtro", "solo acelerómetro (α = 0) da inclinación aparente; con α = 0,999 no hay alarma",
+                       "; ".join(f"α={x[0]}: pitch máx {x[2]:.1f}°, {'alarma' if x[4] else 'sin alarma'}" for x in filas),
+                       bool(sin_alarma_999) and bool(con_alarma_0), "evidencias/frenada/comparacion_filtro.md"))
     (EVID / "resultados_nativo.json").write_text(json.dumps(todos, ensure_ascii=False, indent=2), encoding="utf-8")
     md = ["# Resultados del banco nativo", "",
           "Firmware `firmware/carro_rc/carro_rc.ino` ejecutado sin cambios sobre el banco de "

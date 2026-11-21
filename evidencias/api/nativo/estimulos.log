@@ -1,15 +1,15 @@
   2200.678 ms  wait-serial 'CAL OK' OK
   2200.678 ms  wait-serial 'SESION id=' OK
-  2220.222 ms  WIFI desconectado
-  2320.222 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
+  2220.402 ms  WIFI desconectado
+  2320.402 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
   3200.678 ms  set-control hall_sim.pressed = 1
   3220.678 ms  set-control hall_sim.pressed = 0
   3450.678 ms  set-control hall_sim.pressed = 1
   3470.678 ms  set-control hall_sim.pressed = 0
   3700.678 ms  set-control hall_sim.pressed = 1
   3720.678 ms  set-control hall_sim.pressed = 0
-  3835.222 ms  HTTP POST #1 http://127.0.0.1:3999/api/v1/sesiones -> 201
-  3870.222 ms  HTTP POST #2 llegó a la API con 201 pero se pierde la respuesta
+  3835.402 ms  HTTP POST #1 http://127.0.0.1:3999/api/v1/sesiones -> 201
+  3870.402 ms  HTTP POST #2 llegó a la API con 201 pero se pierde la respuesta
   3950.678 ms  set-control hall_sim.pressed = 1
   3970.678 ms  set-control hall_sim.pressed = 0
   4200.678 ms  set-control hall_sim.pressed = 1
@@ -36,21 +36,21 @@
   5852.578 ms  set-control btn_rearme.pressed = 0
   5954.478 ms  set-control hall_sim.pressed = 1
   5974.478 ms  set-control hall_sim.pressed = 0
-  7385.222 ms  HTTP POST #3 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-0FEC1EEF/mediciones -> 200
-  7420.222 ms  HTTP POST #4 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-0FEC1EEF/mediciones -> 201
-  7455.222 ms  HTTP POST #5 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-0FEC1EEF/mediciones -> 201
-  7490.222 ms  HTTP POST #6 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-0FEC1EEF/mediciones -> 201
-  7525.222 ms  HTTP POST #7 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-0FEC1EEF/mediciones -> 201
+  7385.402 ms  HTTP POST #3 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-5CF5B6C7/mediciones -> 200
+  7420.402 ms  HTTP POST #4 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-5CF5B6C7/mediciones -> 201
+  7455.402 ms  HTTP POST #5 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-5CF5B6C7/mediciones -> 201
+  7490.402 ms  HTTP POST #6 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-5CF5B6C7/mediciones -> 201
+  7525.402 ms  HTTP POST #7 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-5CF5B6C7/mediciones -> 201
   7545.478 ms  wait-serial 'JSON evento ' OK
-  7560.222 ms  HTTP POST #8 llegó a la API con 201 pero se pierde la respuesta
+  7560.402 ms  HTTP POST #8 llegó a la API con 201 pero se pierde la respuesta
  10561.478 ms  wait-serial '/eventos evento' OK
- 11075.222 ms  HTTP POST #9 http://127.0.0.1:3999/api/v1/eventos -> 200
- 11110.222 ms  HTTP POST #10 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-0FEC1EEF/mediciones -> 201
- 11145.222 ms  HTTP POST #11 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-0FEC1EEF/mediciones -> 201
- 11180.222 ms  HTTP POST #12 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-0FEC1EEF/mediciones -> 201
- 11215.222 ms  HTTP POST #13 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-0FEC1EEF/mediciones -> 201
- 11730.222 ms  HTTP POST #14 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-0FEC1EEF/mediciones -> 201
- 12225.222 ms  HTTP POST #15 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-0FEC1EEF/mediciones -> 201
- 12720.222 ms  HTTP POST #16 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-0FEC1EEF/mediciones -> 201
- 13215.222 ms  HTTP POST #17 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-0FEC1EEF/mediciones -> 201
+ 11075.402 ms  HTTP POST #9 http://127.0.0.1:3999/api/v1/eventos -> 200
+ 11110.402 ms  HTTP POST #10 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-5CF5B6C7/mediciones -> 201
+ 11145.402 ms  HTTP POST #11 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-5CF5B6C7/mediciones -> 201
+ 11180.402 ms  HTTP POST #12 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-5CF5B6C7/mediciones -> 201
+ 11215.402 ms  HTTP POST #13 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-5CF5B6C7/mediciones -> 201
+ 11730.402 ms  HTTP POST #14 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-5CF5B6C7/mediciones -> 201
+ 12225.402 ms  HTTP POST #15 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-5CF5B6C7/mediciones -> 201
+ 12720.402 ms  HTTP POST #16 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-5CF5B6C7/mediciones -> 201
+ 13215.402 ms  HTTP POST #17 http://127.0.0.1:3999/api/v1/sesiones/RC-ABCDEF-5CF5B6C7/mediciones -> 201
  13561.478 ms  FIN escenario fallos=0

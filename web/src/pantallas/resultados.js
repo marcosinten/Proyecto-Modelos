@@ -6,6 +6,8 @@ import {app, $, escape, get, toast, heading} from '../app.js';
 import {calcularResultados, ESCENARIOS, CLASES} from '../resultados.js';
 import {NOMBRE_ESCENARIO} from './prueba-fisica.js';
 import {SIN_MEDIR} from '../../../compartido/exportacion.js';
+import {CONSTANTES_INO} from '../../../compartido/parametros-firmware.js';
+const PARAMETROS_UMBRAL = CONSTANTES_INO.UMBRAL_INCLINACION_DEG;
 import {icono} from '../iconos.js';
 
 const NOMBRE_CLASE = {ninguno: 'Ninguno', golpe: 'Golpe', inclinacion: 'Inclinación', vuelco: 'Vuelco'};
@@ -93,6 +95,14 @@ function tablaRepeticiones(reps) {
   </tbody></table></div>`;
 }
 
+function tablaFrenada(filas) {
+  return `<section class="bloque" aria-labelledby="t-frenada"><div class="bloque-cabecera"><h2 id="t-frenada">Frenada: ángulo solo con acelerómetro frente a filtro complementario</h2><span class="ayuda">simulación con los parámetros del firmware · umbral de inclinación ${num(PARAMETROS_UMBRAL, 0)}°</span></div>
+   <div class="table-scroll"><table><thead><tr><th>Cálculo del ángulo</th><th class="griego">α</th><th class="griego">τ (s)</th><th>Pitch máx. que usa el detector</th><th>Pitch máx. solo acelerómetro</th><th>Pitch real del modelo</th><th>¿Alarma?</th></tr></thead><tbody>
+   ${filas.map(f => `<tr><td>${escape(f.nombre)}</td><td class="mono">${num(f.alfa, 3)}</td><td class="mono">${num(f.tau_s, 2)}</td><td class="mono">${num(f.pitch_max_deg, 1)}°</td><td class="mono">${num(f.pitch_acelerometro_max_deg, 1)}°</td><td class="mono">${num(f.pitch_real_max_deg, 1)}°</td><td>${f.alarma ? `sí (${escape(NOMBRE_CLASE[f.alarma])}, ${num(f.t_deteccion_ms / 1000, 3)} s)` : 'no'}</td></tr>`).join('')}
+   </tbody></table></div>
+   <p class="grafica-nota">La desaceleración se proyecta en el eje X del acelerómetro y el ángulo calculado solo con él sube aunque el carro casi no cabecee. El filtro complementario integra el giroscopio y corrige con el acelerómetro con constante de tiempo τ = α·dt/(1 − α); con τ ≈ 4 s la frenada no alcanza a mover el ángulo estimado hasta el umbral. El banco nativo, con el firmware real, da la misma conclusión (evidencias/frenada/comparacion_filtro.md).</p></section>`;
+}
+
 export async function renderResultados() {
   const generacion = app.liveGeneration;
   $('#main').innerHTML = heading('Resultados', 'Simulación frente al prototipo, por escenario, y aciertos del detector en las pruebas físicas.',
@@ -129,7 +139,7 @@ export async function renderResultados() {
     ${grafica('g-deteccion', 'Tiempo de detección', 'De la primera lectura sobre el umbral a la confirmación (ms). Sin barra: no detectó o sin medir.')}
     ${grafica('g-repeticiones', 'Tiempo de respuesta de cada repetición', 'Detección (eje izquierdo) y activación (eje derecho), medidas en el carro con micros().')}
    </div>` : vacio) +
-   ESCENARIOS.map(e => tablaEscenario(r.porEscenario.find(x => x.escenario === e))).join('') +
+   ESCENARIOS.map(e => tablaEscenario(r.porEscenario.find(x => x.escenario === e))).join('') + tablaFrenada(r.frenada) +
    (r.hayDatos ? `<section class="bloque" aria-labelledby="t-reps"><div class="bloque-cabecera"><h2 id="t-reps">Repeticiones</h2></div>${tablaRepeticiones(r.repeticiones)}</section>` : '') +
    `<p class="helper">Simulación: web/src/simulation.js con los parámetros del firmware (golpe ≥ ${r.parametros.aceleracion} m/s² durante ${r.parametros.permanenciaImpacto} ms; inclinación ≥ ${r.parametros.angulo}° y vuelco ≥ 90° durante ${r.parametros.permanencia} ms). Las amplitudes sintéticas son ilustrativas. El ángulo simulado es el real; el firmware calcula uno aparente con el acelerómetro, que en una frenada puede superar el umbral. Media ± desviación estándar muestral.</p>`);
   if (r.hayDatos) {

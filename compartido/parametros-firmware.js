@@ -24,6 +24,9 @@ export const CONSTANTES_INO = {
   PERIODO_ADQ_MS: 4,
   MUESTRAS_POR_TEL: 5,
   LSB_POR_G: 2048,
+  // Filtro complementario de roll y pitch (21 nov): ángulo = α·(ángulo + giro·dt) + (1 − α)·ángulo_acelerómetro.
+  ALFA_COMPLEMENTARIO: 0.999,
+  LSB_POR_GRADO_S: 16.4,
   // Corrección opcional del ángulo (fase 4): desactivada; con 1, ángulo = ANGULO_M·ángulo + ANGULO_B.
   CORRECCION_ANGULO: 0,
   ANGULO_M: 1,
@@ -47,6 +50,8 @@ export const PARAMETROS_FIRMWARE = [
   { parametro: 'Frecuencia de adquisición', valor: 1000 / c.PERIODO_ADQ_MS, unidad: 'Hz', descripcion: `Una lectura del MPU6050 cada ${c.PERIODO_ADQ_MS} ms; las reglas se evalúan sobre estas lecturas`, constante: 'PERIODO_ADQ_MS' },
   { parametro: 'Frecuencia de publicación', valor: 1000 / (c.PERIODO_ADQ_MS * c.MUESTRAS_POR_TEL), unidad: 'Hz', descripcion: `De cada ${c.MUESTRAS_POR_TEL} lecturas se envía la de mayor aceleración (pico de una ventana de ${c.PERIODO_ADQ_MS * c.MUESTRAS_POR_TEL} ms)`, constante: 'MUESTRAS_POR_TEL' },
   { parametro: 'Rango del acelerómetro', valor: 32768 / c.LSB_POR_G, unidad: '± g', descripcion: `${c.LSB_POR_G} LSB por g`, constante: 'LSB_POR_G' },
+  { parametro: 'Filtro complementario (α)', valor: c.ALFA_COMPLEMENTARIO, unidad: '—', descripcion: `ángulo = α·(ángulo + giro·dt) + (1 − α)·ángulo del acelerómetro; constante de tiempo τ = α·dt/(1 − α) ≈ ${Math.round(c.ALFA_COMPLEMENTARIO * c.PERIODO_ADQ_MS / (1 - c.ALFA_COMPLEMENTARIO)) / 1000} s. Se usa para la inclinación; el vuelco usa el acelerómetro`, constante: 'ALFA_COMPLEMENTARIO' },
+  { parametro: 'Rango del giroscopio', valor: Math.round(32768 / c.LSB_POR_GRADO_S), unidad: '± °/s', descripcion: `${c.LSB_POR_GRADO_S} LSB por °/s; el cero se mide al arrancar con el carro quieto`, constante: 'LSB_POR_GRADO_S' },
   { parametro: 'Corrección del ángulo', valor: c.CORRECCION_ANGULO ? 'activada' : 'desactivada', unidad: '—', descripcion: `Ángulo corregido = ${c.ANGULO_M}·ángulo + ${c.ANGULO_B} (scripts/ajuste_curvas.py); se activa en config_local.h`, constante: 'CORRECCION_ANGULO' },
   { parametro: 'Diámetro de la rueda con sensor', valor: DIAMETRO_RUEDA_M ?? 'sin medir', unidad: 'm', descripcion: 'Necesario para distancia y velocidad; no se inventa', constante: '—' }
 ];

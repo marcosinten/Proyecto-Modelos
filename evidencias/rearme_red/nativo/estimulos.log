@@ -1,26 +1,70 @@
   2200.678 ms  wait-serial 'CAL OK' OK
   2200.678 ms  wait-serial 'SESION id=' OK
-  2220.222 ms  WIFI desconectado
-  2320.222 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
+  2220.402 ms  WIFI desconectado
+  2320.402 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
   5200.678 ms  write-serial 'wifi off\n'
+  6200.678 ms  set-control imu1.rotationX = 1357.14
+  6200.678 ms  set-control imu1.rotationY = -0
   6200.678 ms  set-control imu1.accelX = 0
-  6200.678 ms  set-control imu1.accelY = 0.9962
-  6200.678 ms  set-control imu1.accelZ = -0.0872
+  6200.678 ms  set-control imu1.accelY = 0.2347
+  6200.678 ms  set-control imu1.accelZ = 0.9721
+  6210.678 ms  set-control imu1.accelX = 0
+  6210.678 ms  set-control imu1.accelY = 0.4562
+  6210.678 ms  set-control imu1.accelZ = 0.8899
+  6220.678 ms  set-control imu1.accelX = 0
+  6220.678 ms  set-control imu1.accelY = 0.6523
+  6220.678 ms  set-control imu1.accelZ = 0.758
+  6230.678 ms  set-control imu1.accelX = 0
+  6230.678 ms  set-control imu1.accelY = 0.8119
+  6230.678 ms  set-control imu1.accelZ = 0.5837
+  6240.678 ms  set-control imu1.accelX = 0
+  6240.678 ms  set-control imu1.accelY = 0.9262
+  6240.678 ms  set-control imu1.accelZ = 0.3769
+  6250.678 ms  set-control imu1.accelX = 0
+  6250.678 ms  set-control imu1.accelY = 0.9888
+  6250.678 ms  set-control imu1.accelZ = 0.149
+  6260.678 ms  set-control imu1.accelX = 0
+  6260.678 ms  set-control imu1.accelY = 0.9962
+  6260.678 ms  set-control imu1.accelZ = -0.0872
+  6270.678 ms  set-control imu1.rotationX = 0
+  6270.678 ms  set-control imu1.rotationY = 0
   6500.678 ms  expect-pin led1:A = 1 -> leído 1 OK
-  6820.222 ms  HTTP POST #1 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
-  6840.222 ms  WIFI desconectado
+  6820.402 ms  HTTP POST #1 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
+  6840.402 ms  WIFI desconectado
+  7200.678 ms  set-control imu1.rotationX = -1357.14
+  7200.678 ms  set-control imu1.rotationY = -0
   7200.678 ms  set-control imu1.accelX = 0
-  7200.678 ms  set-control imu1.accelY = 0
-  7200.678 ms  set-control imu1.accelZ = 1
+  7200.678 ms  set-control imu1.accelY = 0.9888
+  7200.678 ms  set-control imu1.accelZ = 0.149
+  7210.678 ms  set-control imu1.accelX = 0
+  7210.678 ms  set-control imu1.accelY = 0.9262
+  7210.678 ms  set-control imu1.accelZ = 0.3769
+  7220.678 ms  set-control imu1.accelX = 0
+  7220.678 ms  set-control imu1.accelY = 0.8119
+  7220.678 ms  set-control imu1.accelZ = 0.5837
+  7230.678 ms  set-control imu1.accelX = 0
+  7230.678 ms  set-control imu1.accelY = 0.6523
+  7230.678 ms  set-control imu1.accelZ = 0.758
+  7240.678 ms  set-control imu1.accelX = 0
+  7240.678 ms  set-control imu1.accelY = 0.4562
+  7240.678 ms  set-control imu1.accelZ = 0.8899
+  7250.678 ms  set-control imu1.accelX = 0
+  7250.678 ms  set-control imu1.accelY = 0.2347
+  7250.678 ms  set-control imu1.accelZ = 0.9721
+  7260.678 ms  set-control imu1.accelX = 0
+  7260.678 ms  set-control imu1.accelY = 0
+  7260.678 ms  set-control imu1.accelZ = 1
+  7270.678 ms  set-control imu1.rotationX = 0
+  7270.678 ms  set-control imu1.rotationY = 0
   8200.678 ms  set-control btn_rearme.pressed = 1
   8402.578 ms  set-control btn_rearme.pressed = 0
-  8604.622 ms  expect-pin led1:A = 0 -> leído 0 OK
-  8604.622 ms  expect-pin esp:D27 = 0 -> leído 0 OK
-  9204.622 ms  set-control btn_rearme.pressed = 1
-  9406.522 ms  set-control btn_rearme.pressed = 0
- 11208.622 ms  write-serial 'wifi on\n'
- 11220.222 ms  WIFI desconectado
- 11320.222 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
- 15820.222 ms  HTTP POST #2 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
- 17208.622 ms  MARCA fin rearme_red
- 17208.622 ms  FIN escenario fallos=0
+  8604.802 ms  expect-pin led1:A = 0 -> leído 0 OK
+  8604.802 ms  expect-pin esp:D27 = 0 -> leído 0 OK
+  9204.802 ms  set-control btn_rearme.pressed = 1
+  9406.702 ms  set-control btn_rearme.pressed = 0
+ 11208.802 ms  write-serial 'wifi on\n'
+ 11220.402 ms  WIFI desconectado
+ 11320.402 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
+ 15820.402 ms  HTTP POST #2 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
+ 17208.802 ms  MARCA fin rearme_red
+ 17208.802 ms  FIN escenario fallos=0

@@ -106,6 +106,22 @@ export function matrizConfusion(reps) {
   };
 }
 
+// Frenada sin incidente con tres cálculos del ángulo: solo acelerómetro (α = 0), filtro con α = 0,98 y el
+// filtro del firmware. Tabla para el informe: pitch máximo que ve el detector y si da alarma.
+export function comparacionFrenada(generar = generarEscenario) {
+  const p = PARAMETROS_SIMULACION, alfaFw = CONSTANTES_INO.ALFA_COMPLEMENTARIO;
+  return [['Solo acelerómetro', 0], ['Filtro complementario', 0.98], ['Filtro complementario (firmware)', alfaFw]].map(([nombre, alfa]) => {
+    const c = generar('frenada', p.aceleracion, p.angulo, p.permanencia, p.permanenciaImpacto, {alfa});
+    return {
+      nombre, alfa, tau_s: alfa * CONSTANTES_INO.PERIODO_ADQ_MS / 1000 / (1 - alfa),
+      pitch_max_deg: Math.max(...c.mediciones.map(m => Math.abs(m.pitch_deg))),
+      pitch_acelerometro_max_deg: Math.max(...c.angulosReales.map(a => Math.abs(a.pitch_acc_deg))),
+      pitch_real_max_deg: Math.max(...c.angulosReales.map(a => Math.abs(a.pitch_deg))),
+      alarma: c.evento?.tipo ?? null, t_deteccion_ms: c.evento?.t_deteccion_ms ?? null
+    };
+  });
+}
+
 // Todo lo que muestra la pantalla Resultados, a partir de la respuesta de GET /pruebas.
 export function calcularResultados(pruebas, generar = generarEscenario) {
   const reps = pruebas.map(repeticion);
@@ -118,5 +134,6 @@ export function calcularResultados(pruebas, generar = generarEscenario) {
     });
     return {escenario, repeticiones: propias.length, clase_simulada: simulado.clase, aciertos: propias.filter(r => r.acierto).length, filas};
   });
-  return {repeticiones: reps, porEscenario, confusion: matrizConfusion(reps), hayDatos: reps.length > 0, parametros: PARAMETROS_SIMULACION};
+  return {repeticiones: reps, porEscenario, confusion: matrizConfusion(reps), hayDatos: reps.length > 0, parametros: PARAMETROS_SIMULACION,
+    frenada: comparacionFrenada(generar)};
 }

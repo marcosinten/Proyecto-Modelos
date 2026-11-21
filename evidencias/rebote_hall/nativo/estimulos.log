@@ -1,7 +1,7 @@
   2200.678 ms  wait-serial 'CAL OK' OK
   2200.678 ms  wait-serial 'SESION id=' OK
-  2220.222 ms  WIFI desconectado
-  2320.222 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
+  2220.402 ms  WIFI desconectado
+  2320.402 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
   3200.678 ms  set-control hall_sim.pressed = 1
   3201.278 ms  set-control hall_sim.pressed = 0
   3201.858 ms  set-control hall_sim.pressed = 1
@@ -50,6 +50,6 @@
   5951.278 ms  set-control hall_sim.pressed = 0
   5951.858 ms  set-control hall_sim.pressed = 1
   5970.678 ms  set-control hall_sim.pressed = 0
-  6820.222 ms  HTTP POST #1 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
+  6820.402 ms  HTTP POST #1 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
   7450.678 ms  MARCA fin rebote_hall
   7450.678 ms  FIN escenario fallos=0

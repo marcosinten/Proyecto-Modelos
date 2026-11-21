@@ -4,8 +4,8 @@
 //   se ejecuta a la vez; el planificador despierta siempre a la tarea con el
 //   instante de activación más próximo (desempate por prioridad). Resultado
 //   determinista y con la cadencia exacta de vTaskDelayUntil.
-// - MPU6050 modelado por registros (WHO_AM_I, SMPLRT_DIV, CONFIG, ACCEL_CONFIG y
-//   escala ±2/4/8/16 g). No modela ruido ni el filtro DLPF (igual que Wokwi).
+// - MPU6050 modelado por registros (WHO_AM_I, SMPLRT_DIV, CONFIG, ACCEL_CONFIG, GYRO_CONFIG y
+//   escala ±2/4/8/16 g y ±250…2000 °/s). Giroscopio con controles rotationX/Y/Z (°/s) y --sesgo-giro.
 // - Coste modelado: I2C a 400 kHz (22,5 µs por byte + 10 µs), digitalWrite 1 µs,
 //   ledcWrite 3 µs. El resto del código cuenta como tiempo 0.
 // - Los estímulos se leen de un archivo .pasos generado con escenarios/generar.py,
@@ -298,6 +298,9 @@ static uint8_t punteroMpu = 0;
 static double controlG[3] = {0, 0, 1};  // accelX, accelY, accelZ en g (como Wokwi)
 static double sesgoG[3] = {0, 0, 0};    // --sesgo x,y,z (g): error de cero del sensor
 static double ruidoG = 0;               // --ruido sigma (g): ruido blanco gaussiano
+// Giroscopio (como los controles rotationX/Y/Z de Wokwi, en °/s) y su error de cero (--sesgo-giro x,y,z).
+static double controlGiro[3] = {0, 0, 0};
+static double sesgoGiro[3] = {0, 0, 0};
 static uint64_t semillaRuido = 0x1234567ull;
 static double gauss() {
   auto u = [] { semillaRuido = semillaRuido * 6364136223846793005ull + 1442695040888963407ull;
@@ -321,6 +324,15 @@ static void actualizarRegistrosAcel() {
     v = std::max(-32768L, std::min(32767L, v));
     regs[0x3B + 2 * k] = (uint8_t)((v >> 8) & 0xFF);
     regs[0x3C + 2 * k] = (uint8_t)(v & 0xFF);
+  }
+  // Giroscopio: GYRO_CONFIG (0x1B) bits 4:3 = ±250/500/1000/2000 °/s → 131/65,5/32,8/16,4 LSB por °/s.
+  int fsg = (regs[0x1B] >> 3) & 3;
+  double lsbGiro = 131.0 / (1 << fsg);
+  for (int k = 0; k < 3; k++) {
+    long v = lround((controlGiro[k] + sesgoGiro[k]) * lsbGiro);
+    v = std::max(-32768L, std::min(32767L, v));
+    regs[0x43 + 2 * k] = (uint8_t)((v >> 8) & 0xFF);
+    regs[0x44 + 2 * k] = (uint8_t)(v & 0xFF);
   }
 }
 bool TwoWireSim::begin(int, int, uint32_t) {
@@ -492,6 +504,9 @@ static void tareaEscenario(void*) {
         if (control == "accelX") controlG[0] = v;
         else if (control == "accelY") controlG[1] = v;
         else if (control == "accelZ") controlG[2] = v;
+        else if (control == "rotationX") controlGiro[0] = v;
+        else if (control == "rotationY") controlGiro[1] = v;
+        else if (control == "rotationZ") controlGiro[2] = v;
         else if (control == "bus_colgado") busColgado = v != 0;
         else if (control == "desconectado") mpuDesconectado = v != 0;
       } else if (parte == "hall_sim") pulsar(32, v != 0, false);
@@ -568,6 +583,7 @@ int main(int argc, char** argv) {
     else if (k == "--tiempo-real") tiempoReal = v == "1";
     else if (k == "--sesgo") sscanf(v.c_str(), "%lf,%lf,%lf", &sesgoG[0], &sesgoG[1], &sesgoG[2]);
     else if (k == "--ruido") ruidoG = atof(v.c_str());
+    else if (k == "--sesgo-giro") sscanf(v.c_str(), "%lf,%lf,%lf", &sesgoGiro[0], &sesgoGiro[1], &sesgoGiro[2]);
     else if (k == "--perder-ruta") {
       std::stringstream ss(v);
       std::string x;

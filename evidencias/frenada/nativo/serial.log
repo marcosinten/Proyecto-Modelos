@@ -1,467 +1,461 @@
-INICIO carro_rc Grupo 11 version=2026.11.21-cp2-estados origen=simulado mpu_correccion=1 ang_corr=0(m=1.000 b=0.000) modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
-MPU WHO_AM_I=0x68 SMPLRT_DIV=3 CONFIG=0x02 ACCEL_CONFIG=0x18 (esperado 3, 0x02, 0x18) OK
+INICIO carro_rc Grupo 11 version=2026.11.21-cp2-filtro origen=simulado mpu_correccion=1 ang_corr=0(m=1.000 b=0.000) modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
+MPU WHO_AM_I=0x68 SMPLRT_DIV=3 CONFIG=0x02 GYRO_CONFIG=0x18 ACCEL_CONFIG=0x18 (esperado 3, 0x02, 0x18, 0x18) filtro_alfa=0.9990 OK
 CAL mantén el carro quieto y horizontal 2 s
 RED escaneo: 1 redes
 RED WiFi: [Wokwi-GUEST] | canal 6 | senal -50 dBm
-CAL OK muestras=500 media=(0.2955, -0.1960, 10.1978) m/s2 desv_norma=0.0406 offsets=(0.2955, -0.1960, 0.3912)
-SESION id=RC-ABCDEF-77AE0BF3 origen=simulado t0_us_arranque=2200222
-TEL n=1 t=15 ax=-0.056 ay=-0.067 az=9.846 roll=-0.39 pitch=-0.33 rps=0.00 k=3
-TEL n=2 t=27 ax=0.030 ay=0.014 az=9.856 roll=0.08 pitch=0.17 rps=0.00 k=1
-TEL n=3 t=43 ax=0.040 ay=0.009 az=9.894 roll=0.05 pitch=0.23 rps=0.00 k=0
-TEL n=4 t=67 ax=0.001 ay=-0.000 az=9.885 roll=-0.00 pitch=0.01 rps=0.00 k=1
-TEL n=5 t=87 ax=-0.027 ay=-0.005 az=9.832 roll=-0.03 pitch=-0.16 rps=0.00 k=1
+CAL OK muestras=500 media=(0.2955, -0.1960, 10.1978) m/s2 desv_norma=0.0406 offsets=(0.2955, -0.1960, 0.3912) giro_cero=(1.524, -0.976, 0.488) dps
+SESION id=RC-ABCDEF-77AE0BF3 origen=simulado t0_us_arranque=2200402
+TEL n=1 t=15 ax=-0.056 ay=-0.067 az=9.846 roll=0.08 pitch=-0.27 rps=0.00 k=3 roll_acc=-0.39 pitch_acc=-0.33
+TEL n=2 t=27 ax=0.030 ay=0.014 az=9.856 roll=0.08 pitch=-0.27 rps=0.00 k=1 roll_acc=0.08 pitch_acc=0.17
+TEL n=3 t=43 ax=0.040 ay=0.009 az=9.894 roll=0.08 pitch=-0.27 rps=0.00 k=0 roll_acc=0.05 pitch_acc=0.23
+TEL n=4 t=67 ax=0.001 ay=-0.000 az=9.885 roll=0.08 pitch=-0.27 rps=0.00 k=1 roll_acc=-0.00 pitch_acc=0.01
+TEL n=5 t=87 ax=-0.027 ay=-0.005 az=9.832 roll=0.08 pitch=-0.26 rps=0.00 k=1 roll_acc=-0.03 pitch_acc=-0.16
 JSON sesion {"version":1,"sesion":{"id":"RC-ABCDEF-77AE0BF3","origen":"simulado"}}
-TEL n=6 t=119 ax=0.001 ay=0.033 az=9.832 roll=0.19 pitch=0.01 rps=0.00 k=4
+TEL n=6 t=119 ax=0.001 ay=0.033 az=9.832 roll=0.08 pitch=-0.26 rps=0.00 k=4 roll_acc=0.19 pitch_acc=0.01
 RED conectando a Wokwi-GUEST t_ms=20
-TEL n=7 t=131 ax=-0.042 ay=0.019 az=9.823 roll=0.11 pitch=-0.24 rps=0.00 k=2
-TEL n=8 t=151 ax=-0.013 ay=0.033 az=9.866 roll=0.19 pitch=-0.08 rps=0.00 k=2
-TEL n=9 t=179 ax=0.035 ay=-0.005 az=9.846 roll=-0.03 pitch=0.20 rps=0.00 k=4
-TEL n=10 t=195 ax=-0.023 ay=0.052 az=9.827 roll=0.30 pitch=-0.13 rps=0.00 k=3
-TEL n=11 t=219 ax=-0.018 ay=0.043 az=9.870 roll=0.25 pitch=-0.10 rps=0.00 k=4
-TEL n=12 t=235 ax=0.006 ay=0.024 az=9.832 roll=0.14 pitch=0.04 rps=0.00 k=3
-TEL n=13 t=247 ax=0.059 ay=-0.000 az=9.890 roll=-0.00 pitch=0.34 rps=0.00 k=1
-TEL n=14 t=263 ax=-0.070 ay=-0.020 az=9.861 roll=-0.11 pitch=-0.41 rps=0.00 k=0
-TEL n=15 t=283 ax=-0.018 ay=-0.039 az=9.870 roll=-0.22 pitch=-0.10 rps=0.00 k=0
-TEL n=16 t=307 ax=0.001 ay=-0.043 az=9.846 roll=-0.25 pitch=0.01 rps=0.00 k=1
-TEL n=17 t=331 ax=-0.008 ay=-0.020 az=9.823 roll=-0.11 pitch=-0.05 rps=0.00 k=2
-TEL n=18 t=347 ax=0.016 ay=0.091 az=9.861 roll=0.53 pitch=0.09 rps=0.00 k=1
-TEL n=19 t=379 ax=-0.027 ay=0.004 az=9.808 roll=0.03 pitch=-0.16 rps=0.00 k=4
-TEL n=20 t=399 ax=-0.070 ay=0.057 az=9.808 roll=0.33 pitch=-0.41 rps=0.00 k=4
-TEL n=21 t=419 ax=0.054 ay=0.014 az=9.823 roll=0.08 pitch=0.32 rps=0.00 k=4
-TEL n=22 t=435 ax=0.025 ay=-0.000 az=9.870 roll=-0.00 pitch=0.15 rps=0.00 k=3
-TEL n=23 t=459 ax=0.035 ay=0.048 az=9.861 roll=0.28 pitch=0.20 rps=0.00 k=4
-TEL n=24 t=479 ax=0.011 ay=-0.043 az=9.856 roll=-0.25 pitch=0.06 rps=0.00 k=4
-TEL n=25 t=487 ax=0.044 ay=0.009 az=9.832 roll=0.05 pitch=0.26 rps=0.00 k=1
-TEL n=26 t=503 ax=0.011 ay=0.004 az=9.870 roll=0.03 pitch=0.06 rps=0.00 k=0
-TEL n=27 t=539 ax=-0.042 ay=-0.010 az=9.846 roll=-0.06 pitch=-0.24 rps=0.00 k=4
-TEL n=28 t=543 ax=-0.056 ay=-0.015 az=9.880 roll=-0.09 pitch=-0.33 rps=0.00 k=0
-TEL n=29 t=579 ax=0.083 ay=0.091 az=9.875 roll=0.53 pitch=0.48 rps=0.00 k=4
-TEL n=30 t=595 ax=-0.051 ay=0.048 az=9.875 roll=0.28 pitch=-0.30 rps=0.00 k=3
-TEL n=31 t=611 ax=-0.023 ay=-0.005 az=9.870 roll=-0.03 pitch=-0.13 rps=0.00 k=2
-TEL n=32 t=627 ax=0.040 ay=-0.000 az=9.870 roll=-0.00 pitch=0.23 rps=0.00 k=1
-TEL n=33 t=643 ax=-0.104 ay=-0.020 az=9.823 roll=-0.11 pitch=-0.61 rps=0.00 k=0
-TEL n=34 t=675 ax=-0.032 ay=-0.043 az=9.918 roll=-0.25 pitch=-0.19 rps=0.00 k=3
-TEL n=35 t=691 ax=-0.056 ay=-0.043 az=9.933 roll=-0.25 pitch=-0.32 rps=0.00 k=2
-TEL n=36 t=703 ax=-0.042 ay=-0.000 az=9.851 roll=-0.00 pitch=-0.24 rps=0.00 k=0
-TEL n=37 t=735 ax=-0.061 ay=0.028 az=9.832 roll=0.17 pitch=-0.35 rps=0.00 k=3
-TEL n=38 t=759 ax=0.135 ay=-0.048 az=9.827 roll=-0.28 pitch=0.79 rps=0.00 k=4
-TEL n=39 t=779 ax=0.064 ay=-0.039 az=9.851 roll=-0.22 pitch=0.37 rps=0.00 k=4
-TEL n=40 t=791 ax=0.006 ay=-0.048 az=9.880 roll=-0.28 pitch=0.04 rps=0.00 k=2
-TEL n=41 t=803 ax=-0.047 ay=-0.005 az=9.803 roll=-0.03 pitch=-0.27 rps=0.00 k=0
-TEL n=42 t=823 ax=-0.085 ay=0.038 az=9.890 roll=0.22 pitch=-0.49 rps=0.00 k=0
-TEL n=43 t=851 ax=-0.075 ay=0.028 az=9.875 roll=0.16 pitch=-0.44 rps=0.00 k=2
-TEL n=44 t=875 ax=0.006 ay=0.009 az=9.856 roll=0.05 pitch=0.04 rps=0.00 k=3
-TEL n=45 t=883 ax=0.035 ay=0.048 az=9.803 roll=0.28 pitch=0.20 rps=0.00 k=0
-TEL n=46 t=919 ax=0.064 ay=-0.005 az=9.837 roll=-0.03 pitch=0.37 rps=0.00 k=4
-TEL n=47 t=939 ax=0.006 ay=-0.058 az=9.842 roll=-0.34 pitch=0.04 rps=0.00 k=4
-TEL n=48 t=947 ax=-0.003 ay=0.028 az=9.851 roll=0.16 pitch=-0.02 rps=0.00 k=1
-TEL n=49 t=963 ax=-0.027 ay=-0.048 az=9.861 roll=-0.28 pitch=-0.16 rps=0.00 k=0
-TEL n=50 t=987 ax=0.006 ay=0.004 az=9.846 roll=0.03 pitch=0.04 rps=0.00 k=1
-EST t=999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=50 perdidas=0 log_perdidas=0 wifi=0 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
-TEL n=51 t=1011 ax=0.016 ay=0.076 az=9.875 roll=0.44 pitch=0.09 rps=0.00 k=2
-TEL n=52 t=1027 ax=-0.042 ay=0.033 az=9.856 roll=0.19 pitch=-0.24 rps=0.00 k=1
-TEL n=53 t=1047 ax=0.006 ay=0.028 az=9.851 roll=0.16 pitch=0.04 rps=0.00 k=1
-TEL n=54 t=1067 ax=-0.061 ay=0.019 az=9.851 roll=0.11 pitch=-0.35 rps=0.00 k=1
-TEL n=55 t=1083 ax=0.092 ay=0.057 az=9.846 roll=0.33 pitch=0.54 rps=0.00 k=0
-TEL n=56 t=1111 ax=0.044 ay=-0.034 az=9.827 roll=-0.20 pitch=0.26 rps=0.00 k=2
-TEL n=57 t=1123 ax=-0.003 ay=-0.020 az=9.856 roll=-0.11 pitch=-0.02 rps=0.00 k=0
-TEL n=58 t=1151 ax=-0.042 ay=0.043 az=9.904 roll=0.25 pitch=-0.24 rps=0.00 k=2
-TEL n=59 t=1175 ax=0.030 ay=-0.020 az=9.856 roll=-0.11 pitch=0.17 rps=0.00 k=3
-TEL n=60 t=1195 ax=0.035 ay=0.009 az=9.813 roll=0.05 pitch=0.20 rps=0.00 k=3
-TEL n=61 t=1211 ax=0.025 ay=-0.082 az=9.832 roll=-0.48 pitch=0.15 rps=0.00 k=2
-TEL n=62 t=1235 ax=0.054 ay=-0.020 az=9.870 roll=-0.11 pitch=0.31 rps=0.00 k=3
-TEL n=63 t=1255 ax=0.001 ay=-0.034 az=9.827 roll=-0.20 pitch=0.01 rps=4.00 k=3
-TEL n=64 t=1275 ax=0.068 ay=-0.043 az=9.861 roll=-0.25 pitch=0.40 rps=4.00 k=3
-TEL n=65 t=1287 ax=-0.027 ay=0.014 az=9.866 roll=0.08 pitch=-0.16 rps=4.00 k=1
-TEL n=66 t=1315 ax=-0.023 ay=-0.000 az=9.885 roll=-0.00 pitch=-0.13 rps=4.00 k=3
-TEL n=67 t=1335 ax=-0.018 ay=-0.087 az=9.832 roll=-0.50 pitch=-0.10 rps=4.00 k=3
-TEL n=68 t=1347 ax=0.040 ay=-0.091 az=9.861 roll=-0.53 pitch=0.23 rps=4.00 k=1
-TEL n=69 t=1363 ax=0.025 ay=-0.077 az=9.846 roll=-0.45 pitch=0.15 rps=4.00 k=0
-TEL n=70 t=1387 ax=0.088 ay=-0.000 az=9.827 roll=-0.00 pitch=0.51 rps=4.00 k=1
-TEL n=71 t=1403 ax=0.016 ay=0.028 az=9.856 roll=0.16 pitch=0.09 rps=4.00 k=0
-TEL n=72 t=1439 ax=-0.018 ay=0.033 az=9.827 roll=0.19 pitch=-0.10 rps=4.00 k=4
-TEL n=73 t=1459 ax=0.092 ay=-0.024 az=9.904 roll=-0.14 pitch=0.53 rps=4.00 k=4
-TEL n=74 t=1467 ax=-0.018 ay=0.038 az=9.861 roll=0.22 pitch=-0.10 rps=4.00 k=1
-TEL n=75 t=1487 ax=-0.018 ay=-0.005 az=9.880 roll=-0.03 pitch=-0.10 rps=4.00 k=1
-TEL n=76 t=1507 ax=-0.027 ay=0.009 az=9.832 roll=0.05 pitch=-0.16 rps=4.00 k=1
-TEL n=77 t=1527 ax=0.016 ay=0.024 az=9.870 roll=0.14 pitch=0.09 rps=4.00 k=1
-TEL n=78 t=1547 ax=0.078 ay=-0.043 az=9.832 roll=-0.25 pitch=0.45 rps=4.00 k=1
-TEL n=79 t=1579 ax=0.025 ay=-0.000 az=9.818 roll=-0.00 pitch=0.15 rps=4.00 k=4
-TEL n=80 t=1587 ax=-0.018 ay=0.014 az=9.837 roll=0.08 pitch=-0.10 rps=4.00 k=1
-TEL n=81 t=1611 ax=-0.047 ay=-0.039 az=9.856 roll=-0.22 pitch=-0.27 rps=4.00 k=2
-TEL n=82 t=1623 ax=-0.042 ay=0.004 az=9.832 roll=0.03 pitch=-0.24 rps=4.00 k=0
-TEL n=83 t=1647 ax=0.001 ay=-0.020 az=9.846 roll=-0.11 pitch=0.01 rps=4.00 k=1
-TEL n=84 t=1671 ax=0.030 ay=-0.034 az=9.842 roll=-0.20 pitch=0.18 rps=4.00 k=2
-TEL n=85 t=1699 ax=-0.003 ay=-0.024 az=9.875 roll=-0.14 pitch=-0.02 rps=4.00 k=4
-TEL n=86 t=1715 ax=0.049 ay=0.048 az=9.827 roll=0.28 pitch=0.29 rps=4.00 k=3
-TEL n=87 t=1735 ax=-0.027 ay=0.024 az=9.856 roll=0.14 pitch=-0.16 rps=4.00 k=3
-TEL n=88 t=1743 ax=0.021 ay=-0.000 az=9.880 roll=-0.00 pitch=0.12 rps=4.00 k=0
-TEL n=89 t=1763 ax=-0.075 ay=-0.024 az=9.866 roll=-0.14 pitch=-0.44 rps=4.00 k=0
-TEL n=90 t=1783 ax=0.064 ay=-0.110 az=9.846 roll=-0.64 pitch=0.37 rps=4.00 k=0
-TEL n=91 t=1815 ax=0.016 ay=-0.020 az=9.832 roll=-0.11 pitch=0.09 rps=4.00 k=3
-TEL n=92 t=1823 ax=-0.075 ay=0.019 az=9.880 roll=0.11 pitch=-0.44 rps=4.00 k=0
-TEL n=93 t=1847 ax=0.021 ay=-0.058 az=9.875 roll=-0.34 pitch=0.12 rps=4.00 k=1
-TEL n=94 t=1871 ax=0.044 ay=-0.034 az=9.861 roll=-0.20 pitch=0.26 rps=4.00 k=2
-TEL n=95 t=1891 ax=-0.018 ay=0.052 az=9.842 roll=0.30 pitch=-0.10 rps=4.00 k=2
-TEL n=96 t=1903 ax=-0.032 ay=-0.020 az=9.899 roll=-0.11 pitch=-0.19 rps=4.00 k=0
-TEL n=97 t=1935 ax=0.044 ay=-0.015 az=9.823 roll=-0.09 pitch=0.26 rps=4.00 k=3
-TEL n=98 t=1947 ax=0.011 ay=0.024 az=9.851 roll=0.14 pitch=0.06 rps=4.00 k=1
-TEL n=99 t=1975 ax=0.011 ay=0.048 az=9.851 roll=0.28 pitch=0.06 rps=4.00 k=3
-TEL n=100 t=1987 ax=-0.032 ay=-0.024 az=9.846 roll=-0.14 pitch=-0.19 rps=4.00 k=1
-EST t=1999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=100 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
-TEL n=101 t=2003 ax=-0.032 ay=-0.029 az=9.827 roll=-0.17 pitch=-0.19 rps=4.00 k=0
-TEL n=102 t=2031 ax=-0.037 ay=-0.000 az=9.856 roll=-0.00 pitch=-0.21 rps=4.00 k=2
-TEL n=103 t=2055 ax=-0.018 ay=0.014 az=9.851 roll=0.08 pitch=-0.10 rps=4.00 k=3
-TEL n=104 t=2079 ax=0.001 ay=-0.005 az=9.803 roll=-0.03 pitch=0.01 rps=4.00 k=4
-TEL n=105 t=2099 ax=-0.047 ay=0.004 az=9.823 roll=0.03 pitch=-0.27 rps=4.00 k=4
-TEL n=106 t=2119 ax=-0.037 ay=-0.034 az=9.827 roll=-0.20 pitch=-0.22 rps=4.00 k=4
-TEL n=107 t=2127 ax=0.035 ay=-0.043 az=9.846 roll=-0.25 pitch=0.20 rps=4.00 k=1
-TEL n=108 t=2143 ax=0.011 ay=-0.043 az=9.861 roll=-0.25 pitch=0.06 rps=4.00 k=0
-TEL n=109 t=2171 ax=0.011 ay=0.048 az=9.813 roll=0.28 pitch=0.06 rps=4.00 k=2
-TEL n=110 t=2187 ax=-0.013 ay=0.043 az=9.880 roll=0.25 pitch=-0.08 rps=4.00 k=1
-TEL n=111 t=2215 ax=0.088 ay=-0.000 az=9.851 roll=-0.00 pitch=0.51 rps=4.00 k=3
-TEL n=112 t=2227 ax=0.044 ay=0.091 az=9.846 roll=0.53 pitch=0.26 rps=4.00 k=1
-TEL n=113 t=2259 ax=0.044 ay=-0.005 az=9.861 roll=-0.03 pitch=0.26 rps=4.00 k=4
-TEL n=114 t=2263 ax=-0.003 ay=0.033 az=9.827 roll=0.19 pitch=-0.02 rps=4.00 k=0
-TEL n=115 t=2295 ax=-0.023 ay=0.004 az=9.803 roll=0.03 pitch=-0.13 rps=4.00 k=3
-TEL n=116 t=2315 ax=-0.023 ay=-0.000 az=9.837 roll=-0.00 pitch=-0.13 rps=4.00 k=3
-TEL n=117 t=2339 ax=0.006 ay=0.019 az=9.794 roll=0.11 pitch=0.04 rps=4.00 k=4
-TEL n=118 t=2347 ax=0.011 ay=0.105 az=9.861 roll=0.61 pitch=0.06 rps=4.00 k=1
-TEL n=119 t=2363 ax=0.001 ay=0.043 az=9.880 roll=0.25 pitch=0.01 rps=4.00 k=0
-TEL n=120 t=2391 ax=-0.023 ay=-0.000 az=9.837 roll=-0.00 pitch=-0.13 rps=4.00 k=2
-TEL n=121 t=2411 ax=-0.032 ay=0.004 az=9.923 roll=0.03 pitch=-0.19 rps=4.00 k=2
-TEL n=122 t=2439 ax=0.068 ay=-0.039 az=9.851 roll=-0.22 pitch=0.40 rps=4.00 k=4
-TEL n=123 t=2443 ax=0.001 ay=-0.048 az=9.856 roll=-0.28 pitch=0.01 rps=4.00 k=0
-TEL n=124 t=2463 ax=-0.047 ay=-0.072 az=9.856 roll=-0.42 pitch=-0.27 rps=4.00 k=0
-TEL n=125 t=2495 ax=-0.018 ay=0.009 az=9.823 roll=0.05 pitch=-0.10 rps=4.00 k=3
-TEL n=126 t=2519 ax=0.044 ay=-0.048 az=9.851 roll=-0.28 pitch=0.26 rps=4.00 k=4
-TEL n=127 t=2535 ax=-0.047 ay=-0.015 az=9.818 roll=-0.09 pitch=-0.27 rps=4.00 k=3
-TEL n=128 t=2555 ax=-0.003 ay=0.024 az=9.837 roll=0.14 pitch=-0.02 rps=4.00 k=3
-TEL n=129 t=2579 ax=0.030 ay=-0.029 az=9.870 roll=-0.17 pitch=0.17 rps=4.00 k=4
-TEL n=130 t=2595 ax=-0.051 ay=0.076 az=9.823 roll=0.44 pitch=-0.30 rps=4.00 k=3
-TEL n=131 t=2607 ax=0.001 ay=-0.029 az=9.885 roll=-0.17 pitch=0.01 rps=4.00 k=1
-TEL n=132 t=2631 ax=0.044 ay=-0.015 az=9.823 roll=-0.09 pitch=0.26 rps=4.00 k=2
-TEL n=133 t=2655 ax=0.044 ay=-0.072 az=9.866 roll=-0.42 pitch=0.26 rps=4.00 k=3
-TEL n=134 t=2667 ax=-0.018 ay=0.067 az=9.851 roll=0.39 pitch=-0.10 rps=4.00 k=1
-TEL n=135 t=2695 ax=0.035 ay=0.043 az=9.846 roll=0.25 pitch=0.20 rps=4.00 k=3
-TEL n=136 t=2715 ax=0.006 ay=-0.034 az=9.837 roll=-0.20 pitch=0.04 rps=4.00 k=3
-TEL n=137 t=2723 ax=0.054 ay=0.038 az=9.818 roll=0.22 pitch=0.32 rps=4.00 k=0
-TEL n=138 t=2751 ax=0.001 ay=-0.087 az=9.856 roll=-0.50 pitch=0.01 rps=4.00 k=2
-TEL n=139 t=2779 ax=-0.013 ay=0.048 az=9.880 roll=0.28 pitch=-0.08 rps=4.00 k=4
-TEL n=140 t=2795 ax=0.006 ay=0.024 az=9.827 roll=0.14 pitch=0.04 rps=4.00 k=3
-TEL n=141 t=2811 ax=-0.027 ay=-0.029 az=9.837 roll=-0.17 pitch=-0.16 rps=4.00 k=2
-TEL n=142 t=2835 ax=-0.003 ay=-0.034 az=9.827 roll=-0.20 pitch=-0.02 rps=4.00 k=3
-TEL n=143 t=2843 ax=-0.070 ay=-0.020 az=9.818 roll=-0.11 pitch=-0.41 rps=4.00 k=0
-TEL n=144 t=2875 ax=0.025 ay=0.024 az=9.837 roll=0.14 pitch=0.15 rps=4.00 k=3
-TEL n=145 t=2887 ax=0.011 ay=-0.000 az=9.851 roll=-0.00 pitch=0.06 rps=4.00 k=1
-TEL n=146 t=2915 ax=0.025 ay=-0.034 az=9.861 roll=-0.20 pitch=0.15 rps=4.00 k=3
-TEL n=147 t=2927 ax=-0.003 ay=-0.048 az=9.866 roll=-0.28 pitch=-0.02 rps=4.00 k=1
-TEL n=148 t=2959 ax=-0.094 ay=0.043 az=9.827 roll=0.25 pitch=-0.55 rps=4.00 k=4
-TEL n=149 t=2975 ax=-0.023 ay=0.019 az=9.870 roll=0.11 pitch=-0.13 rps=4.00 k=3
-TEL n=150 t=2995 ax=-0.013 ay=0.043 az=9.823 roll=0.25 pitch=-0.08 rps=4.00 k=3
-EST t=2999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=150 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
-TEL n=151 t=3019 ax=-0.051 ay=-0.000 az=9.837 roll=-0.00 pitch=-0.30 rps=4.00 k=4
-TEL n=152 t=3035 ax=0.030 ay=-0.043 az=9.827 roll=-0.25 pitch=0.18 rps=4.00 k=3
-TEL n=153 t=3047 ax=0.016 ay=0.086 az=9.899 roll=0.50 pitch=0.09 rps=4.00 k=1
-TEL n=154 t=3067 ax=0.054 ay=0.038 az=9.851 roll=0.22 pitch=0.31 rps=4.00 k=1
-TEL n=155 t=3087 ax=-0.037 ay=-0.063 az=9.846 roll=-0.36 pitch=-0.22 rps=4.00 k=1
-TEL n=156 t=3115 ax=-0.061 ay=-0.015 az=9.842 roll=-0.09 pitch=-0.35 rps=4.00 k=3
-TEL n=157 t=3139 ax=-0.090 ay=-0.034 az=9.856 roll=-0.20 pitch=-0.52 rps=4.00 k=4
-TEL n=158 t=3143 ax=-0.027 ay=-0.058 az=9.837 roll=-0.34 pitch=-0.16 rps=4.00 k=0
-TEL n=159 t=3167 ax=0.021 ay=-0.000 az=9.842 roll=-0.00 pitch=0.12 rps=4.00 k=1
-TEL n=160 t=3187 ax=-0.070 ay=-0.043 az=9.856 roll=-0.25 pitch=-0.41 rps=4.00 k=1
-TEL n=161 t=3203 ax=0.016 ay=-0.048 az=9.832 roll=-0.28 pitch=0.09 rps=4.00 k=0
-TEL n=162 t=3231 ax=-0.032 ay=-0.034 az=9.837 roll=-0.20 pitch=-0.19 rps=4.00 k=2
-TEL n=163 t=3247 ax=-0.051 ay=0.024 az=9.870 roll=0.14 pitch=-0.30 rps=4.00 k=1
-TEL n=164 t=3275 ax=0.001 ay=-0.034 az=9.933 roll=-0.20 pitch=0.01 rps=4.00 k=3
-TEL n=165 t=3287 ax=0.011 ay=-0.048 az=9.851 roll=-0.28 pitch=0.06 rps=4.00 k=1
-TEL n=166 t=3307 ax=-0.032 ay=-0.015 az=9.870 roll=-0.09 pitch=-0.19 rps=4.00 k=1
-TEL n=167 t=3339 ax=0.035 ay=0.014 az=9.842 roll=0.08 pitch=0.20 rps=4.00 k=4
-TEL n=168 t=3351 ax=0.001 ay=0.038 az=9.846 roll=0.22 pitch=0.01 rps=4.00 k=2
-TEL n=169 t=3371 ax=-0.061 ay=0.062 az=9.957 roll=0.36 pitch=-0.35 rps=4.00 k=2
-TEL n=170 t=3387 ax=-0.032 ay=0.033 az=9.827 roll=0.19 pitch=-0.19 rps=4.00 k=1
-TEL n=171 t=3407 ax=-0.023 ay=-0.029 az=9.837 roll=-0.17 pitch=-0.13 rps=4.00 k=1
-TEL n=172 t=3423 ax=0.025 ay=-0.005 az=9.837 roll=-0.03 pitch=0.15 rps=4.00 k=0
-TEL n=173 t=3455 ax=-0.018 ay=0.048 az=9.842 roll=0.28 pitch=-0.10 rps=4.00 k=3
-TEL n=174 t=3479 ax=-0.018 ay=0.071 az=9.861 roll=0.42 pitch=-0.10 rps=4.00 k=4
-TEL n=175 t=3487 ax=0.001 ay=-0.039 az=9.909 roll=-0.22 pitch=0.01 rps=4.00 k=1
-TEL n=176 t=3503 ax=-0.023 ay=0.057 az=9.851 roll=0.33 pitch=-0.13 rps=4.00 k=0
-TEL n=177 t=3523 ax=0.030 ay=-0.039 az=9.880 roll=-0.22 pitch=0.17 rps=4.00 k=0
-TEL n=178 t=3547 ax=0.030 ay=-0.039 az=9.861 roll=-0.22 pitch=0.17 rps=4.00 k=1
-TEL n=179 t=3563 ax=0.049 ay=-0.000 az=9.846 roll=-0.00 pitch=0.29 rps=4.00 k=0
-TEL n=180 t=3595 ax=0.068 ay=0.057 az=9.851 roll=0.33 pitch=0.40 rps=4.00 k=3
-TEL n=181 t=3607 ax=0.073 ay=-0.034 az=9.875 roll=-0.20 pitch=0.42 rps=4.00 k=1
-TEL n=182 t=3623 ax=-0.023 ay=0.004 az=9.842 roll=0.03 pitch=-0.13 rps=4.00 k=0
-TEL n=183 t=3643 ax=0.040 ay=-0.039 az=9.885 roll=-0.22 pitch=0.23 rps=4.00 k=0
-TEL n=184 t=3663 ax=-0.008 ay=-0.091 az=9.885 roll=-0.53 pitch=-0.05 rps=4.00 k=0
-TEL n=185 t=3683 ax=0.006 ay=-0.010 az=9.832 roll=-0.06 pitch=0.04 rps=4.00 k=0
-TEL n=186 t=3703 ax=0.025 ay=-0.015 az=9.808 roll=-0.09 pitch=0.15 rps=4.00 k=0
-TEL n=187 t=3727 ax=0.064 ay=0.038 az=9.875 roll=0.22 pitch=0.37 rps=4.00 k=1
-TEL n=188 t=3747 ax=-0.037 ay=-0.010 az=9.875 roll=-0.06 pitch=-0.21 rps=4.00 k=1
-TEL n=189 t=3771 ax=0.021 ay=-0.005 az=9.851 roll=-0.03 pitch=0.12 rps=4.00 k=2
-TEL n=190 t=3783 ax=0.054 ay=-0.015 az=9.899 roll=-0.09 pitch=0.31 rps=4.00 k=0
-TEL n=191 t=3811 ax=-0.013 ay=0.033 az=9.846 roll=0.19 pitch=-0.08 rps=4.00 k=2
-TEL n=192 t=3827 ax=-0.023 ay=0.057 az=9.870 roll=0.33 pitch=-0.13 rps=4.00 k=1
-TEL n=193 t=3855 ax=0.083 ay=-0.039 az=9.837 roll=-0.23 pitch=0.48 rps=4.00 k=3
-TEL n=194 t=3867 ax=0.068 ay=-0.072 az=9.870 roll=-0.42 pitch=0.40 rps=4.00 k=1
-TEL n=195 t=3887 ax=0.021 ay=-0.034 az=9.846 roll=-0.20 pitch=0.12 rps=4.00 k=1
-TEL n=196 t=3919 ax=-0.051 ay=-0.024 az=9.803 roll=-0.14 pitch=-0.30 rps=4.00 k=4
-TEL n=197 t=3939 ax=-0.023 ay=0.057 az=9.870 roll=0.33 pitch=-0.13 rps=4.00 k=4
-TEL n=198 t=3959 ax=0.016 ay=-0.024 az=9.851 roll=-0.14 pitch=0.09 rps=4.00 k=4
-TEL n=199 t=3975 ax=-0.037 ay=-0.077 az=9.837 roll=-0.45 pitch=-0.22 rps=4.00 k=3
-TEL n=200 t=3987 ax=0.040 ay=-0.067 az=9.875 roll=-0.39 pitch=0.23 rps=4.00 k=1
-EST t=3999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=222 err_i2c=0 anillo=200 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
-TEL n=201 t=4007 ax=-2.924 ay=-0.005 az=9.885 roll=-0.03 pitch=-16.48 rps=4.00 k=1
-TEL n=202 t=4031 ax=-2.929 ay=0.004 az=9.851 roll=0.03 pitch=-16.56 rps=4.00 k=2
-TEL n=203 t=4055 ax=-3.020 ay=-0.015 az=9.861 roll=-0.09 pitch=-17.03 rps=4.00 k=3
-TEL n=204 t=4079 ax=-2.967 ay=-0.010 az=9.827 roll=-0.06 pitch=-16.80 rps=4.00 k=4
-TEL n=205 t=4099 ax=-2.924 ay=0.057 az=9.870 roll=0.33 pitch=-16.50 rps=4.00 k=4
-TEL n=206 t=4111 ax=-2.996 ay=0.052 az=9.885 roll=0.30 pitch=-16.86 rps=4.00 k=2
-TEL n=207 t=4131 ax=-2.953 ay=-0.000 az=9.856 roll=-0.00 pitch=-16.68 rps=4.00 k=2
-DETECCION id=RC-ABCDEF-77AE0BF3-EV001 tipo_inicial=inclinacion motivo=permanencia t_ms=4155 inicio_condicion=4003 norma=10.18 roll=-0.11 pitch=-16.69
-ALERTA tipo=inclinacion t_det_ms=4155 t_det_us_arranque=6356000 LED=+0.223 ms BUZZER=+0.224 ms SERVO(orden)=+0.227 ms
-LATENCIA id=RC-ABCDEF-77AE0BF3-EV001 deteccion_ms=152.000 activacion_ms=0.005
-TEL n=208 t=4151 ax=-2.939 ay=0.009 az=9.904 roll=0.05 pitch=-16.53 rps=4.00 k=2
-TEL n=209 t=4167 ax=-2.977 ay=-0.010 az=9.851 roll=-0.06 pitch=-16.81 rps=4.00 k=1
-TEL n=210 t=4191 ax=-2.944 ay=-0.029 az=9.823 roll=-0.17 pitch=-16.68 rps=4.00 k=2
-TEL n=211 t=4219 ax=-5.419 ay=-0.010 az=9.837 roll=-0.06 pitch=-28.85 rps=4.00 k=4
-TEL n=212 t=4227 ax=-5.386 ay=0.048 az=9.904 roll=0.27 pitch=-28.54 rps=4.00 k=1
-TEL n=213 t=4251 ax=-5.433 ay=-0.005 az=9.837 roll=-0.03 pitch=-28.91 rps=3.86 k=2
-TEL n=214 t=4267 ax=-5.433 ay=0.081 az=9.875 roll=0.47 pitch=-28.82 rps=3.58 k=1
-TEL n=215 t=4283 ax=-5.457 ay=0.033 az=9.856 roll=0.19 pitch=-28.97 rps=3.34 k=0
-TEL n=216 t=4303 ax=-5.419 ay=-0.034 az=9.866 roll=-0.20 pitch=-28.78 rps=3.13 k=0
-TEL n=217 t=4327 ax=-5.410 ay=0.014 az=9.823 roll=0.08 pitch=-28.84 rps=2.95 k=1
-TEL n=218 t=4359 ax=-5.481 ay=-0.043 az=9.813 roll=-0.25 pitch=-29.19 rps=2.78 k=4
-TEL n=219 t=4367 ax=-5.386 ay=-0.082 az=9.827 roll=-0.48 pitch=-28.72 rps=2.64 k=1
-TEL n=220 t=4395 ax=-5.405 ay=-0.005 az=9.837 roll=-0.03 pitch=-28.79 rps=2.50 k=3
-TEL n=221 t=4411 ax=-7.023 ay=0.028 az=9.837 roll=0.17 pitch=-35.53 rps=2.38 k=2
-TEL n=222 t=4431 ax=-7.023 ay=-0.053 az=9.842 roll=-0.31 pitch=-35.51 rps=2.28 k=2
-TEL n=223 t=4459 ax=-7.062 ay=0.024 az=9.799 roll=0.14 pitch=-35.78 rps=2.18 k=4
-TEL n=224 t=4467 ax=-6.971 ay=0.024 az=9.870 roll=0.14 pitch=-35.23 rps=2.09 k=1
-TEL n=225 t=4495 ax=-7.081 ay=-0.067 az=9.846 roll=-0.39 pitch=-35.72 rps=2.00 k=3
-TEL n=226 t=4519 ax=-7.081 ay=0.024 az=9.808 roll=0.14 pitch=-35.83 rps=2.00 k=4
-TEL n=227 t=4539 ax=-7.033 ay=0.014 az=9.875 roll=0.08 pitch=-35.46 rps=2.00 k=4
-TEL n=228 t=4555 ax=-7.071 ay=0.038 az=9.827 roll=0.22 pitch=-35.74 rps=2.00 k=3
-TEL n=229 t=4567 ax=-7.062 ay=0.019 az=9.823 roll=0.11 pitch=-35.71 rps=2.00 k=1
-TEL n=230 t=4599 ax=-7.033 ay=0.048 az=9.846 roll=0.28 pitch=-35.54 rps=2.00 k=4
-TEL n=231 t=4619 ax=-6.995 ay=-0.048 az=9.842 roll=-0.28 pitch=-35.40 rps=2.00 k=4
+TEL n=7 t=131 ax=-0.042 ay=0.019 az=9.823 roll=0.08 pitch=-0.26 rps=0.00 k=2 roll_acc=0.11 pitch_acc=-0.24
+TEL n=8 t=151 ax=-0.013 ay=0.033 az=9.866 roll=0.08 pitch=-0.26 rps=0.00 k=2 roll_acc=0.19 pitch_acc=-0.08
+TEL n=9 t=179 ax=0.035 ay=-0.005 az=9.846 roll=0.08 pitch=-0.26 rps=0.00 k=4 roll_acc=-0.03 pitch_acc=0.20
+TEL n=10 t=195 ax=-0.023 ay=0.052 az=9.827 roll=0.08 pitch=-0.26 rps=0.00 k=3 roll_acc=0.30 pitch_acc=-0.13
+TEL n=11 t=219 ax=-0.018 ay=0.043 az=9.870 roll=0.08 pitch=-0.26 rps=0.00 k=4 roll_acc=0.25 pitch_acc=-0.10
+TEL n=12 t=235 ax=0.006 ay=0.024 az=9.832 roll=0.08 pitch=-0.26 rps=0.00 k=3 roll_acc=0.14 pitch_acc=0.04
+TEL n=13 t=247 ax=0.059 ay=-0.000 az=9.890 roll=0.08 pitch=-0.25 rps=0.00 k=1 roll_acc=-0.00 pitch_acc=0.34
+TEL n=14 t=263 ax=-0.070 ay=-0.020 az=9.861 roll=0.08 pitch=-0.25 rps=0.00 k=0 roll_acc=-0.11 pitch_acc=-0.41
+TEL n=15 t=283 ax=-0.018 ay=-0.039 az=9.870 roll=0.08 pitch=-0.25 rps=0.00 k=0 roll_acc=-0.22 pitch_acc=-0.10
+TEL n=16 t=307 ax=0.001 ay=-0.043 az=9.846 roll=0.08 pitch=-0.25 rps=0.00 k=1 roll_acc=-0.25 pitch_acc=0.01
+TEL n=17 t=331 ax=-0.008 ay=-0.020 az=9.823 roll=0.08 pitch=-0.25 rps=0.00 k=2 roll_acc=-0.11 pitch_acc=-0.05
+TEL n=18 t=347 ax=0.016 ay=0.091 az=9.861 roll=0.08 pitch=-0.25 rps=0.00 k=1 roll_acc=0.53 pitch_acc=0.09
+TEL n=19 t=379 ax=-0.027 ay=0.004 az=9.808 roll=0.08 pitch=-0.25 rps=0.00 k=4 roll_acc=0.03 pitch_acc=-0.16
+TEL n=20 t=399 ax=-0.070 ay=0.057 az=9.808 roll=0.07 pitch=-0.25 rps=0.00 k=4 roll_acc=0.33 pitch_acc=-0.41
+TEL n=21 t=419 ax=0.054 ay=0.014 az=9.823 roll=0.07 pitch=-0.25 rps=0.00 k=4 roll_acc=0.08 pitch_acc=0.32
+TEL n=22 t=435 ax=0.025 ay=-0.000 az=9.870 roll=0.07 pitch=-0.25 rps=0.00 k=3 roll_acc=-0.00 pitch_acc=0.15
+TEL n=23 t=459 ax=0.035 ay=0.048 az=9.861 roll=0.07 pitch=-0.25 rps=0.00 k=4 roll_acc=0.28 pitch_acc=0.20
+TEL n=24 t=479 ax=0.011 ay=-0.043 az=9.856 roll=0.07 pitch=-0.25 rps=0.00 k=4 roll_acc=-0.25 pitch_acc=0.06
+TEL n=25 t=487 ax=0.044 ay=0.009 az=9.832 roll=0.07 pitch=-0.24 rps=0.00 k=1 roll_acc=0.05 pitch_acc=0.26
+TEL n=26 t=503 ax=0.011 ay=0.004 az=9.870 roll=0.07 pitch=-0.24 rps=0.00 k=0 roll_acc=0.03 pitch_acc=0.06
+TEL n=27 t=539 ax=-0.042 ay=-0.010 az=9.846 roll=0.07 pitch=-0.24 rps=0.00 k=4 roll_acc=-0.06 pitch_acc=-0.24
+TEL n=28 t=543 ax=-0.056 ay=-0.015 az=9.880 roll=0.07 pitch=-0.24 rps=0.00 k=0 roll_acc=-0.09 pitch_acc=-0.33
+TEL n=29 t=579 ax=0.083 ay=0.091 az=9.875 roll=0.07 pitch=-0.24 rps=0.00 k=4 roll_acc=0.53 pitch_acc=0.48
+TEL n=30 t=595 ax=-0.051 ay=0.048 az=9.875 roll=0.07 pitch=-0.24 rps=0.00 k=3 roll_acc=0.28 pitch_acc=-0.30
+TEL n=31 t=611 ax=-0.023 ay=-0.005 az=9.870 roll=0.07 pitch=-0.24 rps=0.00 k=2 roll_acc=-0.03 pitch_acc=-0.13
+TEL n=32 t=627 ax=0.040 ay=-0.000 az=9.870 roll=0.07 pitch=-0.24 rps=0.00 k=1 roll_acc=-0.00 pitch_acc=0.23
+TEL n=33 t=643 ax=-0.104 ay=-0.020 az=9.823 roll=0.07 pitch=-0.24 rps=0.00 k=0 roll_acc=-0.11 pitch_acc=-0.61
+TEL n=34 t=675 ax=-0.032 ay=-0.043 az=9.918 roll=0.07 pitch=-0.23 rps=0.00 k=3 roll_acc=-0.25 pitch_acc=-0.19
+TEL n=35 t=691 ax=-0.056 ay=-0.043 az=9.933 roll=0.07 pitch=-0.23 rps=0.00 k=2 roll_acc=-0.25 pitch_acc=-0.32
+TEL n=36 t=703 ax=-0.042 ay=-0.000 az=9.851 roll=0.07 pitch=-0.23 rps=0.00 k=0 roll_acc=-0.00 pitch_acc=-0.24
+TEL n=37 t=735 ax=-0.061 ay=0.028 az=9.832 roll=0.07 pitch=-0.23 rps=0.00 k=3 roll_acc=0.17 pitch_acc=-0.35
+TEL n=38 t=759 ax=0.135 ay=-0.048 az=9.827 roll=0.07 pitch=-0.23 rps=0.00 k=4 roll_acc=-0.28 pitch_acc=0.79
+TEL n=39 t=779 ax=0.064 ay=-0.039 az=9.851 roll=0.07 pitch=-0.23 rps=0.00 k=4 roll_acc=-0.22 pitch_acc=0.37
+TEL n=40 t=791 ax=0.006 ay=-0.048 az=9.880 roll=0.07 pitch=-0.23 rps=0.00 k=2 roll_acc=-0.28 pitch_acc=0.04
+TEL n=41 t=803 ax=-0.047 ay=-0.005 az=9.803 roll=0.07 pitch=-0.23 rps=0.00 k=0 roll_acc=-0.03 pitch_acc=-0.27
+TEL n=42 t=823 ax=-0.085 ay=0.038 az=9.890 roll=0.07 pitch=-0.23 rps=0.00 k=0 roll_acc=0.22 pitch_acc=-0.49
+TEL n=43 t=851 ax=-0.075 ay=0.028 az=9.875 roll=0.06 pitch=-0.22 rps=0.00 k=2 roll_acc=0.16 pitch_acc=-0.44
+TEL n=44 t=875 ax=0.006 ay=0.009 az=9.856 roll=0.06 pitch=-0.22 rps=0.00 k=3 roll_acc=0.05 pitch_acc=0.04
+TEL n=45 t=883 ax=0.035 ay=0.048 az=9.803 roll=0.06 pitch=-0.22 rps=0.00 k=0 roll_acc=0.28 pitch_acc=0.20
+TEL n=46 t=919 ax=0.064 ay=-0.005 az=9.837 roll=0.06 pitch=-0.22 rps=0.00 k=4 roll_acc=-0.03 pitch_acc=0.37
+TEL n=47 t=939 ax=0.006 ay=-0.058 az=9.842 roll=0.06 pitch=-0.22 rps=0.00 k=4 roll_acc=-0.34 pitch_acc=0.04
+TEL n=48 t=947 ax=-0.003 ay=0.028 az=9.851 roll=0.06 pitch=-0.22 rps=0.00 k=1 roll_acc=0.16 pitch_acc=-0.02
+TEL n=49 t=963 ax=-0.027 ay=-0.048 az=9.861 roll=0.06 pitch=-0.22 rps=0.00 k=0 roll_acc=-0.28 pitch_acc=-0.16
+TEL n=50 t=987 ax=0.006 ay=0.004 az=9.846 roll=0.06 pitch=-0.22 rps=0.00 k=1 roll_acc=0.03 pitch_acc=0.04
+EST t=999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=402 err_i2c=0 anillo=50 perdidas=0 log_perdidas=0 wifi=0 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
+TEL n=51 t=1011 ax=0.016 ay=0.076 az=9.875 roll=0.06 pitch=-0.22 rps=0.00 k=2 roll_acc=0.44 pitch_acc=0.09
+TEL n=52 t=1027 ax=-0.042 ay=0.033 az=9.856 roll=0.06 pitch=-0.22 rps=0.00 k=1 roll_acc=0.19 pitch_acc=-0.24
+TEL n=53 t=1047 ax=0.006 ay=0.028 az=9.851 roll=0.06 pitch=-0.21 rps=0.00 k=1 roll_acc=0.16 pitch_acc=0.04
+TEL n=54 t=1067 ax=-0.061 ay=0.019 az=9.851 roll=0.06 pitch=-0.21 rps=0.00 k=1 roll_acc=0.11 pitch_acc=-0.35
+TEL n=55 t=1083 ax=0.092 ay=0.057 az=9.846 roll=0.06 pitch=-0.21 rps=0.00 k=0 roll_acc=0.33 pitch_acc=0.54
+TEL n=56 t=1111 ax=0.044 ay=-0.034 az=9.827 roll=0.06 pitch=-0.21 rps=0.00 k=2 roll_acc=-0.20 pitch_acc=0.26
+TEL n=57 t=1123 ax=-0.003 ay=-0.020 az=9.856 roll=0.06 pitch=-0.21 rps=0.00 k=0 roll_acc=-0.11 pitch_acc=-0.02
+TEL n=58 t=1151 ax=-0.042 ay=0.043 az=9.904 roll=0.06 pitch=-0.21 rps=0.00 k=2 roll_acc=0.25 pitch_acc=-0.24
+TEL n=59 t=1175 ax=0.030 ay=-0.020 az=9.856 roll=0.06 pitch=-0.21 rps=0.00 k=3 roll_acc=-0.11 pitch_acc=0.17
+TEL n=60 t=1195 ax=0.035 ay=0.009 az=9.813 roll=0.06 pitch=-0.21 rps=0.00 k=3 roll_acc=0.05 pitch_acc=0.20
+TEL n=61 t=1211 ax=0.025 ay=-0.082 az=9.832 roll=0.06 pitch=-0.21 rps=0.00 k=2 roll_acc=-0.48 pitch_acc=0.15
+TEL n=62 t=1235 ax=0.054 ay=-0.020 az=9.870 roll=0.06 pitch=-0.20 rps=0.00 k=3 roll_acc=-0.11 pitch_acc=0.31
+TEL n=63 t=1255 ax=0.001 ay=-0.034 az=9.827 roll=0.06 pitch=-0.20 rps=4.00 k=3 roll_acc=-0.20 pitch_acc=0.01
+TEL n=64 t=1275 ax=0.068 ay=-0.043 az=9.861 roll=0.06 pitch=-0.20 rps=4.00 k=3 roll_acc=-0.25 pitch_acc=0.40
+TEL n=65 t=1287 ax=-0.027 ay=0.014 az=9.866 roll=0.06 pitch=-0.20 rps=4.00 k=1 roll_acc=0.08 pitch_acc=-0.16
+TEL n=66 t=1315 ax=-0.023 ay=-0.000 az=9.885 roll=0.06 pitch=-0.20 rps=4.00 k=3 roll_acc=-0.00 pitch_acc=-0.13
+TEL n=67 t=1335 ax=-0.018 ay=-0.087 az=9.832 roll=0.06 pitch=-0.20 rps=4.00 k=3 roll_acc=-0.50 pitch_acc=-0.10
+TEL n=68 t=1347 ax=0.040 ay=-0.091 az=9.861 roll=0.06 pitch=-0.20 rps=4.00 k=1 roll_acc=-0.53 pitch_acc=0.23
+TEL n=69 t=1363 ax=0.025 ay=-0.077 az=9.846 roll=0.06 pitch=-0.20 rps=4.00 k=0 roll_acc=-0.45 pitch_acc=0.15
+TEL n=70 t=1387 ax=0.088 ay=-0.000 az=9.827 roll=0.06 pitch=-0.20 rps=4.00 k=1 roll_acc=-0.00 pitch_acc=0.51
+TEL n=71 t=1403 ax=0.016 ay=0.028 az=9.856 roll=0.06 pitch=-0.20 rps=4.00 k=0 roll_acc=0.16 pitch_acc=0.09
+TEL n=72 t=1439 ax=-0.018 ay=0.033 az=9.827 roll=0.05 pitch=-0.19 rps=4.00 k=4 roll_acc=0.19 pitch_acc=-0.10
+TEL n=73 t=1459 ax=0.092 ay=-0.024 az=9.904 roll=0.05 pitch=-0.19 rps=4.00 k=4 roll_acc=-0.14 pitch_acc=0.53
+TEL n=74 t=1467 ax=-0.018 ay=0.038 az=9.861 roll=0.05 pitch=-0.19 rps=4.00 k=1 roll_acc=0.22 pitch_acc=-0.10
+TEL n=75 t=1487 ax=-0.018 ay=-0.005 az=9.880 roll=0.05 pitch=-0.19 rps=4.00 k=1 roll_acc=-0.03 pitch_acc=-0.10
+TEL n=76 t=1507 ax=-0.027 ay=0.009 az=9.832 roll=0.05 pitch=-0.19 rps=4.00 k=1 roll_acc=0.05 pitch_acc=-0.16
+TEL n=77 t=1527 ax=0.016 ay=0.024 az=9.870 roll=0.05 pitch=-0.19 rps=4.00 k=1 roll_acc=0.14 pitch_acc=0.09
+TEL n=78 t=1547 ax=0.078 ay=-0.043 az=9.832 roll=0.05 pitch=-0.19 rps=4.00 k=1 roll_acc=-0.25 pitch_acc=0.45
+TEL n=79 t=1579 ax=0.025 ay=-0.000 az=9.818 roll=0.05 pitch=-0.19 rps=4.00 k=4 roll_acc=-0.00 pitch_acc=0.15
+TEL n=80 t=1587 ax=-0.018 ay=0.014 az=9.837 roll=0.05 pitch=-0.19 rps=4.00 k=1 roll_acc=0.08 pitch_acc=-0.10
+TEL n=81 t=1611 ax=-0.047 ay=-0.039 az=9.856 roll=0.05 pitch=-0.18 rps=4.00 k=2 roll_acc=-0.22 pitch_acc=-0.27
+TEL n=82 t=1623 ax=-0.042 ay=0.004 az=9.832 roll=0.05 pitch=-0.18 rps=4.00 k=0 roll_acc=0.03 pitch_acc=-0.24
+TEL n=83 t=1647 ax=0.001 ay=-0.020 az=9.846 roll=0.05 pitch=-0.18 rps=4.00 k=1 roll_acc=-0.11 pitch_acc=0.01
+TEL n=84 t=1671 ax=0.030 ay=-0.034 az=9.842 roll=0.05 pitch=-0.18 rps=4.00 k=2 roll_acc=-0.20 pitch_acc=0.18
+TEL n=85 t=1699 ax=-0.003 ay=-0.024 az=9.875 roll=0.05 pitch=-0.18 rps=4.00 k=4 roll_acc=-0.14 pitch_acc=-0.02
+TEL n=86 t=1715 ax=0.049 ay=0.048 az=9.827 roll=0.05 pitch=-0.18 rps=4.00 k=3 roll_acc=0.28 pitch_acc=0.29
+TEL n=87 t=1735 ax=-0.027 ay=0.024 az=9.856 roll=0.05 pitch=-0.18 rps=4.00 k=3 roll_acc=0.14 pitch_acc=-0.16
+TEL n=88 t=1743 ax=0.021 ay=-0.000 az=9.880 roll=0.05 pitch=-0.18 rps=4.00 k=0 roll_acc=-0.00 pitch_acc=0.12
+TEL n=89 t=1763 ax=-0.075 ay=-0.024 az=9.866 roll=0.05 pitch=-0.18 rps=4.00 k=0 roll_acc=-0.14 pitch_acc=-0.44
+TEL n=90 t=1783 ax=0.064 ay=-0.110 az=9.846 roll=0.05 pitch=-0.18 rps=4.00 k=0 roll_acc=-0.64 pitch_acc=0.37
+TEL n=91 t=1815 ax=0.016 ay=-0.020 az=9.832 roll=0.05 pitch=-0.17 rps=4.00 k=3 roll_acc=-0.11 pitch_acc=0.09
+TEL n=92 t=1823 ax=-0.075 ay=0.019 az=9.880 roll=0.05 pitch=-0.17 rps=4.00 k=0 roll_acc=0.11 pitch_acc=-0.44
+TEL n=93 t=1847 ax=0.021 ay=-0.058 az=9.875 roll=0.05 pitch=-0.17 rps=4.00 k=1 roll_acc=-0.34 pitch_acc=0.12
+TEL n=94 t=1871 ax=0.044 ay=-0.034 az=9.861 roll=0.05 pitch=-0.17 rps=4.00 k=2 roll_acc=-0.20 pitch_acc=0.26
+TEL n=95 t=1891 ax=-0.018 ay=0.052 az=9.842 roll=0.05 pitch=-0.17 rps=4.00 k=2 roll_acc=0.30 pitch_acc=-0.10
+TEL n=96 t=1903 ax=-0.032 ay=-0.020 az=9.899 roll=0.05 pitch=-0.17 rps=4.00 k=0 roll_acc=-0.11 pitch_acc=-0.19
+TEL n=97 t=1935 ax=0.044 ay=-0.015 az=9.823 roll=0.05 pitch=-0.17 rps=4.00 k=3 roll_acc=-0.09 pitch_acc=0.26
+TEL n=98 t=1947 ax=0.011 ay=0.024 az=9.851 roll=0.05 pitch=-0.17 rps=4.00 k=1 roll_acc=0.14 pitch_acc=0.06
+TEL n=99 t=1975 ax=0.011 ay=0.048 az=9.851 roll=0.05 pitch=-0.17 rps=4.00 k=3 roll_acc=0.28 pitch_acc=0.06
+TEL n=100 t=1987 ax=-0.032 ay=-0.024 az=9.846 roll=0.05 pitch=-0.17 rps=4.00 k=1 roll_acc=-0.14 pitch_acc=-0.19
+EST t=1999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=402 err_i2c=0 anillo=100 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
+TEL n=101 t=2003 ax=-0.032 ay=-0.029 az=9.827 roll=0.05 pitch=-0.17 rps=4.00 k=0 roll_acc=-0.17 pitch_acc=-0.19
+TEL n=102 t=2031 ax=-0.037 ay=-0.000 az=9.856 roll=0.05 pitch=-0.17 rps=4.00 k=2 roll_acc=-0.00 pitch_acc=-0.21
+TEL n=103 t=2055 ax=-0.018 ay=0.014 az=9.851 roll=0.04 pitch=-0.16 rps=4.00 k=3 roll_acc=0.08 pitch_acc=-0.10
+TEL n=104 t=2079 ax=0.001 ay=-0.005 az=9.803 roll=0.04 pitch=-0.16 rps=4.00 k=4 roll_acc=-0.03 pitch_acc=0.01
+TEL n=105 t=2099 ax=-0.047 ay=0.004 az=9.823 roll=0.04 pitch=-0.16 rps=4.00 k=4 roll_acc=0.03 pitch_acc=-0.27
+TEL n=106 t=2119 ax=-0.037 ay=-0.034 az=9.827 roll=0.04 pitch=-0.16 rps=4.00 k=4 roll_acc=-0.20 pitch_acc=-0.22
+TEL n=107 t=2127 ax=0.035 ay=-0.043 az=9.846 roll=0.04 pitch=-0.16 rps=4.00 k=1 roll_acc=-0.25 pitch_acc=0.20
+TEL n=108 t=2143 ax=0.011 ay=-0.043 az=9.861 roll=0.04 pitch=-0.16 rps=4.00 k=0 roll_acc=-0.25 pitch_acc=0.06
+TEL n=109 t=2171 ax=0.011 ay=0.048 az=9.813 roll=0.04 pitch=-0.16 rps=4.00 k=2 roll_acc=0.28 pitch_acc=0.06
+TEL n=110 t=2187 ax=-0.013 ay=0.043 az=9.880 roll=0.04 pitch=-0.16 rps=4.00 k=1 roll_acc=0.25 pitch_acc=-0.08
+TEL n=111 t=2215 ax=0.088 ay=-0.000 az=9.851 roll=0.04 pitch=-0.16 rps=4.00 k=3 roll_acc=-0.00 pitch_acc=0.51
+TEL n=112 t=2227 ax=0.044 ay=0.091 az=9.846 roll=0.04 pitch=-0.16 rps=4.00 k=1 roll_acc=0.53 pitch_acc=0.26
+TEL n=113 t=2259 ax=0.044 ay=-0.005 az=9.861 roll=0.04 pitch=-0.15 rps=4.00 k=4 roll_acc=-0.03 pitch_acc=0.26
+TEL n=114 t=2263 ax=-0.003 ay=0.033 az=9.827 roll=0.04 pitch=-0.15 rps=4.00 k=0 roll_acc=0.19 pitch_acc=-0.02
+TEL n=115 t=2295 ax=-0.023 ay=0.004 az=9.803 roll=0.04 pitch=-0.15 rps=4.00 k=3 roll_acc=0.03 pitch_acc=-0.13
+TEL n=116 t=2315 ax=-0.023 ay=-0.000 az=9.837 roll=0.04 pitch=-0.15 rps=4.00 k=3 roll_acc=-0.00 pitch_acc=-0.13
+TEL n=117 t=2339 ax=0.006 ay=0.019 az=9.794 roll=0.04 pitch=-0.15 rps=4.00 k=4 roll_acc=0.11 pitch_acc=0.04
+TEL n=118 t=2347 ax=0.011 ay=0.105 az=9.861 roll=0.04 pitch=-0.15 rps=4.00 k=1 roll_acc=0.61 pitch_acc=0.06
+TEL n=119 t=2363 ax=0.001 ay=0.043 az=9.880 roll=0.04 pitch=-0.15 rps=4.00 k=0 roll_acc=0.25 pitch_acc=0.01
+TEL n=120 t=2391 ax=-0.023 ay=-0.000 az=9.837 roll=0.04 pitch=-0.15 rps=4.00 k=2 roll_acc=-0.00 pitch_acc=-0.13
+TEL n=121 t=2411 ax=-0.032 ay=0.004 az=9.923 roll=0.04 pitch=-0.15 rps=4.00 k=2 roll_acc=0.03 pitch_acc=-0.19
+TEL n=122 t=2439 ax=0.068 ay=-0.039 az=9.851 roll=0.04 pitch=-0.15 rps=4.00 k=4 roll_acc=-0.22 pitch_acc=0.40
+TEL n=123 t=2443 ax=0.001 ay=-0.048 az=9.856 roll=0.04 pitch=-0.15 rps=4.00 k=0 roll_acc=-0.28 pitch_acc=0.01
+TEL n=124 t=2463 ax=-0.047 ay=-0.072 az=9.856 roll=0.04 pitch=-0.15 rps=4.00 k=0 roll_acc=-0.42 pitch_acc=-0.27
+TEL n=125 t=2495 ax=-0.018 ay=0.009 az=9.823 roll=0.04 pitch=-0.15 rps=4.00 k=3 roll_acc=0.05 pitch_acc=-0.10
+TEL n=126 t=2519 ax=0.044 ay=-0.048 az=9.851 roll=0.04 pitch=-0.15 rps=4.00 k=4 roll_acc=-0.28 pitch_acc=0.26
+TEL n=127 t=2535 ax=-0.047 ay=-0.015 az=9.818 roll=0.04 pitch=-0.15 rps=4.00 k=3 roll_acc=-0.09 pitch_acc=-0.27
+TEL n=128 t=2555 ax=-0.003 ay=0.024 az=9.837 roll=0.04 pitch=-0.15 rps=4.00 k=3 roll_acc=0.14 pitch_acc=-0.02
+TEL n=129 t=2579 ax=0.030 ay=-0.029 az=9.870 roll=0.04 pitch=-0.15 rps=4.00 k=4 roll_acc=-0.17 pitch_acc=0.17
+TEL n=130 t=2595 ax=-0.051 ay=0.076 az=9.823 roll=0.04 pitch=-0.15 rps=4.00 k=3 roll_acc=0.44 pitch_acc=-0.30
+TEL n=131 t=2607 ax=0.001 ay=-0.029 az=9.885 roll=0.04 pitch=-0.14 rps=4.00 k=1 roll_acc=-0.17 pitch_acc=0.01
+TEL n=132 t=2631 ax=0.044 ay=-0.015 az=9.823 roll=0.04 pitch=-0.14 rps=4.00 k=2 roll_acc=-0.09 pitch_acc=0.26
+TEL n=133 t=2655 ax=0.044 ay=-0.072 az=9.866 roll=0.03 pitch=-0.14 rps=4.00 k=3 roll_acc=-0.42 pitch_acc=0.26
+TEL n=134 t=2667 ax=-0.018 ay=0.067 az=9.851 roll=0.03 pitch=-0.14 rps=4.00 k=1 roll_acc=0.39 pitch_acc=-0.10
+TEL n=135 t=2695 ax=0.035 ay=0.043 az=9.846 roll=0.03 pitch=-0.14 rps=4.00 k=3 roll_acc=0.25 pitch_acc=0.20
+TEL n=136 t=2715 ax=0.006 ay=-0.034 az=9.837 roll=0.03 pitch=-0.14 rps=4.00 k=3 roll_acc=-0.20 pitch_acc=0.04
+TEL n=137 t=2723 ax=0.054 ay=0.038 az=9.818 roll=0.03 pitch=-0.14 rps=4.00 k=0 roll_acc=0.22 pitch_acc=0.32
+TEL n=138 t=2751 ax=0.001 ay=-0.087 az=9.856 roll=0.03 pitch=-0.14 rps=4.00 k=2 roll_acc=-0.50 pitch_acc=0.01
+TEL n=139 t=2779 ax=-0.013 ay=0.048 az=9.880 roll=0.03 pitch=-0.14 rps=4.00 k=4 roll_acc=0.28 pitch_acc=-0.08
+TEL n=140 t=2795 ax=0.006 ay=0.024 az=9.827 roll=0.03 pitch=-0.14 rps=4.00 k=3 roll_acc=0.14 pitch_acc=0.04
+TEL n=141 t=2811 ax=-0.027 ay=-0.029 az=9.837 roll=0.03 pitch=-0.14 rps=4.00 k=2 roll_acc=-0.17 pitch_acc=-0.16
+TEL n=142 t=2835 ax=-0.003 ay=-0.034 az=9.827 roll=0.03 pitch=-0.14 rps=4.00 k=3 roll_acc=-0.20 pitch_acc=-0.02
+TEL n=143 t=2843 ax=-0.070 ay=-0.020 az=9.818 roll=0.03 pitch=-0.14 rps=4.00 k=0 roll_acc=-0.11 pitch_acc=-0.41
+TEL n=144 t=2875 ax=0.025 ay=0.024 az=9.837 roll=0.03 pitch=-0.14 rps=4.00 k=3 roll_acc=0.14 pitch_acc=0.15
+TEL n=145 t=2887 ax=0.011 ay=-0.000 az=9.851 roll=0.03 pitch=-0.13 rps=4.00 k=1 roll_acc=-0.00 pitch_acc=0.06
+TEL n=146 t=2915 ax=0.025 ay=-0.034 az=9.861 roll=0.03 pitch=-0.13 rps=4.00 k=3 roll_acc=-0.20 pitch_acc=0.15
+TEL n=147 t=2927 ax=-0.003 ay=-0.048 az=9.866 roll=0.03 pitch=-0.13 rps=4.00 k=1 roll_acc=-0.28 pitch_acc=-0.02
+TEL n=148 t=2959 ax=-0.094 ay=0.043 az=9.827 roll=0.03 pitch=-0.13 rps=4.00 k=4 roll_acc=0.25 pitch_acc=-0.55
+TEL n=149 t=2975 ax=-0.023 ay=0.019 az=9.870 roll=0.03 pitch=-0.13 rps=4.00 k=3 roll_acc=0.11 pitch_acc=-0.13
+TEL n=150 t=2995 ax=-0.013 ay=0.043 az=9.823 roll=0.03 pitch=-0.13 rps=4.00 k=3 roll_acc=0.25 pitch_acc=-0.08
+EST t=2999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=402 err_i2c=0 anillo=150 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
+TEL n=151 t=3019 ax=-0.051 ay=-0.000 az=9.837 roll=0.03 pitch=-0.13 rps=4.00 k=4 roll_acc=-0.00 pitch_acc=-0.30
+TEL n=152 t=3035 ax=0.030 ay=-0.043 az=9.827 roll=0.03 pitch=-0.13 rps=4.00 k=3 roll_acc=-0.25 pitch_acc=0.18
+TEL n=153 t=3047 ax=0.016 ay=0.086 az=9.899 roll=0.03 pitch=-0.13 rps=4.00 k=1 roll_acc=0.50 pitch_acc=0.09
+TEL n=154 t=3067 ax=0.054 ay=0.038 az=9.851 roll=0.03 pitch=-0.13 rps=4.00 k=1 roll_acc=0.22 pitch_acc=0.31
+TEL n=155 t=3087 ax=-0.037 ay=-0.063 az=9.846 roll=0.03 pitch=-0.13 rps=4.00 k=1 roll_acc=-0.36 pitch_acc=-0.22
+TEL n=156 t=3115 ax=-0.061 ay=-0.015 az=9.842 roll=0.03 pitch=-0.12 rps=4.00 k=3 roll_acc=-0.09 pitch_acc=-0.35
+TEL n=157 t=3139 ax=-0.090 ay=-0.034 az=9.856 roll=0.03 pitch=-0.12 rps=4.00 k=4 roll_acc=-0.20 pitch_acc=-0.52
+TEL n=158 t=3143 ax=-0.027 ay=-0.058 az=9.837 roll=0.03 pitch=-0.12 rps=4.00 k=0 roll_acc=-0.34 pitch_acc=-0.16
+TEL n=159 t=3167 ax=0.021 ay=-0.000 az=9.842 roll=0.03 pitch=-0.12 rps=4.00 k=1 roll_acc=-0.00 pitch_acc=0.12
+TEL n=160 t=3187 ax=-0.070 ay=-0.043 az=9.856 roll=0.03 pitch=-0.12 rps=4.00 k=1 roll_acc=-0.25 pitch_acc=-0.41
+TEL n=161 t=3203 ax=0.016 ay=-0.048 az=9.832 roll=0.03 pitch=-0.12 rps=4.00 k=0 roll_acc=-0.28 pitch_acc=0.09
+TEL n=162 t=3231 ax=-0.032 ay=-0.034 az=9.837 roll=0.03 pitch=-0.12 rps=4.00 k=2 roll_acc=-0.20 pitch_acc=-0.19
+TEL n=163 t=3247 ax=-0.051 ay=0.024 az=9.870 roll=0.03 pitch=-0.12 rps=4.00 k=1 roll_acc=0.14 pitch_acc=-0.30
+TEL n=164 t=3275 ax=0.001 ay=-0.034 az=9.933 roll=0.03 pitch=-0.12 rps=4.00 k=3 roll_acc=-0.20 pitch_acc=0.01
+TEL n=165 t=3287 ax=0.011 ay=-0.048 az=9.851 roll=0.03 pitch=-0.12 rps=4.00 k=1 roll_acc=-0.28 pitch_acc=0.06
+TEL n=166 t=3307 ax=-0.032 ay=-0.015 az=9.870 roll=0.02 pitch=-0.12 rps=4.00 k=1 roll_acc=-0.09 pitch_acc=-0.19
+TEL n=167 t=3339 ax=0.035 ay=0.014 az=9.842 roll=0.02 pitch=-0.12 rps=4.00 k=4 roll_acc=0.08 pitch_acc=0.20
+TEL n=168 t=3351 ax=0.001 ay=0.038 az=9.846 roll=0.02 pitch=-0.12 rps=4.00 k=2 roll_acc=0.22 pitch_acc=0.01
+TEL n=169 t=3371 ax=-0.061 ay=0.062 az=9.957 roll=0.03 pitch=-0.12 rps=4.00 k=2 roll_acc=0.36 pitch_acc=-0.35
+TEL n=170 t=3387 ax=-0.032 ay=0.033 az=9.827 roll=0.03 pitch=-0.12 rps=4.00 k=1 roll_acc=0.19 pitch_acc=-0.19
+TEL n=171 t=3407 ax=-0.023 ay=-0.029 az=9.837 roll=0.02 pitch=-0.12 rps=4.00 k=1 roll_acc=-0.17 pitch_acc=-0.13
+TEL n=172 t=3423 ax=0.025 ay=-0.005 az=9.837 roll=0.02 pitch=-0.12 rps=4.00 k=0 roll_acc=-0.03 pitch_acc=0.15
+TEL n=173 t=3455 ax=-0.018 ay=0.048 az=9.842 roll=0.02 pitch=-0.12 rps=4.00 k=3 roll_acc=0.28 pitch_acc=-0.10
+TEL n=174 t=3479 ax=-0.018 ay=0.071 az=9.861 roll=0.02 pitch=-0.12 rps=4.00 k=4 roll_acc=0.42 pitch_acc=-0.10
+TEL n=175 t=3487 ax=0.001 ay=-0.039 az=9.909 roll=0.02 pitch=-0.12 rps=4.00 k=1 roll_acc=-0.22 pitch_acc=0.01
+TEL n=176 t=3503 ax=-0.023 ay=0.057 az=9.851 roll=0.02 pitch=-0.11 rps=4.00 k=0 roll_acc=0.33 pitch_acc=-0.13
+TEL n=177 t=3523 ax=0.030 ay=-0.039 az=9.880 roll=0.02 pitch=-0.12 rps=4.00 k=0 roll_acc=-0.22 pitch_acc=0.17
+TEL n=178 t=3547 ax=0.030 ay=-0.039 az=9.861 roll=0.02 pitch=-0.11 rps=4.00 k=1 roll_acc=-0.22 pitch_acc=0.17
+TEL n=179 t=3563 ax=0.049 ay=-0.000 az=9.846 roll=0.02 pitch=-0.11 rps=4.00 k=0 roll_acc=-0.00 pitch_acc=0.29
+TEL n=180 t=3595 ax=0.068 ay=0.057 az=9.851 roll=0.02 pitch=-0.11 rps=4.00 k=3 roll_acc=0.33 pitch_acc=0.40
+TEL n=181 t=3607 ax=0.073 ay=-0.034 az=9.875 roll=0.02 pitch=-0.11 rps=4.00 k=1 roll_acc=-0.20 pitch_acc=0.42
+TEL n=182 t=3623 ax=-0.023 ay=0.004 az=9.842 roll=0.02 pitch=-0.11 rps=4.00 k=0 roll_acc=0.03 pitch_acc=-0.13
+TEL n=183 t=3643 ax=0.040 ay=-0.039 az=9.885 roll=0.02 pitch=-0.11 rps=4.00 k=0 roll_acc=-0.22 pitch_acc=0.23
+TEL n=184 t=3663 ax=-0.008 ay=-0.091 az=9.885 roll=0.02 pitch=-0.11 rps=4.00 k=0 roll_acc=-0.53 pitch_acc=-0.05
+TEL n=185 t=3683 ax=0.006 ay=-0.010 az=9.832 roll=0.02 pitch=-0.11 rps=4.00 k=0 roll_acc=-0.06 pitch_acc=0.04
+TEL n=186 t=3703 ax=0.025 ay=-0.015 az=9.808 roll=0.02 pitch=-0.11 rps=4.00 k=0 roll_acc=-0.09 pitch_acc=0.15
+TEL n=187 t=3727 ax=0.064 ay=0.038 az=9.875 roll=0.02 pitch=-0.10 rps=4.00 k=1 roll_acc=0.22 pitch_acc=0.37
+TEL n=188 t=3747 ax=-0.037 ay=-0.010 az=9.875 roll=0.02 pitch=-0.10 rps=4.00 k=1 roll_acc=-0.06 pitch_acc=-0.21
+TEL n=189 t=3771 ax=0.021 ay=-0.005 az=9.851 roll=0.02 pitch=-0.10 rps=4.00 k=2 roll_acc=-0.03 pitch_acc=0.12
+TEL n=190 t=3783 ax=0.054 ay=-0.015 az=9.899 roll=0.02 pitch=-0.10 rps=4.00 k=0 roll_acc=-0.09 pitch_acc=0.31
+TEL n=191 t=3811 ax=-0.013 ay=0.033 az=9.846 roll=0.02 pitch=-0.10 rps=4.00 k=2 roll_acc=0.19 pitch_acc=-0.08
+TEL n=192 t=3827 ax=-0.023 ay=0.057 az=9.870 roll=0.02 pitch=-0.10 rps=4.00 k=1 roll_acc=0.33 pitch_acc=-0.13
+TEL n=193 t=3855 ax=0.083 ay=-0.039 az=9.837 roll=0.02 pitch=-0.10 rps=4.00 k=3 roll_acc=-0.23 pitch_acc=0.48
+TEL n=194 t=3867 ax=0.068 ay=-0.072 az=9.870 roll=0.02 pitch=-0.10 rps=4.00 k=1 roll_acc=-0.42 pitch_acc=0.40
+TEL n=195 t=3887 ax=0.021 ay=-0.034 az=9.846 roll=0.02 pitch=-0.10 rps=4.00 k=1 roll_acc=-0.20 pitch_acc=0.12
+TEL n=196 t=3919 ax=-0.051 ay=-0.024 az=9.803 roll=0.02 pitch=-0.10 rps=4.00 k=4 roll_acc=-0.14 pitch_acc=-0.30
+TEL n=197 t=3939 ax=-0.023 ay=0.057 az=9.870 roll=0.02 pitch=-0.10 rps=4.00 k=4 roll_acc=0.33 pitch_acc=-0.13
+TEL n=198 t=3959 ax=0.016 ay=-0.024 az=9.851 roll=0.02 pitch=-0.10 rps=4.00 k=4 roll_acc=-0.14 pitch_acc=0.09
+TEL n=199 t=3975 ax=-0.037 ay=-0.077 az=9.837 roll=0.02 pitch=-0.10 rps=4.00 k=3 roll_acc=-0.45 pitch_acc=-0.22
+TEL n=200 t=3987 ax=0.040 ay=-0.067 az=9.875 roll=0.02 pitch=-0.10 rps=4.00 k=1 roll_acc=-0.39 pitch_acc=0.23
+EST t=3999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=402 err_i2c=0 anillo=200 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
+TEL n=201 t=4007 ax=-2.924 ay=-0.005 az=9.885 roll=0.02 pitch=-0.13 rps=4.00 k=1 roll_acc=-0.03 pitch_acc=-16.48
+TEL n=202 t=4031 ax=-2.929 ay=0.004 az=9.851 roll=0.02 pitch=-0.23 rps=4.00 k=2 roll_acc=0.03 pitch_acc=-16.56
+TEL n=203 t=4055 ax=-3.020 ay=-0.015 az=9.861 roll=0.02 pitch=-0.33 rps=4.00 k=3 roll_acc=-0.09 pitch_acc=-17.03
+TEL n=204 t=4079 ax=-2.967 ay=-0.010 az=9.827 roll=0.02 pitch=-0.43 rps=4.00 k=4 roll_acc=-0.06 pitch_acc=-16.80
+TEL n=205 t=4099 ax=-2.924 ay=0.057 az=9.870 roll=0.02 pitch=-0.51 rps=4.00 k=4 roll_acc=0.33 pitch_acc=-16.50
+TEL n=206 t=4111 ax=-2.996 ay=0.052 az=9.885 roll=0.02 pitch=-0.56 rps=4.00 k=2 roll_acc=0.30 pitch_acc=-16.86
+TEL n=207 t=4131 ax=-2.953 ay=-0.000 az=9.856 roll=0.02 pitch=-0.64 rps=4.00 k=2 roll_acc=-0.00 pitch_acc=-16.68
+TEL n=208 t=4151 ax=-2.939 ay=0.009 az=9.904 roll=0.02 pitch=-0.72 rps=4.00 k=2 roll_acc=0.05 pitch_acc=-16.53
+TEL n=209 t=4167 ax=-2.977 ay=-0.010 az=9.851 roll=0.02 pitch=-0.78 rps=4.00 k=1 roll_acc=-0.06 pitch_acc=-16.81
+TEL n=210 t=4191 ax=-2.944 ay=-0.029 az=9.823 roll=0.02 pitch=-0.88 rps=4.00 k=2 roll_acc=-0.17 pitch_acc=-16.68
+TEL n=211 t=4219 ax=-5.419 ay=-0.010 az=9.837 roll=0.02 pitch=-1.05 rps=4.00 k=4 roll_acc=-0.06 pitch_acc=-28.85
+TEL n=212 t=4227 ax=-5.386 ay=0.048 az=9.904 roll=0.02 pitch=-1.10 rps=4.00 k=1 roll_acc=0.27 pitch_acc=-28.54
+TEL n=213 t=4251 ax=-5.433 ay=-0.005 az=9.837 roll=0.02 pitch=-1.27 rps=3.86 k=2 roll_acc=-0.03 pitch_acc=-28.91
+TEL n=214 t=4267 ax=-5.433 ay=0.081 az=9.875 roll=0.02 pitch=-1.38 rps=3.58 k=1 roll_acc=0.47 pitch_acc=-28.82
+TEL n=215 t=4283 ax=-5.457 ay=0.033 az=9.856 roll=0.02 pitch=-1.49 rps=3.34 k=0 roll_acc=0.19 pitch_acc=-28.97
+TEL n=216 t=4303 ax=-5.419 ay=-0.034 az=9.866 roll=0.02 pitch=-1.62 rps=3.13 k=0 roll_acc=-0.20 pitch_acc=-28.78
+TEL n=217 t=4327 ax=-5.410 ay=0.014 az=9.823 roll=0.02 pitch=-1.79 rps=2.95 k=1 roll_acc=0.08 pitch_acc=-28.84
+TEL n=218 t=4359 ax=-5.481 ay=-0.043 az=9.813 roll=0.02 pitch=-2.00 rps=2.78 k=4 roll_acc=-0.25 pitch_acc=-29.19
+TEL n=219 t=4367 ax=-5.386 ay=-0.082 az=9.827 roll=0.02 pitch=-2.06 rps=2.64 k=1 roll_acc=-0.48 pitch_acc=-28.72
+TEL n=220 t=4395 ax=-5.405 ay=-0.005 az=9.837 roll=0.02 pitch=-2.24 rps=2.50 k=3 roll_acc=-0.03 pitch_acc=-28.79
+TEL n=221 t=4411 ax=-7.023 ay=0.028 az=9.837 roll=0.02 pitch=-2.37 rps=2.38 k=2 roll_acc=0.17 pitch_acc=-35.53
+TEL n=222 t=4431 ax=-7.023 ay=-0.053 az=9.842 roll=0.02 pitch=-2.53 rps=2.28 k=2 roll_acc=-0.31 pitch_acc=-35.51
+TEL n=223 t=4459 ax=-7.062 ay=0.024 az=9.799 roll=0.02 pitch=-2.77 rps=2.18 k=4 roll_acc=0.14 pitch_acc=-35.78
+TEL n=224 t=4467 ax=-6.971 ay=0.024 az=9.870 roll=0.02 pitch=-2.83 rps=2.09 k=1 roll_acc=0.14 pitch_acc=-35.23
+TEL n=225 t=4495 ax=-7.081 ay=-0.067 az=9.846 roll=0.02 pitch=-3.06 rps=2.00 k=3 roll_acc=-0.39 pitch_acc=-35.72
+TEL n=226 t=4519 ax=-7.081 ay=0.024 az=9.808 roll=0.02 pitch=-3.25 rps=2.00 k=4 roll_acc=0.14 pitch_acc=-35.83
+TEL n=227 t=4539 ax=-7.033 ay=0.014 az=9.875 roll=0.02 pitch=-3.41 rps=2.00 k=4 roll_acc=0.08 pitch_acc=-35.46
+TEL n=228 t=4555 ax=-7.071 ay=0.038 az=9.827 roll=0.02 pitch=-3.54 rps=2.00 k=3 roll_acc=0.22 pitch_acc=-35.74
+TEL n=229 t=4567 ax=-7.062 ay=0.019 az=9.823 roll=0.02 pitch=-3.64 rps=2.00 k=1 roll_acc=0.11 pitch_acc=-35.71
+TEL n=230 t=4599 ax=-7.033 ay=0.048 az=9.846 roll=0.02 pitch=-3.89 rps=2.00 k=4 roll_acc=0.28 pitch_acc=-35.54
+TEL n=231 t=4619 ax=-6.995 ay=-0.048 az=9.842 roll=0.02 pitch=-4.05 rps=2.00 k=4 roll_acc=-0.28 pitch_acc=-35.40
 RED POST /sesiones sesion intento=1 bytes=70 hash=731C9EBD resultado=-1 t_ms=4620
-TEL n=232 t=4627 ax=-6.966 ay=0.024 az=9.832 roll=0.14 pitch=-35.32 rps=2.00 k=1
-TEL n=233 t=4647 ax=-6.961 ay=0.076 az=9.880 roll=0.44 pitch=-35.17 rps=2.00 k=1
-TEL n=234 t=4663 ax=-7.090 ay=0.024 az=9.823 roll=0.14 pitch=-35.82 rps=2.00 k=0
-TEL n=235 t=4683 ax=-7.038 ay=0.024 az=9.866 roll=0.14 pitch=-35.50 rps=2.00 k=0
-TEL n=236 t=4711 ax=-7.066 ay=-0.024 az=9.818 roll=-0.14 pitch=-35.74 rps=2.00 k=2
-TEL n=237 t=4739 ax=-7.042 ay=-0.043 az=9.818 roll=-0.25 pitch=-35.65 rps=2.00 k=4
-TEL n=238 t=4747 ax=-6.971 ay=0.004 az=9.913 roll=0.03 pitch=-35.11 rps=2.00 k=1
-TEL n=239 t=4775 ax=-7.066 ay=0.019 az=9.813 roll=0.11 pitch=-35.76 rps=2.00 k=3
-TEL n=240 t=4791 ax=-7.038 ay=0.048 az=9.870 roll=0.28 pitch=-35.49 rps=2.00 k=2
-TEL n=241 t=4815 ax=-6.995 ay=-0.010 az=9.880 roll=-0.06 pitch=-35.30 rps=2.00 k=3
-TEL n=242 t=4835 ax=-7.033 ay=-0.043 az=9.842 roll=-0.25 pitch=-35.55 rps=2.00 k=3
-TEL n=243 t=4859 ax=-6.999 ay=0.004 az=9.861 roll=0.03 pitch=-35.37 rps=2.00 k=4
-TEL n=244 t=4879 ax=-7.004 ay=0.043 az=9.870 roll=0.25 pitch=-35.36 rps=2.00 k=4
-TEL n=245 t=4883 ax=-7.109 ay=0.033 az=9.784 roll=0.19 pitch=-36.00 rps=2.00 k=0
-TEL n=246 t=4919 ax=-5.328 ay=-0.015 az=9.861 roll=-0.09 pitch=-28.38 rps=2.00 k=4
-TEL n=247 t=4939 ax=-5.472 ay=-0.020 az=9.799 roll=-0.11 pitch=-29.18 rps=2.00 k=4
-TEL n=248 t=4959 ax=-5.419 ay=0.038 az=9.846 roll=0.22 pitch=-28.83 rps=2.00 k=4
-TEL n=249 t=4975 ax=-5.419 ay=0.062 az=9.837 roll=0.36 pitch=-28.85 rps=2.00 k=3
-TEL n=250 t=4995 ax=-5.395 ay=0.019 az=9.913 roll=0.11 pitch=-28.56 rps=2.00 k=3
-EST t=4999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=227 err_i2c=0 anillo=250 perdidas=0 log_perdidas=0 wifi=1 estado=EMERGENCIA heap_libre=200000 heap_bloque_max=110000 heap_min=180000
-TEL n=251 t=5007 ax=-5.390 ay=0.004 az=9.880 roll=0.03 pitch=-28.62 rps=2.00 k=1
-TEL n=252 t=5027 ax=-5.323 ay=0.014 az=9.899 roll=0.08 pitch=-28.27 rps=2.00 k=1
-TEL n=253 t=5059 ax=-5.395 ay=-0.039 az=9.842 roll=-0.23 pitch=-28.73 rps=2.00 k=4
-TEL n=254 t=5075 ax=-5.390 ay=-0.015 az=9.909 roll=-0.09 pitch=-28.55 rps=2.00 k=3
-TEL n=255 t=5087 ax=-5.414 ay=0.076 az=9.818 roll=0.44 pitch=-28.88 rps=2.00 k=1
-TEL n=256 t=5119 ax=-2.958 ay=-0.043 az=9.832 roll=-0.25 pitch=-16.74 rps=2.00 k=4
-TEL n=257 t=5123 ax=-2.920 ay=-0.020 az=9.861 roll=-0.11 pitch=-16.49 rps=2.00 k=0
-TEL n=258 t=5147 ax=-2.910 ay=0.014 az=9.890 roll=0.08 pitch=-16.40 rps=2.00 k=1
-TEL n=259 t=5163 ax=-2.915 ay=0.028 az=9.846 roll=0.17 pitch=-16.49 rps=2.00 k=0
-TEL n=260 t=5187 ax=-2.924 ay=-0.005 az=9.851 roll=-0.03 pitch=-16.53 rps=2.00 k=1
-TEL n=261 t=5203 ax=-2.944 ay=-0.043 az=9.842 roll=-0.25 pitch=-16.65 rps=2.00 k=0
-TEL n=262 t=5235 ax=-2.972 ay=-0.000 az=9.832 roll=-0.00 pitch=-16.82 rps=2.00 k=3
-TEL n=263 t=5243 ax=-2.915 ay=0.028 az=9.856 roll=0.16 pitch=-16.47 rps=2.00 k=0
-TEL n=264 t=5263 ax=-2.948 ay=0.009 az=9.846 roll=0.05 pitch=-16.67 rps=2.00 k=0
-TEL n=265 t=5295 ax=-3.006 ay=0.033 az=9.866 roll=0.19 pitch=-16.94 rps=2.00 k=3
-TEL n=266 t=5307 ax=-0.104 ay=0.043 az=9.823 roll=0.25 pitch=-0.61 rps=2.00 k=1
-TEL n=267 t=5323 ax=0.025 ay=0.028 az=9.813 roll=0.17 pitch=0.15 rps=2.00 k=0
-TEL n=268 t=5347 ax=-0.018 ay=0.004 az=9.827 roll=0.03 pitch=-0.10 rps=2.00 k=1
-TEL n=269 t=5375 ax=-0.008 ay=0.019 az=9.904 roll=0.11 pitch=-0.05 rps=2.00 k=3
-TEL n=270 t=5399 ax=-0.070 ay=0.019 az=9.832 roll=0.11 pitch=-0.41 rps=2.00 k=4
-TEL n=271 t=5407 ax=0.064 ay=-0.010 az=9.827 roll=-0.06 pitch=0.37 rps=2.00 k=1
-TEL n=272 t=5439 ax=-0.008 ay=0.062 az=9.846 roll=0.36 pitch=-0.05 rps=2.00 k=4
-TEL n=273 t=5447 ax=-0.023 ay=-0.053 az=9.837 roll=-0.31 pitch=-0.13 rps=2.00 k=1
-TEL n=274 t=5463 ax=0.030 ay=-0.101 az=9.803 roll=-0.59 pitch=0.18 rps=2.00 k=0
-TEL n=275 t=5495 ax=-0.018 ay=-0.000 az=9.866 roll=-0.00 pitch=-0.10 rps=2.00 k=3
-TEL n=276 t=5515 ax=-0.051 ay=-0.024 az=9.832 roll=-0.14 pitch=-0.30 rps=2.00 k=3
-TEL n=277 t=5535 ax=-0.051 ay=-0.000 az=9.837 roll=-0.00 pitch=-0.30 rps=2.00 k=3
-TEL n=278 t=5547 ax=0.030 ay=-0.015 az=9.842 roll=-0.09 pitch=0.18 rps=2.00 k=1
-TEL n=279 t=5575 ax=0.011 ay=-0.039 az=9.827 roll=-0.23 pitch=0.06 rps=2.00 k=3
-TEL n=280 t=5583 ax=-0.013 ay=-0.005 az=9.856 roll=-0.03 pitch=-0.08 rps=2.00 k=0
-TEL n=281 t=5607 ax=-0.085 ay=0.004 az=9.827 roll=0.03 pitch=-0.49 rps=2.00 k=1
-TEL n=282 t=5635 ax=-0.051 ay=0.014 az=9.856 roll=0.08 pitch=-0.30 rps=2.00 k=3
-TEL n=283 t=5651 ax=0.016 ay=-0.000 az=9.856 roll=-0.00 pitch=0.09 rps=2.00 k=2
-TEL n=284 t=5663 ax=-0.013 ay=-0.005 az=9.885 roll=-0.03 pitch=-0.08 rps=2.00 k=0
-TEL n=285 t=5699 ax=0.001 ay=0.009 az=9.918 roll=0.05 pitch=0.01 rps=2.00 k=4
-TEL n=286 t=5715 ax=0.025 ay=0.028 az=9.837 roll=0.17 pitch=0.15 rps=2.00 k=3
-TEL n=287 t=5723 ax=0.016 ay=0.043 az=9.813 roll=0.25 pitch=0.09 rps=2.00 k=0
-TEL n=288 t=5743 ax=0.059 ay=0.009 az=9.842 roll=0.05 pitch=0.34 rps=2.00 k=0
-TEL n=289 t=5767 ax=0.001 ay=0.052 az=9.846 roll=0.30 pitch=0.01 rps=2.00 k=1
-EVENTO id=RC-ABCDEF-77AE0BF3-EV001 tipo=inclinacion gravedad=media t_inicio=3003 t_det=4155 t_act=4156 t_fin=5799 cierre=condicion_ausente lat_det_ms=152.000 lat_act_ms=0.005
-TEL n=290 t=5787 ax=-0.013 ay=-0.005 az=9.846 roll=-0.03 pitch=-0.08 rps=2.00 k=1
-TEL n=291 t=5807 ax=0.035 ay=0.028 az=9.856 roll=0.16 pitch=0.20 rps=2.00 k=1
-TEL n=292 t=5823 ax=0.064 ay=-0.015 az=9.818 roll=-0.09 pitch=0.37 rps=2.00 k=0
-TEL n=293 t=5855 ax=0.035 ay=-0.000 az=9.837 roll=-0.00 pitch=0.20 rps=2.00 k=3
-TEL n=294 t=5871 ax=0.078 ay=0.009 az=9.842 roll=0.05 pitch=0.45 rps=2.00 k=2
-TEL n=295 t=5883 ax=-0.070 ay=0.028 az=9.846 roll=0.17 pitch=-0.41 rps=2.00 k=0
-TEL n=296 t=5919 ax=-0.018 ay=-0.015 az=9.885 roll=-0.09 pitch=-0.10 rps=2.00 k=4
-TEL n=297 t=5931 ax=0.025 ay=-0.058 az=9.885 roll=-0.34 pitch=0.15 rps=2.00 k=2
-TEL n=298 t=5951 ax=-0.047 ay=-0.010 az=9.861 roll=-0.06 pitch=-0.27 rps=2.00 k=2
-TEL n=299 t=5967 ax=0.025 ay=-0.039 az=9.837 roll=-0.23 pitch=0.15 rps=2.00 k=1
-TEL n=300 t=5983 ax=0.107 ay=0.009 az=9.894 roll=0.05 pitch=0.62 rps=2.00 k=0
-EST t=6003 f_adq=250.0 f_dec=250.0 f_tel=49.8 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=224 err_i2c=0 anillo=300 perdidas=0 log_perdidas=0 wifi=1 estado=REARME heap_libre=200000 heap_bloque_max=110000 heap_min=180000
-TEL n=301 t=6011 ax=-0.032 ay=-0.020 az=9.870 roll=-0.11 pitch=-0.19 rps=2.00 k=2
-TEL n=302 t=6035 ax=-0.013 ay=0.052 az=9.894 roll=0.30 pitch=-0.08 rps=2.00 k=3
-TEL n=303 t=6059 ax=0.040 ay=0.048 az=9.861 roll=0.28 pitch=0.23 rps=2.00 k=4
-TEL n=304 t=6079 ax=-0.066 ay=-0.043 az=9.880 roll=-0.25 pitch=-0.38 rps=2.00 k=4
-TEL n=305 t=6083 ax=0.049 ay=0.043 az=9.866 roll=0.25 pitch=0.29 rps=2.00 k=0
-TEL n=306 t=6111 ax=-0.003 ay=0.033 az=9.851 roll=0.19 pitch=-0.02 rps=2.00 k=2
-TEL n=307 t=6127 ax=0.006 ay=-0.063 az=9.842 roll=-0.36 pitch=0.04 rps=2.00 k=1
-TEL n=308 t=6159 ax=-0.023 ay=0.028 az=9.875 roll=0.16 pitch=-0.13 rps=2.00 k=4
-TEL n=309 t=6163 ax=0.016 ay=0.028 az=9.813 roll=0.17 pitch=0.09 rps=2.00 k=0
-TEL n=310 t=6199 ax=0.011 ay=-0.005 az=9.866 roll=-0.03 pitch=0.06 rps=2.00 k=4
-TEL n=311 t=6215 ax=0.054 ay=-0.039 az=9.823 roll=-0.23 pitch=0.32 rps=2.00 k=3
-TEL n=312 t=6239 ax=-0.042 ay=0.024 az=9.870 roll=0.14 pitch=-0.24 rps=2.00 k=4
-TEL n=313 t=6259 ax=-0.008 ay=-0.077 az=9.861 roll=-0.45 pitch=-0.05 rps=2.00 k=4
-TEL n=314 t=6275 ax=-0.047 ay=0.019 az=9.866 roll=0.11 pitch=-0.27 rps=2.00 k=3
-DETECTOR listo t_ms=6299
-TEL n=315 t=6295 ax=-0.003 ay=0.071 az=9.851 roll=0.42 pitch=-0.02 rps=2.00 k=3
-TEL n=316 t=6303 ax=0.044 ay=0.057 az=9.856 roll=0.33 pitch=0.26 rps=2.00 k=0
-TEL n=317 t=6339 ax=-0.018 ay=-0.005 az=9.861 roll=-0.03 pitch=-0.10 rps=2.00 k=4
-TEL n=318 t=6359 ax=-0.023 ay=-0.015 az=9.842 roll=-0.09 pitch=-0.13 rps=2.00 k=4
-TEL n=319 t=6379 ax=-0.008 ay=-0.072 az=9.890 roll=-0.42 pitch=-0.05 rps=2.00 k=4
-TEL n=320 t=6395 ax=-0.032 ay=-0.000 az=9.842 roll=-0.00 pitch=-0.19 rps=2.00 k=3
-TEL n=321 t=6411 ax=-0.008 ay=0.019 az=9.894 roll=0.11 pitch=-0.05 rps=2.00 k=2
-TEL n=322 t=6435 ax=0.059 ay=-0.000 az=9.813 roll=-0.00 pitch=0.34 rps=2.00 k=3
-TEL n=323 t=6459 ax=-0.042 ay=0.052 az=9.875 roll=0.30 pitch=-0.24 rps=2.00 k=4
-TEL n=324 t=6463 ax=-0.051 ay=0.024 az=9.870 roll=0.14 pitch=-0.30 rps=2.00 k=0
-TEL n=325 t=6483 ax=-0.042 ay=-0.005 az=9.823 roll=-0.03 pitch=-0.24 rps=2.00 k=0
-TEL n=326 t=6515 ax=-0.013 ay=-0.000 az=9.842 roll=-0.00 pitch=-0.08 rps=1.93 k=3
-TEL n=327 t=6531 ax=-0.051 ay=0.038 az=9.856 roll=0.22 pitch=-0.30 rps=1.85 k=2
-TEL n=328 t=6559 ax=0.040 ay=-0.082 az=9.832 roll=-0.48 pitch=0.23 rps=1.79 k=4
-TEL n=329 t=6563 ax=-0.008 ay=-0.000 az=9.842 roll=-0.00 pitch=-0.05 rps=1.73 k=0
-TEL n=330 t=6591 ax=-0.008 ay=0.014 az=9.866 roll=0.08 pitch=-0.05 rps=1.67 k=2
-TEL n=331 t=6607 ax=0.044 ay=0.048 az=9.875 roll=0.28 pitch=0.26 rps=1.61 k=1
-TEL n=332 t=6627 ax=-0.037 ay=-0.063 az=9.851 roll=-0.36 pitch=-0.21 rps=1.56 k=1
-TEL n=333 t=6643 ax=0.025 ay=0.052 az=9.846 roll=0.30 pitch=0.15 rps=1.52 k=0
-TEL n=334 t=6663 ax=-0.051 ay=0.009 az=9.856 roll=0.05 pitch=-0.30 rps=1.50 k=0
-TEL n=335 t=6683 ax=0.030 ay=-0.029 az=9.866 roll=-0.17 pitch=0.17 rps=1.50 k=0
-TEL n=336 t=6715 ax=-0.023 ay=-0.020 az=9.832 roll=-0.11 pitch=-0.13 rps=1.50 k=3
-TEL n=337 t=6727 ax=0.011 ay=-0.005 az=9.837 roll=-0.03 pitch=0.06 rps=1.50 k=1
-TEL n=338 t=6743 ax=-0.061 ay=-0.029 az=9.890 roll=-0.17 pitch=-0.35 rps=1.50 k=0
-TEL n=339 t=6771 ax=0.064 ay=-0.020 az=9.799 roll=-0.11 pitch=0.37 rps=1.50 k=2
-TEL n=340 t=6787 ax=-0.023 ay=-0.010 az=9.823 roll=-0.06 pitch=-0.13 rps=1.50 k=1
-TEL n=341 t=6807 ax=0.035 ay=-0.020 az=9.808 roll=-0.11 pitch=0.20 rps=1.50 k=1
-TEL n=342 t=6831 ax=-0.023 ay=-0.034 az=9.861 roll=-0.20 pitch=-0.13 rps=1.50 k=2
-TEL n=343 t=6851 ax=-0.008 ay=-0.010 az=9.880 roll=-0.06 pitch=-0.05 rps=1.50 k=2
-TEL n=344 t=6879 ax=-0.032 ay=-0.015 az=9.803 roll=-0.09 pitch=-0.19 rps=1.50 k=4
-TEL n=345 t=6883 ax=-0.090 ay=-0.034 az=9.870 roll=-0.20 pitch=-0.52 rps=1.50 k=0
-TEL n=346 t=6907 ax=0.030 ay=0.019 az=9.856 roll=0.11 pitch=0.17 rps=1.50 k=1
-TEL n=347 t=6939 ax=-0.008 ay=-0.029 az=9.870 roll=-0.17 pitch=-0.05 rps=1.50 k=4
-TEL n=348 t=6951 ax=0.121 ay=-0.039 az=9.846 roll=-0.23 pitch=0.70 rps=1.50 k=2
-TEL n=349 t=6963 ax=0.025 ay=-0.010 az=9.885 roll=-0.06 pitch=0.15 rps=1.50 k=0
-TEL n=350 t=6991 ax=-0.037 ay=-0.005 az=9.846 roll=-0.03 pitch=-0.22 rps=1.50 k=2
-EST t=7003 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=224 err_i2c=0 anillo=350 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
-TEL n=351 t=7003 ax=0.054 ay=-0.034 az=9.942 roll=-0.20 pitch=0.31 rps=1.50 k=0
-TEL n=352 t=7035 ax=0.030 ay=-0.029 az=9.846 roll=-0.17 pitch=0.18 rps=1.50 k=3
-TEL n=353 t=7047 ax=0.068 ay=0.062 az=9.837 roll=0.36 pitch=0.40 rps=1.50 k=1
-TEL n=354 t=7063 ax=-0.080 ay=0.067 az=9.856 roll=0.39 pitch=-0.47 rps=1.50 k=0
-TEL n=355 t=7087 ax=-0.066 ay=-0.024 az=9.885 roll=-0.14 pitch=-0.38 rps=1.50 k=1
-TEL n=356 t=7111 ax=-0.056 ay=-0.010 az=9.846 roll=-0.06 pitch=-0.33 rps=1.50 k=2
-TEL n=357 t=7135 ax=0.016 ay=-0.000 az=9.813 roll=-0.00 pitch=0.09 rps=1.50 k=3
-TEL n=358 t=7143 ax=-0.090 ay=0.004 az=9.885 roll=0.03 pitch=-0.52 rps=1.50 k=0
-TEL n=359 t=7175 ax=0.049 ay=0.048 az=9.885 roll=0.28 pitch=0.29 rps=1.50 k=3
-TEL n=360 t=7191 ax=0.016 ay=0.028 az=9.885 roll=0.16 pitch=0.09 rps=1.50 k=2
-TEL n=361 t=7207 ax=0.006 ay=0.048 az=9.789 roll=0.28 pitch=0.04 rps=1.50 k=1
-TEL n=362 t=7235 ax=-0.018 ay=0.004 az=9.832 roll=0.03 pitch=-0.10 rps=1.50 k=3
-TEL n=363 t=7247 ax=0.064 ay=0.038 az=9.827 roll=0.22 pitch=0.37 rps=1.50 k=1
-TEL n=364 t=7275 ax=0.021 ay=-0.015 az=9.832 roll=-0.09 pitch=0.12 rps=1.50 k=3
-TEL n=365 t=7291 ax=0.016 ay=-0.005 az=9.942 roll=-0.03 pitch=0.09 rps=1.50 k=2
-TEL n=366 t=7303 ax=-0.037 ay=0.004 az=9.846 roll=0.03 pitch=-0.22 rps=1.50 k=0
-TEL n=367 t=7323 ax=-0.003 ay=0.019 az=9.842 roll=0.11 pitch=-0.02 rps=1.50 k=0
-TEL n=368 t=7351 ax=0.049 ay=-0.058 az=9.851 roll=-0.34 pitch=0.29 rps=1.50 k=2
-TEL n=369 t=7375 ax=-0.008 ay=-0.058 az=9.827 roll=-0.34 pitch=-0.05 rps=1.50 k=3
-TEL n=370 t=7391 ax=-0.013 ay=0.028 az=9.861 roll=0.16 pitch=-0.08 rps=1.50 k=2
-TEL n=371 t=7403 ax=0.025 ay=0.009 az=9.885 roll=0.05 pitch=0.15 rps=1.50 k=0
-TEL n=372 t=7427 ax=0.025 ay=-0.125 az=9.851 roll=-0.73 pitch=0.15 rps=1.50 k=1
-TEL n=373 t=7451 ax=-0.042 ay=0.019 az=9.880 roll=0.11 pitch=-0.24 rps=1.50 k=2
-TEL n=374 t=7471 ax=-0.008 ay=0.048 az=9.846 roll=0.28 pitch=-0.05 rps=1.50 k=2
-TEL n=375 t=7499 ax=-0.003 ay=0.004 az=9.866 roll=0.03 pitch=-0.02 rps=1.50 k=4
-TEL n=376 t=7511 ax=0.049 ay=0.019 az=9.837 roll=0.11 pitch=0.29 rps=1.50 k=2
-TEL n=377 t=7539 ax=0.035 ay=0.019 az=9.808 roll=0.11 pitch=0.20 rps=1.50 k=4
-TEL n=378 t=7547 ax=0.006 ay=0.014 az=9.866 roll=0.08 pitch=0.04 rps=1.50 k=1
-TEL n=379 t=7575 ax=-0.008 ay=0.052 az=9.846 roll=0.30 pitch=-0.05 rps=1.50 k=3
-TEL n=380 t=7591 ax=0.030 ay=-0.053 az=9.885 roll=-0.31 pitch=0.17 rps=1.50 k=2
-TEL n=381 t=7611 ax=-0.027 ay=-0.034 az=9.851 roll=-0.20 pitch=-0.16 rps=1.50 k=2
-TEL n=382 t=7623 ax=0.025 ay=0.024 az=9.846 roll=0.14 pitch=0.15 rps=1.50 k=0
-TEL n=383 t=7651 ax=-0.023 ay=0.019 az=9.885 roll=0.11 pitch=-0.13 rps=1.50 k=2
-TEL n=384 t=7675 ax=-0.018 ay=-0.048 az=9.856 roll=-0.28 pitch=-0.10 rps=1.50 k=3
-TEL n=385 t=7699 ax=-0.003 ay=-0.029 az=9.894 roll=-0.17 pitch=-0.02 rps=1.50 k=4
-TEL n=386 t=7707 ax=0.030 ay=-0.024 az=9.832 roll=-0.14 pitch=0.18 rps=1.50 k=1
-TEL n=387 t=7723 ax=0.025 ay=-0.039 az=9.837 roll=-0.23 pitch=0.15 rps=1.50 k=0
-TEL n=388 t=7743 ax=-0.085 ay=-0.087 az=9.880 roll=-0.50 pitch=-0.49 rps=1.50 k=0
-TEL n=389 t=7779 ax=0.030 ay=-0.005 az=9.870 roll=-0.03 pitch=0.17 rps=1.50 k=4
-TEL n=390 t=7791 ax=0.001 ay=-0.005 az=9.913 roll=-0.03 pitch=0.01 rps=1.50 k=2
-TEL n=391 t=7815 ax=-0.013 ay=0.062 az=9.866 roll=0.36 pitch=-0.08 rps=1.50 k=3
-TEL n=392 t=7823 ax=0.035 ay=0.004 az=9.842 roll=0.03 pitch=0.20 rps=1.50 k=0
-TEL n=393 t=7851 ax=0.097 ay=-0.048 az=9.851 roll=-0.28 pitch=0.56 rps=1.50 k=2
-TEL n=394 t=7879 ax=-0.042 ay=0.004 az=9.823 roll=0.03 pitch=-0.24 rps=1.50 k=4
-TEL n=395 t=7891 ax=0.011 ay=-0.063 az=9.866 roll=-0.36 pitch=0.06 rps=1.50 k=2
-TEL n=396 t=7903 ax=-0.013 ay=-0.015 az=9.856 roll=-0.09 pitch=-0.08 rps=1.50 k=0
-TEL n=397 t=7923 ax=-0.066 ay=-0.015 az=9.904 roll=-0.09 pitch=-0.38 rps=1.50 k=0
-TEL n=398 t=7955 ax=0.059 ay=-0.000 az=9.837 roll=-0.00 pitch=0.34 rps=1.50 k=3
-TEL n=399 t=7967 ax=-0.003 ay=-0.020 az=9.846 roll=-0.11 pitch=-0.02 rps=1.50 k=1
-TEL n=400 t=7983 ax=0.025 ay=0.033 az=9.851 roll=0.19 pitch=0.15 rps=1.50 k=0
-EST t=8003 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=224 err_i2c=0 anillo=400 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
-TEL n=401 t=8003 ax=-0.047 ay=0.019 az=9.823 roll=0.11 pitch=-0.27 rps=1.46 k=0
-TEL n=402 t=8027 ax=-0.013 ay=0.038 az=9.880 roll=0.22 pitch=-0.08 rps=1.42 k=1
-TEL n=403 t=8043 ax=-0.061 ay=-0.063 az=9.870 roll=-0.36 pitch=-0.35 rps=1.38 k=0
-TEL n=404 t=8075 ax=-0.047 ay=-0.053 az=9.861 roll=-0.31 pitch=-0.27 rps=1.34 k=3
+TEL n=232 t=4627 ax=-6.966 ay=0.024 az=9.832 roll=0.02 pitch=-4.11 rps=2.00 k=1 roll_acc=0.14 pitch_acc=-35.32
+TEL n=233 t=4647 ax=-6.961 ay=0.076 az=9.880 roll=0.02 pitch=-4.27 rps=2.00 k=1 roll_acc=0.44 pitch_acc=-35.17
+TEL n=234 t=4663 ax=-7.090 ay=0.024 az=9.823 roll=0.02 pitch=-4.39 rps=2.00 k=0 roll_acc=0.14 pitch_acc=-35.82
+TEL n=235 t=4683 ax=-7.038 ay=0.024 az=9.866 roll=0.02 pitch=-4.55 rps=2.00 k=0 roll_acc=0.14 pitch_acc=-35.50
+TEL n=236 t=4711 ax=-7.066 ay=-0.024 az=9.818 roll=0.02 pitch=-4.77 rps=2.00 k=2 roll_acc=-0.14 pitch_acc=-35.74
+TEL n=237 t=4739 ax=-7.042 ay=-0.043 az=9.818 roll=0.02 pitch=-4.98 rps=2.00 k=4 roll_acc=-0.25 pitch_acc=-35.65
+TEL n=238 t=4747 ax=-6.971 ay=0.004 az=9.913 roll=0.02 pitch=-5.04 rps=2.00 k=1 roll_acc=0.03 pitch_acc=-35.11
+TEL n=239 t=4775 ax=-7.066 ay=0.019 az=9.813 roll=0.02 pitch=-5.25 rps=2.00 k=3 roll_acc=0.11 pitch_acc=-35.76
+TEL n=240 t=4791 ax=-7.038 ay=0.048 az=9.870 roll=0.02 pitch=-5.38 rps=2.00 k=2 roll_acc=0.28 pitch_acc=-35.49
+TEL n=241 t=4815 ax=-6.995 ay=-0.010 az=9.880 roll=0.02 pitch=-5.56 rps=2.00 k=3 roll_acc=-0.06 pitch_acc=-35.30
+TEL n=242 t=4835 ax=-7.033 ay=-0.043 az=9.842 roll=0.02 pitch=-5.70 rps=2.00 k=3 roll_acc=-0.25 pitch_acc=-35.55
+TEL n=243 t=4859 ax=-6.999 ay=0.004 az=9.861 roll=0.02 pitch=-5.88 rps=2.00 k=4 roll_acc=0.03 pitch_acc=-35.37
+TEL n=244 t=4879 ax=-7.004 ay=0.043 az=9.870 roll=0.02 pitch=-6.03 rps=2.00 k=4 roll_acc=0.25 pitch_acc=-35.36
+TEL n=245 t=4883 ax=-7.109 ay=0.033 az=9.784 roll=0.02 pitch=-6.06 rps=2.00 k=0 roll_acc=0.19 pitch_acc=-36.00
+TEL n=246 t=4919 ax=-5.328 ay=-0.015 az=9.861 roll=0.02 pitch=-6.29 rps=2.00 k=4 roll_acc=-0.09 pitch_acc=-28.38
+TEL n=247 t=4939 ax=-5.472 ay=-0.020 az=9.799 roll=0.02 pitch=-6.40 rps=2.00 k=4 roll_acc=-0.11 pitch_acc=-29.18
+TEL n=248 t=4959 ax=-5.419 ay=0.038 az=9.846 roll=0.02 pitch=-6.52 rps=2.00 k=4 roll_acc=0.22 pitch_acc=-28.83
+TEL n=249 t=4975 ax=-5.419 ay=0.062 az=9.837 roll=0.02 pitch=-6.61 rps=2.00 k=3 roll_acc=0.36 pitch_acc=-28.85
+TEL n=250 t=4995 ax=-5.395 ay=0.019 az=9.913 roll=0.02 pitch=-6.72 rps=2.00 k=3 roll_acc=0.11 pitch_acc=-28.56
+EST t=4999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=402 err_i2c=0 anillo=250 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
+TEL n=251 t=5007 ax=-5.390 ay=0.004 az=9.880 roll=0.02 pitch=-6.78 rps=2.00 k=1 roll_acc=0.03 pitch_acc=-28.62
+TEL n=252 t=5027 ax=-5.323 ay=0.014 az=9.899 roll=0.02 pitch=-6.89 rps=2.00 k=1 roll_acc=0.08 pitch_acc=-28.27
+TEL n=253 t=5059 ax=-5.395 ay=-0.039 az=9.842 roll=0.02 pitch=-7.07 rps=2.00 k=4 roll_acc=-0.23 pitch_acc=-28.73
+TEL n=254 t=5075 ax=-5.390 ay=-0.015 az=9.909 roll=0.02 pitch=-7.15 rps=2.00 k=3 roll_acc=-0.09 pitch_acc=-28.55
+TEL n=255 t=5087 ax=-5.414 ay=0.076 az=9.818 roll=0.02 pitch=-7.22 rps=2.00 k=1 roll_acc=0.44 pitch_acc=-28.88
+TEL n=256 t=5119 ax=-2.958 ay=-0.043 az=9.832 roll=0.02 pitch=-7.33 rps=2.00 k=4 roll_acc=-0.25 pitch_acc=-16.74
+TEL n=257 t=5123 ax=-2.920 ay=-0.020 az=9.861 roll=0.02 pitch=-7.34 rps=2.00 k=0 roll_acc=-0.11 pitch_acc=-16.49
+TEL n=258 t=5147 ax=-2.910 ay=0.014 az=9.890 roll=0.02 pitch=-7.40 rps=2.00 k=1 roll_acc=0.08 pitch_acc=-16.40
+TEL n=259 t=5163 ax=-2.915 ay=0.028 az=9.846 roll=0.02 pitch=-7.43 rps=2.00 k=0 roll_acc=0.17 pitch_acc=-16.49
+TEL n=260 t=5187 ax=-2.924 ay=-0.005 az=9.851 roll=0.01 pitch=-7.49 rps=2.00 k=1 roll_acc=-0.03 pitch_acc=-16.53
+TEL n=261 t=5203 ax=-2.944 ay=-0.043 az=9.842 roll=0.02 pitch=-7.52 rps=2.00 k=0 roll_acc=-0.25 pitch_acc=-16.65
+TEL n=262 t=5235 ax=-2.972 ay=-0.000 az=9.832 roll=0.01 pitch=-7.60 rps=2.00 k=3 roll_acc=-0.00 pitch_acc=-16.82
+TEL n=263 t=5243 ax=-2.915 ay=0.028 az=9.856 roll=0.01 pitch=-7.62 rps=2.00 k=0 roll_acc=0.16 pitch_acc=-16.47
+TEL n=264 t=5263 ax=-2.948 ay=0.009 az=9.846 roll=0.01 pitch=-7.66 rps=2.00 k=0 roll_acc=0.05 pitch_acc=-16.67
+TEL n=265 t=5295 ax=-3.006 ay=0.033 az=9.866 roll=0.01 pitch=-7.73 rps=2.00 k=3 roll_acc=0.19 pitch_acc=-16.94
+TEL n=266 t=5307 ax=-0.104 ay=0.043 az=9.823 roll=0.01 pitch=-7.73 rps=2.00 k=1 roll_acc=0.25 pitch_acc=-0.61
+TEL n=267 t=5323 ax=0.025 ay=0.028 az=9.813 roll=0.02 pitch=-7.70 rps=2.00 k=0 roll_acc=0.17 pitch_acc=0.15
+TEL n=268 t=5347 ax=-0.018 ay=0.004 az=9.827 roll=0.02 pitch=-7.65 rps=2.00 k=1 roll_acc=0.03 pitch_acc=-0.10
+TEL n=269 t=5375 ax=-0.008 ay=0.019 az=9.904 roll=0.02 pitch=-7.60 rps=2.00 k=3 roll_acc=0.11 pitch_acc=-0.05
+TEL n=270 t=5399 ax=-0.070 ay=0.019 az=9.832 roll=0.01 pitch=-7.55 rps=2.00 k=4 roll_acc=0.11 pitch_acc=-0.41
+TEL n=271 t=5407 ax=0.064 ay=-0.010 az=9.827 roll=0.01 pitch=-7.54 rps=2.00 k=1 roll_acc=-0.06 pitch_acc=0.37
+TEL n=272 t=5439 ax=-0.008 ay=0.062 az=9.846 roll=0.02 pitch=-7.48 rps=2.00 k=4 roll_acc=0.36 pitch_acc=-0.05
+TEL n=273 t=5447 ax=-0.023 ay=-0.053 az=9.837 roll=0.01 pitch=-7.46 rps=2.00 k=1 roll_acc=-0.31 pitch_acc=-0.13
+TEL n=274 t=5463 ax=0.030 ay=-0.101 az=9.803 roll=0.01 pitch=-7.43 rps=2.00 k=0 roll_acc=-0.59 pitch_acc=0.18
+TEL n=275 t=5495 ax=-0.018 ay=-0.000 az=9.866 roll=0.02 pitch=-7.37 rps=2.00 k=3 roll_acc=-0.00 pitch_acc=-0.10
+TEL n=276 t=5515 ax=-0.051 ay=-0.024 az=9.832 roll=0.02 pitch=-7.34 rps=2.00 k=3 roll_acc=-0.14 pitch_acc=-0.30
+TEL n=277 t=5535 ax=-0.051 ay=-0.000 az=9.837 roll=0.02 pitch=-7.30 rps=2.00 k=3 roll_acc=-0.00 pitch_acc=-0.30
+TEL n=278 t=5547 ax=0.030 ay=-0.015 az=9.842 roll=0.02 pitch=-7.28 rps=2.00 k=1 roll_acc=-0.09 pitch_acc=0.18
+TEL n=279 t=5575 ax=0.011 ay=-0.039 az=9.827 roll=0.02 pitch=-7.23 rps=2.00 k=3 roll_acc=-0.23 pitch_acc=0.06
+TEL n=280 t=5583 ax=-0.013 ay=-0.005 az=9.856 roll=0.02 pitch=-7.21 rps=2.00 k=0 roll_acc=-0.03 pitch_acc=-0.08
+TEL n=281 t=5607 ax=-0.085 ay=0.004 az=9.827 roll=0.02 pitch=-7.17 rps=2.00 k=1 roll_acc=0.03 pitch_acc=-0.49
+TEL n=282 t=5635 ax=-0.051 ay=0.014 az=9.856 roll=0.02 pitch=-7.12 rps=2.00 k=3 roll_acc=0.08 pitch_acc=-0.30
+TEL n=283 t=5651 ax=0.016 ay=-0.000 az=9.856 roll=0.02 pitch=-7.09 rps=2.00 k=2 roll_acc=-0.00 pitch_acc=0.09
+TEL n=284 t=5663 ax=-0.013 ay=-0.005 az=9.885 roll=0.01 pitch=-7.07 rps=2.00 k=0 roll_acc=-0.03 pitch_acc=-0.08
+TEL n=285 t=5699 ax=0.001 ay=0.009 az=9.918 roll=0.01 pitch=-7.01 rps=2.00 k=4 roll_acc=0.05 pitch_acc=0.01
+TEL n=286 t=5715 ax=0.025 ay=0.028 az=9.837 roll=0.01 pitch=-6.98 rps=2.00 k=3 roll_acc=0.17 pitch_acc=0.15
+TEL n=287 t=5723 ax=0.016 ay=0.043 az=9.813 roll=0.01 pitch=-6.97 rps=2.00 k=0 roll_acc=0.25 pitch_acc=0.09
+TEL n=288 t=5743 ax=0.059 ay=0.009 az=9.842 roll=0.01 pitch=-6.93 rps=2.00 k=0 roll_acc=0.05 pitch_acc=0.34
+TEL n=289 t=5767 ax=0.001 ay=0.052 az=9.846 roll=0.02 pitch=-6.89 rps=2.00 k=1 roll_acc=0.30 pitch_acc=0.01
+TEL n=290 t=5787 ax=-0.013 ay=-0.005 az=9.846 roll=0.01 pitch=-6.86 rps=2.00 k=1 roll_acc=-0.03 pitch_acc=-0.08
+TEL n=291 t=5807 ax=0.035 ay=0.028 az=9.856 roll=0.01 pitch=-6.82 rps=2.00 k=1 roll_acc=0.16 pitch_acc=0.20
+TEL n=292 t=5823 ax=0.064 ay=-0.015 az=9.818 roll=0.01 pitch=-6.79 rps=2.00 k=0 roll_acc=-0.09 pitch_acc=0.37
+TEL n=293 t=5855 ax=0.035 ay=-0.000 az=9.837 roll=0.01 pitch=-6.74 rps=2.00 k=3 roll_acc=-0.00 pitch_acc=0.20
+TEL n=294 t=5871 ax=0.078 ay=0.009 az=9.842 roll=0.01 pitch=-6.71 rps=2.00 k=2 roll_acc=0.05 pitch_acc=0.45
+TEL n=295 t=5883 ax=-0.070 ay=0.028 az=9.846 roll=0.01 pitch=-6.69 rps=2.00 k=0 roll_acc=0.17 pitch_acc=-0.41
+TEL n=296 t=5919 ax=-0.018 ay=-0.015 az=9.885 roll=0.01 pitch=-6.63 rps=2.00 k=4 roll_acc=-0.09 pitch_acc=-0.10
+TEL n=297 t=5931 ax=0.025 ay=-0.058 az=9.885 roll=0.01 pitch=-6.61 rps=2.00 k=2 roll_acc=-0.34 pitch_acc=0.15
+TEL n=298 t=5951 ax=-0.047 ay=-0.010 az=9.861 roll=0.01 pitch=-6.58 rps=2.00 k=2 roll_acc=-0.06 pitch_acc=-0.27
+TEL n=299 t=5967 ax=0.025 ay=-0.039 az=9.837 roll=0.01 pitch=-6.55 rps=2.00 k=1 roll_acc=-0.23 pitch_acc=0.15
+TEL n=300 t=5983 ax=0.107 ay=0.009 az=9.894 roll=0.01 pitch=-6.53 rps=2.00 k=0 roll_acc=0.05 pitch_acc=0.62
+EST t=5999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=402 err_i2c=0 anillo=300 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
+TEL n=301 t=6011 ax=-0.032 ay=-0.020 az=9.870 roll=0.01 pitch=-6.48 rps=2.00 k=2 roll_acc=-0.11 pitch_acc=-0.19
+TEL n=302 t=6035 ax=-0.013 ay=0.052 az=9.894 roll=0.01 pitch=-6.44 rps=2.00 k=3 roll_acc=0.30 pitch_acc=-0.08
+TEL n=303 t=6059 ax=0.040 ay=0.048 az=9.861 roll=0.01 pitch=-6.40 rps=2.00 k=4 roll_acc=0.28 pitch_acc=0.23
+TEL n=304 t=6079 ax=-0.066 ay=-0.043 az=9.880 roll=0.01 pitch=-6.37 rps=2.00 k=4 roll_acc=-0.25 pitch_acc=-0.38
+TEL n=305 t=6083 ax=0.049 ay=0.043 az=9.866 roll=0.01 pitch=-6.36 rps=2.00 k=0 roll_acc=0.25 pitch_acc=0.29
+TEL n=306 t=6111 ax=-0.003 ay=0.033 az=9.851 roll=0.01 pitch=-6.32 rps=2.00 k=2 roll_acc=0.19 pitch_acc=-0.02
+TEL n=307 t=6127 ax=0.006 ay=-0.063 az=9.842 roll=0.01 pitch=-6.29 rps=2.00 k=1 roll_acc=-0.36 pitch_acc=0.04
+TEL n=308 t=6159 ax=-0.023 ay=0.028 az=9.875 roll=0.01 pitch=-6.24 rps=2.00 k=4 roll_acc=0.16 pitch_acc=-0.13
+TEL n=309 t=6163 ax=0.016 ay=0.028 az=9.813 roll=0.01 pitch=-6.24 rps=2.00 k=0 roll_acc=0.17 pitch_acc=0.09
+TEL n=310 t=6199 ax=0.011 ay=-0.005 az=9.866 roll=0.01 pitch=-6.18 rps=2.00 k=4 roll_acc=-0.03 pitch_acc=0.06
+TEL n=311 t=6215 ax=0.054 ay=-0.039 az=9.823 roll=0.01 pitch=-6.16 rps=2.00 k=3 roll_acc=-0.23 pitch_acc=0.32
+TEL n=312 t=6239 ax=-0.042 ay=0.024 az=9.870 roll=0.01 pitch=-6.12 rps=2.00 k=4 roll_acc=0.14 pitch_acc=-0.24
+TEL n=313 t=6259 ax=-0.008 ay=-0.077 az=9.861 roll=0.01 pitch=-6.09 rps=2.00 k=4 roll_acc=-0.45 pitch_acc=-0.05
+TEL n=314 t=6275 ax=-0.047 ay=0.019 az=9.866 roll=0.01 pitch=-6.07 rps=2.00 k=3 roll_acc=0.11 pitch_acc=-0.27
+TEL n=315 t=6295 ax=-0.003 ay=0.071 az=9.851 roll=0.01 pitch=-6.03 rps=2.00 k=3 roll_acc=0.42 pitch_acc=-0.02
+TEL n=316 t=6303 ax=0.044 ay=0.057 az=9.856 roll=0.01 pitch=-6.02 rps=2.00 k=0 roll_acc=0.33 pitch_acc=0.26
+TEL n=317 t=6339 ax=-0.018 ay=-0.005 az=9.861 roll=0.01 pitch=-5.97 rps=2.00 k=4 roll_acc=-0.03 pitch_acc=-0.10
+TEL n=318 t=6359 ax=-0.023 ay=-0.015 az=9.842 roll=0.01 pitch=-5.94 rps=2.00 k=4 roll_acc=-0.09 pitch_acc=-0.13
+TEL n=319 t=6379 ax=-0.008 ay=-0.072 az=9.890 roll=0.01 pitch=-5.91 rps=2.00 k=4 roll_acc=-0.42 pitch_acc=-0.05
+TEL n=320 t=6395 ax=-0.032 ay=-0.000 az=9.842 roll=0.01 pitch=-5.89 rps=2.00 k=3 roll_acc=-0.00 pitch_acc=-0.19
+TEL n=321 t=6411 ax=-0.008 ay=0.019 az=9.894 roll=0.01 pitch=-5.86 rps=2.00 k=2 roll_acc=0.11 pitch_acc=-0.05
+TEL n=322 t=6435 ax=0.059 ay=-0.000 az=9.813 roll=0.01 pitch=-5.83 rps=2.00 k=3 roll_acc=-0.00 pitch_acc=0.34
+TEL n=323 t=6459 ax=-0.042 ay=0.052 az=9.875 roll=0.01 pitch=-5.79 rps=2.00 k=4 roll_acc=0.30 pitch_acc=-0.24
+TEL n=324 t=6463 ax=-0.051 ay=0.024 az=9.870 roll=0.01 pitch=-5.79 rps=2.00 k=0 roll_acc=0.14 pitch_acc=-0.30
+TEL n=325 t=6483 ax=-0.042 ay=-0.005 az=9.823 roll=0.01 pitch=-5.76 rps=2.00 k=0 roll_acc=-0.03 pitch_acc=-0.24
+TEL n=326 t=6515 ax=-0.013 ay=-0.000 az=9.842 roll=0.01 pitch=-5.71 rps=1.93 k=3 roll_acc=-0.00 pitch_acc=-0.08
+TEL n=327 t=6531 ax=-0.051 ay=0.038 az=9.856 roll=0.01 pitch=-5.69 rps=1.85 k=2 roll_acc=0.22 pitch_acc=-0.30
+TEL n=328 t=6559 ax=0.040 ay=-0.082 az=9.832 roll=0.01 pitch=-5.65 rps=1.79 k=4 roll_acc=-0.48 pitch_acc=0.23
+TEL n=329 t=6563 ax=-0.008 ay=-0.000 az=9.842 roll=0.01 pitch=-5.65 rps=1.73 k=0 roll_acc=-0.00 pitch_acc=-0.05
+TEL n=330 t=6591 ax=-0.008 ay=0.014 az=9.866 roll=0.01 pitch=-5.61 rps=1.67 k=2 roll_acc=0.08 pitch_acc=-0.05
+TEL n=331 t=6607 ax=0.044 ay=0.048 az=9.875 roll=0.01 pitch=-5.59 rps=1.61 k=1 roll_acc=0.28 pitch_acc=0.26
+TEL n=332 t=6627 ax=-0.037 ay=-0.063 az=9.851 roll=0.01 pitch=-5.56 rps=1.56 k=1 roll_acc=-0.36 pitch_acc=-0.21
+TEL n=333 t=6643 ax=0.025 ay=0.052 az=9.846 roll=0.01 pitch=-5.54 rps=1.52 k=0 roll_acc=0.30 pitch_acc=0.15
+TEL n=334 t=6663 ax=-0.051 ay=0.009 az=9.856 roll=0.01 pitch=-5.51 rps=1.50 k=0 roll_acc=0.05 pitch_acc=-0.30
+TEL n=335 t=6683 ax=0.030 ay=-0.029 az=9.866 roll=0.01 pitch=-5.48 rps=1.50 k=0 roll_acc=-0.17 pitch_acc=0.17
+TEL n=336 t=6715 ax=-0.023 ay=-0.020 az=9.832 roll=0.01 pitch=-5.44 rps=1.50 k=3 roll_acc=-0.11 pitch_acc=-0.13
+TEL n=337 t=6727 ax=0.011 ay=-0.005 az=9.837 roll=0.01 pitch=-5.42 rps=1.50 k=1 roll_acc=-0.03 pitch_acc=0.06
+TEL n=338 t=6743 ax=-0.061 ay=-0.029 az=9.890 roll=0.01 pitch=-5.40 rps=1.50 k=0 roll_acc=-0.17 pitch_acc=-0.35
+TEL n=339 t=6771 ax=0.064 ay=-0.020 az=9.799 roll=0.01 pitch=-5.36 rps=1.50 k=2 roll_acc=-0.11 pitch_acc=0.37
+TEL n=340 t=6787 ax=-0.023 ay=-0.010 az=9.823 roll=0.01 pitch=-5.34 rps=1.50 k=1 roll_acc=-0.06 pitch_acc=-0.13
+TEL n=341 t=6807 ax=0.035 ay=-0.020 az=9.808 roll=0.01 pitch=-5.31 rps=1.50 k=1 roll_acc=-0.11 pitch_acc=0.20
+TEL n=342 t=6831 ax=-0.023 ay=-0.034 az=9.861 roll=0.01 pitch=-5.28 rps=1.50 k=2 roll_acc=-0.20 pitch_acc=-0.13
+TEL n=343 t=6851 ax=-0.008 ay=-0.010 az=9.880 roll=0.01 pitch=-5.25 rps=1.50 k=2 roll_acc=-0.06 pitch_acc=-0.05
+TEL n=344 t=6879 ax=-0.032 ay=-0.015 az=9.803 roll=0.01 pitch=-5.22 rps=1.50 k=4 roll_acc=-0.09 pitch_acc=-0.19
+TEL n=345 t=6883 ax=-0.090 ay=-0.034 az=9.870 roll=0.01 pitch=-5.21 rps=1.50 k=0 roll_acc=-0.20 pitch_acc=-0.52
+TEL n=346 t=6907 ax=0.030 ay=0.019 az=9.856 roll=0.01 pitch=-5.18 rps=1.50 k=1 roll_acc=0.11 pitch_acc=0.17
+TEL n=347 t=6939 ax=-0.008 ay=-0.029 az=9.870 roll=0.01 pitch=-5.14 rps=1.50 k=4 roll_acc=-0.17 pitch_acc=-0.05
+TEL n=348 t=6951 ax=0.121 ay=-0.039 az=9.846 roll=0.01 pitch=-5.13 rps=1.50 k=2 roll_acc=-0.23 pitch_acc=0.70
+TEL n=349 t=6963 ax=0.025 ay=-0.010 az=9.885 roll=0.01 pitch=-5.11 rps=1.50 k=0 roll_acc=-0.06 pitch_acc=0.15
+TEL n=350 t=6991 ax=-0.037 ay=-0.005 az=9.846 roll=0.01 pitch=-5.07 rps=1.50 k=2 roll_acc=-0.03 pitch_acc=-0.22
+EST t=6999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=402 err_i2c=0 anillo=350 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
+TEL n=351 t=7003 ax=0.054 ay=-0.034 az=9.942 roll=0.01 pitch=-5.06 rps=1.50 k=0 roll_acc=-0.20 pitch_acc=0.31
+TEL n=352 t=7035 ax=0.030 ay=-0.029 az=9.846 roll=0.01 pitch=-5.02 rps=1.50 k=3 roll_acc=-0.17 pitch_acc=0.18
+TEL n=353 t=7047 ax=0.068 ay=0.062 az=9.837 roll=0.01 pitch=-5.00 rps=1.50 k=1 roll_acc=0.36 pitch_acc=0.40
+TEL n=354 t=7063 ax=-0.080 ay=0.067 az=9.856 roll=0.01 pitch=-4.98 rps=1.50 k=0 roll_acc=0.39 pitch_acc=-0.47
+TEL n=355 t=7087 ax=-0.066 ay=-0.024 az=9.885 roll=0.01 pitch=-4.95 rps=1.50 k=1 roll_acc=-0.14 pitch_acc=-0.38
+TEL n=356 t=7111 ax=-0.056 ay=-0.010 az=9.846 roll=0.01 pitch=-4.92 rps=1.50 k=2 roll_acc=-0.06 pitch_acc=-0.33
+TEL n=357 t=7135 ax=0.016 ay=-0.000 az=9.813 roll=0.01 pitch=-4.89 rps=1.50 k=3 roll_acc=-0.00 pitch_acc=0.09
+TEL n=358 t=7143 ax=-0.090 ay=0.004 az=9.885 roll=0.01 pitch=-4.89 rps=1.50 k=0 roll_acc=0.03 pitch_acc=-0.52
+TEL n=359 t=7175 ax=0.049 ay=0.048 az=9.885 roll=0.01 pitch=-4.85 rps=1.50 k=3 roll_acc=0.28 pitch_acc=0.29
+TEL n=360 t=7191 ax=0.016 ay=0.028 az=9.885 roll=0.01 pitch=-4.82 rps=1.50 k=2 roll_acc=0.16 pitch_acc=0.09
+TEL n=361 t=7207 ax=0.006 ay=0.048 az=9.789 roll=0.01 pitch=-4.81 rps=1.50 k=1 roll_acc=0.28 pitch_acc=0.04
+TEL n=362 t=7235 ax=-0.018 ay=0.004 az=9.832 roll=0.01 pitch=-4.77 rps=1.50 k=3 roll_acc=0.03 pitch_acc=-0.10
+TEL n=363 t=7247 ax=0.064 ay=0.038 az=9.827 roll=0.01 pitch=-4.76 rps=1.50 k=1 roll_acc=0.22 pitch_acc=0.37
+TEL n=364 t=7275 ax=0.021 ay=-0.015 az=9.832 roll=0.01 pitch=-4.72 rps=1.50 k=3 roll_acc=-0.09 pitch_acc=0.12
+TEL n=365 t=7291 ax=0.016 ay=-0.005 az=9.942 roll=0.01 pitch=-4.70 rps=1.50 k=2 roll_acc=-0.03 pitch_acc=0.09
+TEL n=366 t=7303 ax=-0.037 ay=0.004 az=9.846 roll=0.01 pitch=-4.69 rps=1.50 k=0 roll_acc=0.03 pitch_acc=-0.22
+TEL n=367 t=7323 ax=-0.003 ay=0.019 az=9.842 roll=0.01 pitch=-4.67 rps=1.50 k=0 roll_acc=0.11 pitch_acc=-0.02
+TEL n=368 t=7351 ax=0.049 ay=-0.058 az=9.851 roll=0.01 pitch=-4.63 rps=1.50 k=2 roll_acc=-0.34 pitch_acc=0.29
+TEL n=369 t=7375 ax=-0.008 ay=-0.058 az=9.827 roll=0.01 pitch=-4.61 rps=1.50 k=3 roll_acc=-0.34 pitch_acc=-0.05
+TEL n=370 t=7391 ax=-0.013 ay=0.028 az=9.861 roll=0.01 pitch=-4.59 rps=1.50 k=2 roll_acc=0.16 pitch_acc=-0.08
+TEL n=371 t=7403 ax=0.025 ay=0.009 az=9.885 roll=0.01 pitch=-4.58 rps=1.50 k=0 roll_acc=0.05 pitch_acc=0.15
+TEL n=372 t=7427 ax=0.025 ay=-0.125 az=9.851 roll=0.01 pitch=-4.55 rps=1.50 k=1 roll_acc=-0.73 pitch_acc=0.15
+TEL n=373 t=7451 ax=-0.042 ay=0.019 az=9.880 roll=0.01 pitch=-4.52 rps=1.50 k=2 roll_acc=0.11 pitch_acc=-0.24
+TEL n=374 t=7471 ax=-0.008 ay=0.048 az=9.846 roll=0.01 pitch=-4.50 rps=1.50 k=2 roll_acc=0.28 pitch_acc=-0.05
+TEL n=375 t=7499 ax=-0.003 ay=0.004 az=9.866 roll=0.01 pitch=-4.47 rps=1.50 k=4 roll_acc=0.03 pitch_acc=-0.02
+TEL n=376 t=7511 ax=0.049 ay=0.019 az=9.837 roll=0.01 pitch=-4.45 rps=1.50 k=2 roll_acc=0.11 pitch_acc=0.29
+TEL n=377 t=7539 ax=0.035 ay=0.019 az=9.808 roll=0.01 pitch=-4.42 rps=1.50 k=4 roll_acc=0.11 pitch_acc=0.20
+TEL n=378 t=7547 ax=0.006 ay=0.014 az=9.866 roll=0.01 pitch=-4.41 rps=1.50 k=1 roll_acc=0.08 pitch_acc=0.04
+TEL n=379 t=7575 ax=-0.008 ay=0.052 az=9.846 roll=0.01 pitch=-4.38 rps=1.50 k=3 roll_acc=0.30 pitch_acc=-0.05
+TEL n=380 t=7591 ax=0.030 ay=-0.053 az=9.885 roll=0.01 pitch=-4.37 rps=1.50 k=2 roll_acc=-0.31 pitch_acc=0.17
+TEL n=381 t=7611 ax=-0.027 ay=-0.034 az=9.851 roll=0.01 pitch=-4.34 rps=1.50 k=2 roll_acc=-0.20 pitch_acc=-0.16
+TEL n=382 t=7623 ax=0.025 ay=0.024 az=9.846 roll=0.01 pitch=-4.33 rps=1.50 k=0 roll_acc=0.14 pitch_acc=0.15
+TEL n=383 t=7651 ax=-0.023 ay=0.019 az=9.885 roll=0.01 pitch=-4.30 rps=1.50 k=2 roll_acc=0.11 pitch_acc=-0.13
+TEL n=384 t=7675 ax=-0.018 ay=-0.048 az=9.856 roll=0.01 pitch=-4.27 rps=1.50 k=3 roll_acc=-0.28 pitch_acc=-0.10
+TEL n=385 t=7699 ax=-0.003 ay=-0.029 az=9.894 roll=0.01 pitch=-4.25 rps=1.50 k=4 roll_acc=-0.17 pitch_acc=-0.02
+TEL n=386 t=7707 ax=0.030 ay=-0.024 az=9.832 roll=0.01 pitch=-4.24 rps=1.50 k=1 roll_acc=-0.14 pitch_acc=0.18
+TEL n=387 t=7723 ax=0.025 ay=-0.039 az=9.837 roll=0.01 pitch=-4.22 rps=1.50 k=0 roll_acc=-0.23 pitch_acc=0.15
+TEL n=388 t=7743 ax=-0.085 ay=-0.087 az=9.880 roll=0.01 pitch=-4.20 rps=1.50 k=0 roll_acc=-0.50 pitch_acc=-0.49
+TEL n=389 t=7779 ax=0.030 ay=-0.005 az=9.870 roll=0.01 pitch=-4.17 rps=1.50 k=4 roll_acc=-0.03 pitch_acc=0.17
+TEL n=390 t=7791 ax=0.001 ay=-0.005 az=9.913 roll=0.01 pitch=-4.15 rps=1.50 k=2 roll_acc=-0.03 pitch_acc=0.01
+TEL n=391 t=7815 ax=-0.013 ay=0.062 az=9.866 roll=0.01 pitch=-4.13 rps=1.50 k=3 roll_acc=0.36 pitch_acc=-0.08
+TEL n=392 t=7823 ax=0.035 ay=0.004 az=9.842 roll=0.01 pitch=-4.12 rps=1.50 k=0 roll_acc=0.03 pitch_acc=0.20
+TEL n=393 t=7851 ax=0.097 ay=-0.048 az=9.851 roll=0.00 pitch=-4.09 rps=1.50 k=2 roll_acc=-0.28 pitch_acc=0.56
+TEL n=394 t=7879 ax=-0.042 ay=0.004 az=9.823 roll=0.01 pitch=-4.06 rps=1.50 k=4 roll_acc=0.03 pitch_acc=-0.24
+TEL n=395 t=7891 ax=0.011 ay=-0.063 az=9.866 roll=0.01 pitch=-4.05 rps=1.50 k=2 roll_acc=-0.36 pitch_acc=0.06
+TEL n=396 t=7903 ax=-0.013 ay=-0.015 az=9.856 roll=0.01 pitch=-4.04 rps=1.50 k=0 roll_acc=-0.09 pitch_acc=-0.08
+TEL n=397 t=7923 ax=-0.066 ay=-0.015 az=9.904 roll=0.01 pitch=-4.02 rps=1.50 k=0 roll_acc=-0.09 pitch_acc=-0.38
+TEL n=398 t=7955 ax=0.059 ay=-0.000 az=9.837 roll=0.01 pitch=-3.99 rps=1.50 k=3 roll_acc=-0.00 pitch_acc=0.34
+TEL n=399 t=7967 ax=-0.003 ay=-0.020 az=9.846 roll=0.01 pitch=-3.98 rps=1.50 k=1 roll_acc=-0.11 pitch_acc=-0.02
+TEL n=400 t=7983 ax=0.025 ay=0.033 az=9.851 roll=0.00 pitch=-3.96 rps=1.50 k=0 roll_acc=0.19 pitch_acc=0.15
+EST t=7999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=402 err_i2c=0 anillo=400 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
+TEL n=401 t=8003 ax=-0.047 ay=0.019 az=9.823 roll=0.00 pitch=-3.94 rps=1.46 k=0 roll_acc=0.11 pitch_acc=-0.27
+TEL n=402 t=8027 ax=-0.013 ay=0.038 az=9.880 roll=0.00 pitch=-3.92 rps=1.42 k=1 roll_acc=0.22 pitch_acc=-0.08
+TEL n=403 t=8043 ax=-0.061 ay=-0.063 az=9.870 roll=0.00 pitch=-3.90 rps=1.38 k=0 roll_acc=-0.36 pitch_acc=-0.35
+TEL n=404 t=8075 ax=-0.047 ay=-0.053 az=9.861 roll=0.00 pitch=-3.87 rps=1.34 k=3 roll_acc=-0.31 pitch_acc=-0.27
 HALL rueda_rps=0 t_ms=8087 desde_ultimo_pulso=754.0 ms pulsos=19
-TEL n=405 t=8087 ax=-0.018 ay=-0.015 az=9.842 roll=-0.09 pitch=-0.10 rps=0.00 k=1
-TEL n=406 t=8115 ax=0.068 ay=-0.005 az=9.789 roll=-0.03 pitch=0.40 rps=0.00 k=3
+TEL n=405 t=8087 ax=-0.018 ay=-0.015 az=9.842 roll=0.00 pitch=-3.86 rps=0.00 k=1 roll_acc=-0.09 pitch_acc=-0.10
+TEL n=406 t=8115 ax=0.068 ay=-0.005 az=9.789 roll=0.00 pitch=-3.83 rps=0.00 k=3 roll_acc=-0.03 pitch_acc=0.40
 RED POST /sesiones sesion intento=2 bytes=70 hash=731C9EBD resultado=-1 t_ms=8120
-TEL n=407 t=8139 ax=0.068 ay=-0.005 az=9.813 roll=-0.03 pitch=0.40 rps=0.00 k=4
-TEL n=408 t=8151 ax=0.025 ay=-0.053 az=9.866 roll=-0.31 pitch=0.15 rps=0.00 k=2
-TEL n=409 t=8175 ax=0.006 ay=0.024 az=9.866 roll=0.14 pitch=0.04 rps=0.00 k=3
-TEL n=410 t=8195 ax=-0.032 ay=0.009 az=9.837 roll=0.05 pitch=-0.19 rps=0.00 k=3
-TEL n=411 t=8211 ax=-0.003 ay=0.024 az=9.851 roll=0.14 pitch=-0.02 rps=0.00 k=2
-TEL n=412 t=8239 ax=-0.056 ay=-0.010 az=9.885 roll=-0.06 pitch=-0.33 rps=0.00 k=4
-TEL n=413 t=8247 ax=0.011 ay=-0.015 az=9.861 roll=-0.09 pitch=0.06 rps=0.00 k=1
-TEL n=414 t=8267 ax=0.040 ay=-0.010 az=9.837 roll=-0.06 pitch=0.23 rps=0.00 k=1
-TEL n=415 t=8295 ax=-0.023 ay=-0.029 az=9.823 roll=-0.17 pitch=-0.13 rps=0.00 k=3
-TEL n=416 t=8311 ax=-0.070 ay=-0.020 az=9.913 roll=-0.11 pitch=-0.41 rps=0.00 k=2
-TEL n=417 t=8327 ax=0.011 ay=-0.000 az=9.823 roll=-0.00 pitch=0.06 rps=0.00 k=1
-TEL n=418 t=8351 ax=0.044 ay=-0.020 az=9.827 roll=-0.11 pitch=0.26 rps=0.00 k=2
-REARME t_ms=8367 alarma=apagada detector=NORMAL eventos=1
-TEL n=419 t=8363 ax=0.078 ay=0.057 az=9.818 roll=0.33 pitch=0.45 rps=0.00 k=0
-TEL n=420 t=8383 ax=0.021 ay=0.067 az=9.837 roll=0.39 pitch=0.12 rps=0.00 k=0
-TEL n=421 t=8403 ax=-0.085 ay=0.014 az=9.880 roll=0.08 pitch=-0.49 rps=0.00 k=0
-TEL n=422 t=8439 ax=-0.070 ay=0.004 az=9.866 roll=0.03 pitch=-0.41 rps=0.00 k=4
-TEL n=423 t=8443 ax=-0.013 ay=-0.053 az=9.913 roll=-0.31 pitch=-0.08 rps=0.00 k=0
-TEL n=424 t=8479 ax=-0.008 ay=-0.000 az=9.813 roll=-0.00 pitch=-0.05 rps=0.00 k=4
-TEL n=425 t=8483 ax=0.035 ay=0.009 az=9.837 roll=0.05 pitch=0.20 rps=0.00 k=0
-TEL n=426 t=8507 ax=-0.037 ay=-0.000 az=9.870 roll=-0.00 pitch=-0.21 rps=0.00 k=1
-TEL n=427 t=8539 ax=-0.008 ay=0.014 az=9.827 roll=0.08 pitch=-0.05 rps=0.00 k=4
-TEL n=428 t=8555 ax=0.059 ay=-0.020 az=9.861 roll=-0.11 pitch=0.34 rps=0.00 k=3
-TEL n=429 t=8571 ax=-0.037 ay=-0.039 az=9.837 roll=-0.23 pitch=-0.22 rps=0.00 k=2
-TEL n=430 t=8587 ax=-0.042 ay=0.033 az=9.861 roll=0.19 pitch=-0.24 rps=0.00 k=1
-TEL n=431 t=8603 ax=-0.013 ay=0.048 az=9.866 roll=0.28 pitch=-0.08 rps=0.00 k=0
-TEL n=432 t=8631 ax=0.011 ay=-0.015 az=9.813 roll=-0.09 pitch=0.06 rps=0.00 k=2
-TEL n=433 t=8655 ax=-0.070 ay=-0.024 az=9.851 roll=-0.14 pitch=-0.41 rps=0.00 k=3
-TEL n=434 t=8663 ax=-0.023 ay=-0.015 az=9.842 roll=-0.09 pitch=-0.13 rps=0.00 k=0
-TEL n=435 t=8695 ax=-0.013 ay=0.043 az=9.856 roll=0.25 pitch=-0.08 rps=0.00 k=3
-TEL n=436 t=8719 ax=0.054 ay=-0.005 az=9.832 roll=-0.03 pitch=0.31 rps=0.00 k=4
-TEL n=437 t=8739 ax=0.021 ay=0.033 az=9.856 roll=0.19 pitch=0.12 rps=0.00 k=4
-TEL n=438 t=8743 ax=-0.027 ay=-0.005 az=9.856 roll=-0.03 pitch=-0.16 rps=0.00 k=0
-TEL n=439 t=8767 ax=-0.027 ay=0.019 az=9.870 roll=0.11 pitch=-0.16 rps=0.00 k=1
-TEL n=440 t=8783 ax=-0.008 ay=-0.096 az=9.856 roll=-0.56 pitch=-0.05 rps=0.00 k=0
-TEL n=441 t=8815 ax=-0.061 ay=-0.000 az=9.856 roll=-0.00 pitch=-0.35 rps=0.00 k=3
+TEL n=407 t=8139 ax=0.068 ay=-0.005 az=9.813 roll=0.00 pitch=-3.81 rps=0.00 k=4 roll_acc=-0.03 pitch_acc=0.40
+TEL n=408 t=8151 ax=0.025 ay=-0.053 az=9.866 roll=0.00 pitch=-3.80 rps=0.00 k=2 roll_acc=-0.31 pitch_acc=0.15
+TEL n=409 t=8175 ax=0.006 ay=0.024 az=9.866 roll=0.00 pitch=-3.77 rps=0.00 k=3 roll_acc=0.14 pitch_acc=0.04
+TEL n=410 t=8195 ax=-0.032 ay=0.009 az=9.837 roll=0.00 pitch=-3.76 rps=0.00 k=3 roll_acc=0.05 pitch_acc=-0.19
+TEL n=411 t=8211 ax=-0.003 ay=0.024 az=9.851 roll=0.00 pitch=-3.74 rps=0.00 k=2 roll_acc=0.14 pitch_acc=-0.02
+TEL n=412 t=8239 ax=-0.056 ay=-0.010 az=9.885 roll=0.00 pitch=-3.72 rps=0.00 k=4 roll_acc=-0.06 pitch_acc=-0.33
+TEL n=413 t=8247 ax=0.011 ay=-0.015 az=9.861 roll=0.00 pitch=-3.71 rps=0.00 k=1 roll_acc=-0.09 pitch_acc=0.06
+TEL n=414 t=8267 ax=0.040 ay=-0.010 az=9.837 roll=0.00 pitch=-3.69 rps=0.00 k=1 roll_acc=-0.06 pitch_acc=0.23
+TEL n=415 t=8295 ax=-0.023 ay=-0.029 az=9.823 roll=0.00 pitch=-3.66 rps=0.00 k=3 roll_acc=-0.17 pitch_acc=-0.13
+TEL n=416 t=8311 ax=-0.070 ay=-0.020 az=9.913 roll=0.00 pitch=-3.65 rps=0.00 k=2 roll_acc=-0.11 pitch_acc=-0.41
+TEL n=417 t=8327 ax=0.011 ay=-0.000 az=9.823 roll=-0.00 pitch=-3.63 rps=0.00 k=1 roll_acc=-0.00 pitch_acc=0.06
+TEL n=418 t=8351 ax=0.044 ay=-0.020 az=9.827 roll=0.00 pitch=-3.61 rps=0.00 k=2 roll_acc=-0.11 pitch_acc=0.26
+TEL n=419 t=8363 ax=0.078 ay=0.057 az=9.818 roll=0.00 pitch=-3.60 rps=0.00 k=0 roll_acc=0.33 pitch_acc=0.45
+TEL n=420 t=8383 ax=0.021 ay=0.067 az=9.837 roll=0.00 pitch=-3.58 rps=0.00 k=0 roll_acc=0.39 pitch_acc=0.12
+TEL n=421 t=8403 ax=-0.085 ay=0.014 az=9.880 roll=0.00 pitch=-3.56 rps=0.00 k=0 roll_acc=0.08 pitch_acc=-0.49
+TEL n=422 t=8439 ax=-0.070 ay=0.004 az=9.866 roll=0.00 pitch=-3.53 rps=0.00 k=4 roll_acc=0.03 pitch_acc=-0.41
+TEL n=423 t=8443 ax=-0.013 ay=-0.053 az=9.913 roll=0.00 pitch=-3.53 rps=0.00 k=0 roll_acc=-0.31 pitch_acc=-0.08
+TEL n=424 t=8479 ax=-0.008 ay=-0.000 az=9.813 roll=0.00 pitch=-3.50 rps=0.00 k=4 roll_acc=-0.00 pitch_acc=-0.05
+TEL n=425 t=8483 ax=0.035 ay=0.009 az=9.837 roll=0.00 pitch=-3.49 rps=0.00 k=0 roll_acc=0.05 pitch_acc=0.20
+TEL n=426 t=8507 ax=-0.037 ay=-0.000 az=9.870 roll=-0.00 pitch=-3.47 rps=0.00 k=1 roll_acc=-0.00 pitch_acc=-0.21
+TEL n=427 t=8539 ax=-0.008 ay=0.014 az=9.827 roll=-0.00 pitch=-3.45 rps=0.00 k=4 roll_acc=0.08 pitch_acc=-0.05
+TEL n=428 t=8555 ax=0.059 ay=-0.020 az=9.861 roll=-0.00 pitch=-3.43 rps=0.00 k=3 roll_acc=-0.11 pitch_acc=0.34
+TEL n=429 t=8571 ax=-0.037 ay=-0.039 az=9.837 roll=-0.00 pitch=-3.42 rps=0.00 k=2 roll_acc=-0.23 pitch_acc=-0.22
+TEL n=430 t=8587 ax=-0.042 ay=0.033 az=9.861 roll=-0.00 pitch=-3.41 rps=0.00 k=1 roll_acc=0.19 pitch_acc=-0.24
+TEL n=431 t=8603 ax=-0.013 ay=0.048 az=9.866 roll=-0.00 pitch=-3.39 rps=0.00 k=0 roll_acc=0.28 pitch_acc=-0.08
+TEL n=432 t=8631 ax=0.011 ay=-0.015 az=9.813 roll=-0.00 pitch=-3.37 rps=0.00 k=2 roll_acc=-0.09 pitch_acc=0.06
+TEL n=433 t=8655 ax=-0.070 ay=-0.024 az=9.851 roll=-0.00 pitch=-3.35 rps=0.00 k=3 roll_acc=-0.14 pitch_acc=-0.41
+TEL n=434 t=8663 ax=-0.023 ay=-0.015 az=9.842 roll=-0.00 pitch=-3.34 rps=0.00 k=0 roll_acc=-0.09 pitch_acc=-0.13
+TEL n=435 t=8695 ax=-0.013 ay=0.043 az=9.856 roll=-0.00 pitch=-3.32 rps=0.00 k=3 roll_acc=0.25 pitch_acc=-0.08
+TEL n=436 t=8719 ax=0.054 ay=-0.005 az=9.832 roll=-0.00 pitch=-3.30 rps=0.00 k=4 roll_acc=-0.03 pitch_acc=0.31
+TEL n=437 t=8739 ax=0.021 ay=0.033 az=9.856 roll=-0.00 pitch=-3.28 rps=0.00 k=4 roll_acc=0.19 pitch_acc=0.12
+TEL n=438 t=8743 ax=-0.027 ay=-0.005 az=9.856 roll=-0.00 pitch=-3.28 rps=0.00 k=0 roll_acc=-0.03 pitch_acc=-0.16
+TEL n=439 t=8767 ax=-0.027 ay=0.019 az=9.870 roll=-0.00 pitch=-3.26 rps=0.00 k=1 roll_acc=0.11 pitch_acc=-0.16
+TEL n=440 t=8783 ax=-0.008 ay=-0.096 az=9.856 roll=-0.00 pitch=-3.24 rps=0.00 k=0 roll_acc=-0.56 pitch_acc=-0.05
+TEL n=441 t=8815 ax=-0.061 ay=-0.000 az=9.856 roll=-0.00 pitch=-3.22 rps=0.00 k=3 roll_acc=-0.00 pitch_acc=-0.35

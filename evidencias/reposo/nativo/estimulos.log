@@ -1,11 +1,11 @@
   2200.678 ms  wait-serial 'CAL OK' OK
   2200.678 ms  wait-serial 'SESION id=' OK
   2200.678 ms  MARCA inicio reposo
-  2220.222 ms  WIFI desconectado
-  2320.222 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
+  2220.402 ms  WIFI desconectado
+  2320.402 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
   5200.678 ms  expect-pin led1:A = 0 -> leído 0 OK
   5200.678 ms  expect-pin esp:D27 = 0 -> leído 0 OK
-  6820.222 ms  HTTP POST #1 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
+  6820.402 ms  HTTP POST #1 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
   8200.678 ms  expect-pin led1:A = 0 -> leído 0 OK
   8200.678 ms  expect-pin esp:D27 = 0 -> leído 0 OK
   8200.678 ms  MARCA fin reposo

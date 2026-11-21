@@ -272,17 +272,7 @@ steps:
       part-id: hall_sim
       control: pressed
       value: 0
-  - delay: 980ms
-  - set-control:
-      part-id: btn_rearme
-      control: pressed
-      value: 1
-  - delay: 150ms
-  - set-control:
-      part-id: btn_rearme
-      control: pressed
-      value: 0
-  - delay: 350ms
+  - delay: 1480ms
   # fin frenada
   - expect-pin:
       part-id: led1

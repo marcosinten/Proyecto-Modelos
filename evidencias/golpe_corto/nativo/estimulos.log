@@ -1,7 +1,7 @@
   2200.678 ms  wait-serial 'CAL OK' OK
   2200.678 ms  wait-serial 'SESION id=' OK
-  2220.222 ms  WIFI desconectado
-  2320.222 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
+  2220.402 ms  WIFI desconectado
+  2320.402 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
   3200.678 ms  set-control imu1.accelX = 2.5
   3200.678 ms  set-control imu1.accelY = 0
   3200.678 ms  set-control imu1.accelZ = 1
@@ -13,6 +13,6 @@
   5352.578 ms  set-control btn_rearme.pressed = 0
   5504.478 ms  expect-pin led1:A = 0 -> leído 0 OK
   5504.478 ms  expect-pin esp:D27 = 0 -> leído 0 OK
-  6820.222 ms  HTTP POST #1 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
+  6820.402 ms  HTTP POST #1 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
   7204.478 ms  MARCA fin golpe_corto
   7204.478 ms  FIN escenario fallos=0

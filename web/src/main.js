@@ -57,7 +57,7 @@ function render() {
   if(app.page==='sesion'){renderSesion(app.sesionId);return;}
  renderMonitor();
 }
-function route(){const hash=location.hash.slice(1);if(hash.startsWith('sesion/')){app.page='sesion';app.sesionId=decodeURIComponent(hash.slice(7));render();return;}app.page=hash.startsWith('explicar/')?'explicar':hash==='explicar'?'explicar-lista':['simulacion','historial','detalle','exportar','resultados'].includes(hash)?hash:'monitor';if(app.page==='detalle'&&!app.current.evento){app.current=ev2;}if(app.page==='monitor'){app.current=demo;app.position=0;}if(app.page==='simulacion'){app.current=generarEscenario('vuelco');app.position=0;}render();}
+function route(){const hash=location.hash.slice(1);if(hash.startsWith('sesion/')){app.page='sesion';app.sesionId=decodeURIComponent(hash.slice(7));render();return;}app.page=hash.startsWith('explicar/')?'explicar':hash==='explicar'?'explicar-lista':['simulacion','historial','detalle','exportar','resultados'].includes(hash)?hash:'monitor';if(app.page==='detalle'&&!app.current.evento){app.current=ev2;}if(app.page==='monitor'){app.current=demo;app.position=0;}if(app.page==='simulacion'){app.current=generarEscenario('vuelco',16,10,150,8);app.position=0;}render();}
 app.render=render;
 layout();route();requestAnimationFrame(frame);window.addEventListener('hashchange',route);loadEvents().then(()=>{
  if(app.page==='historial')renderHistory();

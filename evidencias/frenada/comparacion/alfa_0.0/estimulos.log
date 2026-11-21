@@ -1,0 +1,66 @@
+  2200.678 ms  wait-serial 'CAL OK' OK
+  2200.678 ms  wait-serial 'SESION id=' OK
+  2220.402 ms  WIFI desconectado
+  2320.402 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
+  3200.678 ms  set-control hall_sim.pressed = 1
+  3220.678 ms  set-control hall_sim.pressed = 0
+  3450.678 ms  set-control hall_sim.pressed = 1
+  3470.678 ms  set-control hall_sim.pressed = 0
+  3700.678 ms  set-control hall_sim.pressed = 1
+  3720.678 ms  set-control hall_sim.pressed = 0
+  3950.678 ms  set-control hall_sim.pressed = 1
+  3970.678 ms  set-control hall_sim.pressed = 0
+  4200.678 ms  set-control hall_sim.pressed = 1
+  4220.678 ms  set-control hall_sim.pressed = 0
+  4450.678 ms  set-control hall_sim.pressed = 1
+  4470.678 ms  set-control hall_sim.pressed = 0
+  4700.678 ms  set-control hall_sim.pressed = 1
+  4720.678 ms  set-control hall_sim.pressed = 0
+  4950.678 ms  set-control hall_sim.pressed = 1
+  4970.678 ms  set-control hall_sim.pressed = 0
+  5200.678 ms  set-control hall_sim.pressed = 1
+  5220.678 ms  set-control hall_sim.pressed = 0
+  5450.678 ms  set-control hall_sim.pressed = 1
+  5470.678 ms  set-control hall_sim.pressed = 0
+  5700.678 ms  set-control hall_sim.pressed = 1
+  5720.678 ms  set-control hall_sim.pressed = 0
+  5950.678 ms  set-control hall_sim.pressed = 1
+  5970.678 ms  set-control hall_sim.pressed = 0
+  6200.678 ms  set-control hall_sim.pressed = 1
+  6200.678 ms  set-control imu1.accelX = -0.3
+  6200.678 ms  set-control imu1.accelY = 0
+  6200.678 ms  set-control imu1.accelZ = 1
+  6220.678 ms  set-control hall_sim.pressed = 0
+  6400.678 ms  set-control imu1.accelX = -0.55
+  6400.678 ms  set-control imu1.accelY = 0
+  6400.678 ms  set-control imu1.accelZ = 1
+  6600.678 ms  set-control imu1.accelX = -0.714
+  6600.678 ms  set-control imu1.accelY = 0
+  6600.678 ms  set-control imu1.accelZ = 1
+  6700.678 ms  set-control hall_sim.pressed = 1
+  6720.678 ms  set-control hall_sim.pressed = 0
+  6820.402 ms  HTTP POST #1 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
+  7100.678 ms  set-control imu1.accelX = -0.55
+  7100.678 ms  set-control imu1.accelY = 0
+  7100.678 ms  set-control imu1.accelZ = 1
+  7200.678 ms  set-control hall_sim.pressed = 1
+  7220.678 ms  set-control hall_sim.pressed = 0
+  7300.678 ms  set-control imu1.accelX = -0.3
+  7300.678 ms  set-control imu1.accelY = 0
+  7300.678 ms  set-control imu1.accelZ = 1
+  7500.678 ms  set-control imu1.accelX = 0
+  7500.678 ms  set-control imu1.accelY = 0
+  7500.678 ms  set-control imu1.accelZ = 1
+  7700.678 ms  set-control hall_sim.pressed = 1
+  7720.678 ms  set-control hall_sim.pressed = 0
+  8200.678 ms  set-control hall_sim.pressed = 1
+  8220.678 ms  set-control hall_sim.pressed = 0
+  8867.345 ms  set-control hall_sim.pressed = 1
+  8887.345 ms  set-control hall_sim.pressed = 0
+  9534.011 ms  set-control hall_sim.pressed = 1
+  9554.011 ms  set-control hall_sim.pressed = 0
+ 10320.404 ms  HTTP POST #2 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
+ 11034.011 ms  MARCA fin frenada
+ 11034.011 ms  expect-pin led1:A = 0 -> leído 1 FALLO
+ 11034.011 ms  expect-pin esp:D27 = 0 -> leído 1 FALLO
+ 11034.011 ms  FIN escenario fallos=2

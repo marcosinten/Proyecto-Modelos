@@ -32,6 +32,7 @@ const UNIDADES_SIMULACION = {
   lectura_ms: ['ms', 'Intervalo entre lecturas del sensor'],
   muestreo_ms: ['ms', 'Intervalo entre mediciones publicadas'],
   radio_rueda_m: ['m', 'Radio de rueda usado para calcular rueda_rps'],
+  alfa_complementario: ['—', 'α del filtro complementario del ángulo (0 = solo acelerómetro)'],
   rango_g: ['g', 'Rango del acelerómetro simulado'],
   ruido_m_s2: ['m/s²', 'Desviación del ruido añadido por eje'],
   duracion_impacto_ms: ['ms', 'Duración del golpe simulado'],
@@ -385,6 +386,14 @@ export function crearLibroResultados(ExcelJS, resultados) {
     { metrica: 'Repeticiones', valor: confusion.total, formula: '', significado: 'Pruebas físicas registradas en la web' }
   ]).eachRow((fila, i) => { if (i > 5) fila.getCell(2).numFmt = FMT.entero; });
 
+  if (resultados.frenada) tabla(libro, 'Frenada y filtro', [
+    { clave: 'nombre', titulo: 'Cálculo del ángulo', ancho: 32 }, { clave: 'alfa', titulo: 'α', ancho: 8, formato: '0.000' },
+    { clave: 'tau', titulo: 'τ (s)', ancho: 8, formato: FMT.decimal }, { clave: 'pitch', titulo: 'Pitch máx. del detector (°)', ancho: 16, formato: FMT.grados },
+    { clave: 'acel', titulo: 'Pitch máx. solo acelerómetro (°)', ancho: 18, formato: FMT.grados }, { clave: 'real', titulo: 'Pitch real del modelo (°)', ancho: 16, formato: FMT.grados },
+    { clave: 'alarma', titulo: '¿Alarma?', ancho: 14 }, { clave: 'det', titulo: 'Detección (ms)', ancho: 13, formato: FMT.entero }
+  ], resultados.frenada.map(f => ({ nombre: f.nombre, alfa: f.alfa, tau: f.tau_s, pitch: f.pitch_max_deg, acel: f.pitch_acelerometro_max_deg,
+    real: f.pitch_real_max_deg, alarma: f.alarma ? `sí (${NOMBRE_CLASE[f.alarma]})` : 'no', det: f.t_deteccion_ms ?? '—' })));
+
   const leeme = libro.addWorksheet('Léeme');
   leeme.columns = [{ width: 120 }];
   [
@@ -393,7 +402,7 @@ export function crearLibroResultados(ExcelJS, resultados) {
     ['Detectado: con varios eventos en una sesión cuenta el más grave (vuelco > golpe > inclinación). Reposo, marcha y frenada esperan «ninguno»: si dan alarma es una falsa alarma.'],
     [`Simulado: web/src/simulation.js con los parámetros del firmware (golpe ≥ ${parametros.aceleracion} m/s² durante ${parametros.permanenciaImpacto} ms, inclinación ≥ ${parametros.angulo}° y vuelco ≥ 90° durante ${parametros.permanencia} ms). Marcha = «normal» y golpe = «impacto» en la simulación.`],
     ['Las amplitudes de la simulación son ilustrativas (p. ej. la inclinación sintética llega a 42°); el error grande en esas magnitudes compara el escenario sintético con el físico, no la precisión del sensor.'],
-    ['El ángulo simulado es el ángulo real del carro; el firmware calcula un ángulo aparente con el acelerómetro. En una frenada el aparente puede superar el umbral aunque el carro no se incline.'],
+    ['Ángulos: la simulación calcula el ángulo como el firmware (acelerómetro + giroscopio con filtro complementario). La hoja «Frenada y filtro» compara la frenada con el ángulo solo del acelerómetro y con el filtro.'],
     ['Media y desviación estándar muestral (n − 1) de las repeticiones. Error absoluto = |observado − simulado|; error relativo = absoluto / |simulado|.'],
     [`«${SIN_MEDIR}»: el dato no se reportó. «${SIN_DATOS}»: no hay repeticiones de ese escenario. «no modelado»: la simulación no calcula la latencia de activación.`]
   ].forEach(([texto, titulo], i) => {

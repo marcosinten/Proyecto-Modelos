@@ -78,7 +78,7 @@ test('Excel de resultados: comparación, repeticiones, matriz y métricas', asyn
   const r = calcularResultados([prueba('golpe', 1, [ev('golpe', { latencia_deteccion_ms: 4, latencia_activacion_ms: 0.5 })], 30), prueba('reposo', 1, [])]);
   const libro = new ExcelJS.Workbook();
   await libro.xlsx.load(await crearLibroResultados(ExcelJS, r).xlsx.writeBuffer());
-  assert.deepEqual(libro.worksheets.map(h => h.name), ['Comparación', 'Repeticiones', 'Matriz de confusión', 'Métricas', 'Léeme']);
+  assert.deepEqual(libro.worksheets.map(h => h.name), ['Comparación', 'Repeticiones', 'Matriz de confusión', 'Métricas', 'Frenada y filtro', 'Léeme']);
   const comp = libro.getWorksheet('Comparación');
   const filas = comp.getSheetValues().filter(Boolean).map(f => f.slice(1));
   const pico = filas.find(f => f[0] === 'Golpe' && f[1] === 'Pico de aceleración total');
@@ -88,4 +88,12 @@ test('Excel de resultados: comparación, repeticiones, matriz y métricas', asyn
   const met = Object.fromEntries(libro.getWorksheet('Métricas').getSheetValues().filter(Boolean).map(f => [f[1], f[2]]));
   assert.equal(met['Sensibilidad'], 1); assert.equal(met['Tasa de falsas alarmas'], 0);
   assert.equal(libro.getWorksheet('Repeticiones').rowCount, 3);
+});
+
+test('comparación de la frenada: solo acelerómetro alarma, el filtro del firmware no', () => {
+  const [acel, f98, fw] = calcularResultados([]).frenada;
+  assert.equal(acel.alfa, 0); assert.equal(acel.alarma, 'inclinacion'); assert.ok(acel.pitch_max_deg > 25);
+  assert.equal(f98.alarma, 'inclinacion');
+  assert.equal(fw.alfa, CONSTANTES_INO.ALFA_COMPLEMENTARIO); assert.equal(fw.alarma, null); assert.ok(fw.pitch_max_deg < CONSTANTES_INO.UMBRAL_INCLINACION_DEG);
+  assert.ok(Math.abs(fw.tau_s - 3.996) < 0.01);
 });

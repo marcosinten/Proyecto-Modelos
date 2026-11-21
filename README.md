@@ -41,7 +41,7 @@ El carro tiene **un solo sensor Hall (A3144), en la rueda trasera, con 1 imán**
 - En vivo el carro 3D se apoya en la carretera: plano sobre las ruedas, inclinado sobre su punto más bajo, volcado sobre el techo.
 - Interfaz adaptable a móvil, controles de teclado y diálogo de exportación.
 
-Las señales de simulación se generan matemáticamente y se evalúan con reglas experimentales. Deben calibrarse con el sensor. El tiempo de activación queda sin medir en las corridas simuladas. EV-001 y EV-002 incluyen 20 ms como dato sintético de ejemplo.
+Las señales de simulación se generan matemáticamente y se evalúan con las mismas reglas que el firmware, incluido el filtro complementario del ángulo. Se contrastan con el sensor en las pruebas físicas (pantalla Resultados). El tiempo de activación queda sin medir en las corridas simuladas. EV-001 y EV-002 incluyen 20 ms como dato sintético de ejemplo.
 
 **Tiempo de respuesta medido en el carro.** Desde el 21 de noviembre el firmware mide con `micros()` y envía en cada evento `latencia_deteccion_ms` (primera lectura sobre el umbral → evento confirmado) y `latencia_activacion_ms` (confirmación → órdenes a LED, buzzer y servo). Se ven en el detalle del evento, en «Explicar», en el Historial y en las dos descargas de Excel. Si un evento no los trae, aparece «sin medir».
 
@@ -117,6 +117,6 @@ El carro es un modelo geométrico original construido con Three.js. Puedes susti
 
 La comparación de corridas y sus parámetros vive en la memoria de la página. El guardado en la API conserva el evento y las mediciones. Los parámetros se incluyen al exportar directamente la corrida, pero requieren una ampliación de base de datos para conservarse entre reinicios.
 
-La interfaz está preparada para uso local sin API_KEY. La configuración de autenticación en red y el formulario para introducir una clave se deben completar antes de usarla con esa protección activada. La integración física del MPU6050, GPS y actuadores queda por probar con el equipo.
+La interfaz está preparada para uso local sin API_KEY. La configuración de autenticación en red y el formulario para introducir una clave se deben completar antes de usarla con esa protección activada. La maqueta (MPU6050, LED, buzzer y servo, sin GPS) está montada; las pruebas físicas repetidas se registran desde En vivo y se comparan en Resultados.
 
 Consulta `docs/API.md` para las peticiones que debe enviar el ESP32. El firmware del archivo anterior del compañero requiere adaptación al contrato y al montaje elegido.

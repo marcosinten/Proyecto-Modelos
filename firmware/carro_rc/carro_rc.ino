@@ -10,7 +10,7 @@
 // Carro RC · Grupo 11 · ESP32 DevKit WROOM-32
 
 // Aparece en la línea INICIO del monitor serie: permite saber qué firmware tiene la placa.
-static const char VERSION_FIRMWARE[] = "2026.11.21-cp2-estados";
+static const char VERSION_FIRMWARE[] = "2026.11.21-cp2-filtro";
 
 #ifdef BANCO_NATIVO
 static const char ORIGEN_SESION[] = "simulado";
@@ -44,6 +44,18 @@ static const int MUESTRAS_POR_TEL = 5;
 static const uint8_t MPU_DIR = 0x68;
 static const float LSB_POR_G = 2048.0f;
 static const float G_MS2 = 9.80665f;
+// Giroscopio a ±2000 °/s (GYRO_CONFIG = 0x18): 16,4 cuentas por °/s. Un vuelco rápido de un carro RC
+// puede pasar de 500 °/s, así que se usa el rango más amplio.
+static const float LSB_POR_GRADO_S = 16.4f;
+// Filtro complementario para roll y pitch (21 nov). En cada lectura (dt ≈ 4 ms):
+//   angulo = α·(angulo + giro·dt) + (1 − α)·angulo_acelerometro
+// El giroscopio sigue los giros reales al instante; el acelerómetro corrige la deriva poco a poco, con
+// constante de tiempo τ = α·dt/(1 − α). Con α = 0,999 y dt = 4 ms, τ ≈ 4 s: una frenada de ~1,3 s ya no
+// alcanza a inclinar el ángulo estimado (el acelerómetro solo daba 36° aparentes en la frenada del banco).
+// Con α = 0,98 (τ ≈ 0,2 s) la frenada seguía llegando a 34,5°. Se cambia en config_local.h.
+#ifndef ALFA_COMPLEMENTARIO
+#define ALFA_COMPLEMENTARIO 0.999f
+#endif
 // Tras tantas lecturas fallidas seguidas (50 = 200 ms a 250 Hz) se reinicializan Wire y el MPU.
 // Si sigue fallando, el siguiente intento espera el doble de lecturas (máximo 1250 = 5 s).
 static const uint32_t I2C_FALLOS_PARA_REINICIAR = 50;
@@ -194,6 +206,7 @@ static volatile uint32_t hallPulsos = 0;
 static volatile int64_t hallUltimo = 0;
 
 static float offX = 0, offY = 0, offZ = 0;
+static float offGX = 0, offGY = 0, offGZ = 0;  // cero del giroscopio (°/s), medido con el carro quieto
 
 // Registro serial
 
@@ -253,23 +266,28 @@ static bool mpuIniciar() {
   bool ok = mpuEscribir(0x6B, 0x01)
          && mpuEscribir(0x19, 0x03)
          && mpuEscribir(0x1A, 0x02)
-         && mpuEscribir(0x1B, 0x00)
+         && mpuEscribir(0x1B, 0x18)
          && mpuEscribir(0x1C, 0x18);
 
   uint8_t r[4] = {0};
   mpuLeer(0x19, r, 4);
-  logq("MPU WHO_AM_I=0x%02X SMPLRT_DIV=%u CONFIG=0x%02X ACCEL_CONFIG=0x%02X (esperado 3, 0x02, 0x18) %s",
-       who, r[0], r[1], r[3], ok ? "OK" : "ERROR");
+  logq("MPU WHO_AM_I=0x%02X SMPLRT_DIV=%u CONFIG=0x%02X GYRO_CONFIG=0x%02X ACCEL_CONFIG=0x%02X (esperado 3, 0x02, 0x18, 0x18) filtro_alfa=%.4f %s",
+       who, r[0], r[1], r[2], r[3], (double)ALFA_COMPLEMENTARIO, ok ? "OK" : "ERROR");
   return ok;
 }
 
-static bool mpuAceleracion(float& ax, float& ay, float& az) {
-  uint8_t b[6];
-  if (!mpuLeer(0x3B, b, 6)) return false;
+// Una sola lectura de 14 bytes desde 0x3B: aceleración (6), temperatura (2, no se usa) y giroscopio (6).
+// gx, gy, gz en °/s, sin restar todavía el cero que mide calibrar().
+static bool mpuLeerSensor(float& ax, float& ay, float& az, float& gx, float& gy, float& gz) {
+  uint8_t b[14];
+  if (!mpuLeer(0x3B, b, 14)) return false;
 
   int16_t rx = (int16_t)((b[0] << 8) | b[1]);
   int16_t ry = (int16_t)((b[2] << 8) | b[3]);
   int16_t rz = (int16_t)((b[4] << 8) | b[5]);
+  gx = (int16_t)((b[8] << 8) | b[9]) / LSB_POR_GRADO_S;
+  gy = (int16_t)((b[10] << 8) | b[11]) / LSB_POR_GRADO_S;
+  gz = (int16_t)((b[12] << 8) | b[13]) / LSB_POR_GRADO_S;
 
   if (enWokwi()) {
     // El MPU virtual ya entrega las cuentas nominales de ±16 g.
@@ -294,15 +312,18 @@ static bool mpuAceleracion(float& ax, float& ay, float& az) {
 static void calibrar() {
   const int N = 500;
   for (int intento = 1; intento <= 3; intento++) {
-    double sx = 0, sy = 0, sz = 0, sn = 0, sn2 = 0;
+    double sx = 0, sy = 0, sz = 0, sn = 0, sn2 = 0, sgx = 0, sgy = 0, sgz = 0;
     int validas = 0;
     TickType_t prox = xTaskGetTickCount();
 
     for (int i = 0; i < N; i++) {
       vTaskDelayUntil(&prox, pdMS_TO_TICKS(PERIODO_ADQ_MS));
-      float x, y, z;
-      if (!mpuAceleracion(x, y, z)) continue;
+      float x, y, z, gx, gy, gz;
+      if (!mpuLeerSensor(x, y, z, gx, gy, gz)) continue;
       double n = sqrt(x * x + y * y + z * z);
+      sgx += gx;
+      sgy += gy;
+      sgz += gz;
       sx += x;
       sy += y;
       sz += z;
@@ -334,8 +355,12 @@ static void calibrar() {
     offX = mx;
     offY = my;
     offZ = mz - G_MS2;
-    logq("CAL OK muestras=%d media=(%.4f, %.4f, %.4f) m/s2 desv_norma=%.4f offsets=(%.4f, %.4f, %.4f)",
-         validas, mx, my, mz, dn, offX, offY, offZ);
+    // Con el carro quieto el giroscopio debería dar 0 °/s: lo que marca es su error de cero.
+    offGX = sgx / validas;
+    offGY = sgy / validas;
+    offGZ = sgz / validas;
+    logq("CAL OK muestras=%d media=(%.4f, %.4f, %.4f) m/s2 desv_norma=%.4f offsets=(%.4f, %.4f, %.4f) giro_cero=(%.3f, %.3f, %.3f) dps",
+         validas, mx, my, mz, dn, offX, offY, offZ, offGX, offGY, offGZ);
     return;
   }
   logq("CAL ADVERTENCIA: sin calibración válida, offsets en 0");
@@ -479,8 +504,38 @@ static void actualizarBuzzer(int64_t ahora_us) {
   }
 }
 
-// Corrección lineal del ángulo (solo con CORRECCION_ANGULO 1). Se limita al rango del contrato:
-// roll −180…180 y pitch −90…90.
+// Filtro complementario (ver ALFA_COMPLEMENTARIO). rollEst y pitchEst son los ángulos que usa la regla
+// de inclinación y los que se envían a la API. El roll se mezcla con la diferencia envuelta a ±180°:
+// de +179° a −179° hay 2°, no 358°.
+static float rollEst = 0, pitchEst = 0;
+static bool filtroIniciado = false;
+
+static float envolver180(float a) {
+  while (a > 180.0f) a -= 360.0f;
+  while (a < -180.0f) a += 360.0f;
+  return a;
+}
+
+// gx: giro sobre X (positivo sube el lado izquierdo = roll positivo).
+// gy: giro sobre Y (positivo baja la trompa = pitch negativo).
+static void filtroComplementario(float rollAcc, float pitchAcc, float gx, float gy, float dt) {
+  if (!filtroIniciado) {  // primera lectura: se parte del ángulo del acelerómetro
+    rollEst = rollAcc;
+    pitchEst = pitchAcc;
+    filtroIniciado = true;
+    return;
+  }
+  float rollGiro = rollEst + gx * dt;
+  float pitchGiro = pitchEst - gy * dt;
+  // α·giro + (1 − α)·acelerómetro, escrito como acelerómetro + α·(giro − acelerómetro).
+  rollEst = envolver180(rollAcc + ALFA_COMPLEMENTARIO * envolver180(rollGiro - rollAcc));
+  pitchEst = pitchAcc + ALFA_COMPLEMENTARIO * (pitchGiro - pitchAcc);
+  if (pitchEst > 90.0f) pitchEst = 90.0f;
+  if (pitchEst < -90.0f) pitchEst = -90.0f;
+}
+
+// Corrección lineal del ángulo del acelerómetro (solo se aplica con CORRECCION_ANGULO 1). Se limita al
+// rango del contrato: roll −180…180 y pitch −90…90.
 static float corregirAngulo(float angulo, float limite) {
   float a = ANGULO_M * angulo + ANGULO_B;
   return a > limite ? limite : a < -limite ? -limite : a;
@@ -545,14 +600,19 @@ static void iniciarEpisodio(uint32_t t, int64_t t_us, uint8_t tipo, bool golpe,
 }
 
 // usLectura: micros() del momento en que se obtuvo esta lectura del MPU6050.
-static void decidir(uint32_t t, int64_t t_us, uint32_t usLectura, float norma, float roll, float pitch) {
+// roll y pitch: ángulos del filtro complementario (regla de inclinación).
+// rollAcc: roll solo con el acelerómetro (regla de vuelco, igual que antes del filtro).
+static void decidir(uint32_t t, int64_t t_us, uint32_t usLectura, float norma, float roll, float pitch,
+                    float rollAcc) {
   bool golpe = norma >= UMBRAL_GOLPE_MS2;
   bool inclinado = fabsf(roll) >= UMBRAL_INCLINACION_DEG
                 || fabsf(pitch) >= UMBRAL_INCLINACION_DEG;
 #if MODO_CARRO_EN_MOVIMIENTO
   if (fabsf(norma - G_MS2) > MOVIMIENTO_DESVIO_MS2) inclinado = false;
 #endif
-  bool vuelcoInstantaneo = fabsf(roll) >= UMBRAL_VUELCO_DEG;
+  // El vuelco se sigue decidiendo con el acelerómetro: boca abajo o de costado la gravedad lo indica
+  // sin ambigüedad y no hay que esperar al filtro.
+  bool vuelcoInstantaneo = fabsf(rollAcc) >= UMBRAL_VUELCO_DEG;
   static bool contandoVuelco = false;
   static uint32_t inicioVuelco = 0;
 
@@ -720,7 +780,8 @@ static uint32_t anilloTmsPrimera() {
 // Adquisición a 250 Hz
 
 static void tareaAdquisicion(void*) {
-  float ax = 0, ay = 0, az = G_MS2;
+  float ax = 0, ay = 0, az = G_MS2, gx = 0, gy = 0;
+  float picoRollAcc = 0, picoPitchAcc = 0;
   Muestra pico{};
   float picoNorma = -1;
   int picoIdx = 0, enVentana = 0;
@@ -740,6 +801,8 @@ static void tareaAdquisicion(void*) {
     int64_t t_us = esp_timer_get_time();
     uint32_t t = (uint32_t)((t_us - t0_us) / 1000);
 
+    // Tiempo real desde la lectura anterior, para integrar el giroscopio (máximo 50 ms si hubo una pausa).
+    float dtS = ultimoCiclo ? fminf((t_us - ultimoCiclo) / 1e6f, 0.05f) : PERIODO_ADQ_MS / 1000.0f;
     if (ultimoCiclo) {
       uint32_t dt = (uint32_t)(t_us - ultimoCiclo);
       dtMin = min(dtMin, dt);
@@ -747,13 +810,15 @@ static void tareaAdquisicion(void*) {
     }
     ultimoCiclo = t_us;
 
-    float x, y, z;
-    bool leida = mpuAceleracion(x, y, z);
+    float x, y, z, gxl, gyl, gzl;
+    bool leida = mpuLeerSensor(x, y, z, gxl, gyl, gzl);
     uint32_t usLectura = micros();  // instante de esta lectura, para las latencias
     if (leida) {
       ax = x - offX;
       ay = y - offY;
       az = z - offZ;
+      gx = gxl - offGX;
+      gy = gyl - offGY;
       cAdq++;
       if (i2cSeguidos >= I2C_FALLOS_PARA_REINICIAR) {
         logq("I2C OK de nuevo t_ms=%lu tras %lu lecturas fallidas seguidas; recuperaciones=%lu",
@@ -763,6 +828,7 @@ static void tareaAdquisicion(void*) {
       i2cProximo = i2cEspera = I2C_FALLOS_PARA_REINICIAR;
     } else {
       errI2c++;
+      gx = gy = 0;  // sin lectura nueva no se integra giro: el ángulo se mantiene
       // Mientras falla se conservan las últimas lecturas válidas (no se inventan valores nuevos).
       if (++i2cSeguidos >= i2cProximo) {
         i2cRecuperaciones++;
@@ -778,12 +844,15 @@ static void tareaAdquisicion(void*) {
     }
 
     float norma = sqrtf(ax * ax + ay * ay + az * az);
-    float roll = atan2f(ay, az) * 180.0f / PI;
-    float pitch = atan2f(ax, sqrtf(ay * ay + az * az)) * 180.0f / PI;
-#if CORRECCION_ANGULO
-    roll = corregirAngulo(roll, 180.0f);
-    pitch = corregirAngulo(pitch, 90.0f);
-#endif
+    // Ángulos solo con el acelerómetro (proyección de la gravedad).
+    float rollAcc = atan2f(ay, az) * 180.0f / PI;
+    float pitchAcc = atan2f(ax, sqrtf(ay * ay + az * az)) * 180.0f / PI;
+    if (CORRECCION_ANGULO) {  // constante: con 0 el compilador quita este bloque
+      rollAcc = corregirAngulo(rollAcc, 180.0f);
+      pitchAcc = corregirAngulo(pitchAcc, 90.0f);
+    }
+    filtroComplementario(rollAcc, pitchAcc, gx, gy, dtS);
+    float roll = rollEst, pitch = pitchEst;
 
     uint32_t pulsos;
     int64_t ultimoPulso;
@@ -795,7 +864,7 @@ static void tareaAdquisicion(void*) {
     }
     rpsEraCero = (rps == 0);
 
-    decidir(t, t_us, usLectura, norma, roll, pitch);
+    decidir(t, t_us, usLectura, norma, roll, pitch, rollAcc);
     cDec++;
     actualizarBuzzer(t_us);
 
@@ -830,6 +899,8 @@ static void tareaAdquisicion(void*) {
       picoNorma = norma;
       picoIdx = enVentana;
       pico = {0, t, ax, ay, az, roll, pitch, rps, pulsos, (uint8_t)estadoDet};
+      picoRollAcc = rollAcc;
+      picoPitchAcc = pitchAcc;
     }
     if (++enVentana == MUESTRAS_POR_TEL) {
       pico.numero = ++numeroTel;
@@ -837,9 +908,9 @@ static void tareaAdquisicion(void*) {
       pico.pulsos = pulsos;
       anilloPoner(pico);
       cTel++;
-      logq("TEL n=%lu t=%lu ax=%.3f ay=%.3f az=%.3f roll=%.2f pitch=%.2f rps=%.2f k=%d",
+      logq("TEL n=%lu t=%lu ax=%.3f ay=%.3f az=%.3f roll=%.2f pitch=%.2f rps=%.2f k=%d roll_acc=%.2f pitch_acc=%.2f",
            (unsigned long)pico.numero, (unsigned long)pico.t_ms,
-           pico.ax, pico.ay, pico.az, pico.roll, pico.pitch, pico.rps, picoIdx);
+           pico.ax, pico.ay, pico.az, pico.roll, pico.pitch, pico.rps, picoIdx, picoRollAcc, picoPitchAcc);
       enVentana = 0;
       picoNorma = -1;
     }

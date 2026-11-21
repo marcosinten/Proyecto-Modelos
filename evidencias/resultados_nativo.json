@@ -9,7 +9,14 @@
   {
     "prueba": "Reposo · ángulos",
     "criterio": "roll y pitch en 0 ± 2°",
-    "observado": "roll [-0.64, +0.61]°, pitch [-0.61, +0.79]°",
+    "observado": "roll [+0.01, +0.08]°, pitch [-0.27, -0.06]°",
+    "estado": "OK",
+    "evidencia": "evidencias/reposo/nativo/"
+  },
+  {
+    "prueba": "Reposo · cero del giroscopio",
+    "criterio": "la calibración mide el error de cero 1,5/−1,0/0,5 °/s (± 0,1) y el ángulo estimado no deriva (roll y pitch en 0 ± 2°)",
+    "observado": "giro_cero medido [1.524, -0.976, 0.488] °/s; roll [+0.01, +0.08]°, pitch [-0.27, -0.06]°",
     "estado": "OK",
     "evidencia": "evidencias/reposo/nativo/"
   },
@@ -30,14 +37,14 @@
   {
     "prueba": "Marcha · vuelta a cero",
     "criterio": "< 1 s desde el último pulso hasta la primera lectura de cero",
-    "observado": "último pulso t=5750.456 ms; primera TEL con 0: t=6515 ms (+764.5 ms); firmware: desde_ultimo_pulso=753.3 ms",
+    "observado": "último pulso t=5750.276 ms; primera TEL con 0: t=6515 ms (+764.7 ms); firmware: desde_ultimo_pulso=753.3 ms",
     "estado": "OK",
     "evidencia": "evidencias/marcha/nativo/"
   },
   {
-    "prueba": "Frenada · inclinación aparente",
-    "criterio": "A -7 m/s² el ángulo acelerométrico supera 10°: inclinación, sin golpe ni vuelco",
-    "observado": "ax mínima -7.11 m/s², |a| máx 12.13 m/s², |pitch| máx 36.0°; rueda_rps 4/s→4.00–4.00, 2/s→2.00–2.00, 1,5/s→1.50–1.50; detecciones 1",
+    "prueba": "Frenada · sin falsa alarma",
+    "criterio": "desaceleración hasta -7 m/s² sin giro: pitch estimado (filtro complementario) < 10°, sin detección ni alerta",
+    "observado": "ax mínima -7.11 m/s², |a| máx 12.13 m/s², |pitch| máx estimado 7.7° (solo acelerómetro: 36.0°); rueda_rps 4/s→4.00–4.00, 2/s→2.00–2.00, 1,5/s→1.50–1.50; detecciones 0, eventos 0",
     "estado": "OK",
     "evidencia": "evidencias/frenada/nativo/"
   },
@@ -51,7 +58,7 @@
   {
     "prueba": "Alertas · latencia",
     "criterio": "LED, buzzer y orden del servo < 50 ms desde la detección",
-    "observado": "firmware: LED +0.223 ms, buzzer +0.224 ms, servo +0.227 ms · señal virtual: LED +0.223 ms, buzzer +0.224 ms, pulso servo 1450 µs +0.227 ms",
+    "observado": "firmware: LED +0.403 ms, buzzer +0.404 ms, servo +0.407 ms · señal virtual: LED +0.403 ms, buzzer +0.404 ms, pulso servo 1450 µs +0.407 ms",
     "estado": "OK",
     "evidencia": "evidencias/golpe/nativo/"
   },
@@ -79,14 +86,14 @@
   {
     "prueba": "Inclinacion · clasificación",
     "criterio": "un solo evento 'inclinacion', gravedad media",
-    "observado": "detecciones 1, eventos 1: inclinacion/media t_inicio=3 t_det=1155 t_act=1156 t_fin=3499 cierre=condicion_ausente",
+    "observado": "detecciones 1, eventos 1: inclinacion/media t_inicio=7 t_det=1159 t_act=1160 t_fin=3539 cierre=condicion_ausente",
     "estado": "OK",
     "evidencia": "evidencias/inclinacion/nativo/"
   },
   {
     "prueba": "Alertas · latencia",
     "criterio": "LED, buzzer y orden del servo < 50 ms desde la detección",
-    "observado": "firmware: LED +0.223 ms, buzzer +0.224 ms, servo +0.227 ms · señal virtual: LED +0.223 ms, buzzer +0.224 ms, pulso servo 1450 µs +0.227 ms",
+    "observado": "firmware: LED +0.403 ms, buzzer +0.404 ms, servo +0.407 ms · señal virtual: LED +0.403 ms, buzzer +0.404 ms, pulso servo 1450 µs +0.407 ms",
     "estado": "OK",
     "evidencia": "evidencias/inclinacion/nativo/"
   },
@@ -114,14 +121,14 @@
   {
     "prueba": "Vuelco costado · clasificación",
     "criterio": "un solo evento 'vuelco', gravedad alta",
-    "observado": "detecciones 1, eventos 1: vuelco/alta t_inicio=3 t_det=1155 t_act=1156 t_fin=6155 cierre=duracion_maxima",
+    "observado": "detecciones 1, eventos 1: vuelco/alta t_inicio=7 t_det=1159 t_act=1160 t_fin=6159 cierre=duracion_maxima",
     "estado": "OK",
     "evidencia": "evidencias/vuelco_costado/nativo/"
   },
   {
     "prueba": "Alertas · latencia",
     "criterio": "LED, buzzer y orden del servo < 50 ms desde la detección",
-    "observado": "firmware: LED +0.223 ms, buzzer +0.224 ms, servo +0.227 ms · señal virtual: LED +0.223 ms, buzzer +0.224 ms, pulso servo 1450 µs +0.227 ms",
+    "observado": "firmware: LED +0.403 ms, buzzer +0.404 ms, servo +0.407 ms · señal virtual: LED +0.403 ms, buzzer +0.404 ms, pulso servo 1450 µs +0.407 ms",
     "estado": "OK",
     "evidencia": "evidencias/vuelco_costado/nativo/"
   },
@@ -135,7 +142,7 @@
   {
     "prueba": "Vuelco costado · buzzer activo",
     "criterio": "120 ms en inclinación, 500 ms en golpe, continuo en vuelco, apagado al rearmar",
-    "observado": "2 cambios de nivel; tramos intermedios 5380–5380 ms; nivel final 0",
+    "observado": "2 cambios de nivel; tramos intermedios 5376–5376 ms; nivel final 0",
     "estado": "OK",
     "evidencia": "evidencias/vuelco_costado/nativo/"
   },
@@ -149,14 +156,14 @@
   {
     "prueba": "Vuelco boca abajo · clasificación",
     "criterio": "un solo evento 'vuelco', gravedad alta",
-    "observado": "detecciones 1, eventos 1: vuelco/alta t_inicio=3 t_det=1155 t_act=1156 t_fin=5499 cierre=condicion_ausente",
+    "observado": "detecciones 1, eventos 1: vuelco/alta t_inicio=7 t_det=1159 t_act=1160 t_fin=5611 cierre=condicion_ausente",
     "estado": "OK",
     "evidencia": "evidencias/vuelco_boca_abajo/nativo/"
   },
   {
     "prueba": "Alertas · latencia",
     "criterio": "LED, buzzer y orden del servo < 50 ms desde la detección",
-    "observado": "firmware: LED +0.223 ms, buzzer +0.224 ms, servo +0.227 ms · señal virtual: LED +0.223 ms, buzzer +0.224 ms, pulso servo 1450 µs +0.227 ms",
+    "observado": "firmware: LED +0.403 ms, buzzer +0.404 ms, servo +0.407 ms · señal virtual: LED +0.403 ms, buzzer +0.404 ms, pulso servo 1450 µs +0.407 ms",
     "estado": "OK",
     "evidencia": "evidencias/vuelco_boca_abajo/nativo/"
   },
@@ -170,7 +177,7 @@
   {
     "prueba": "Vuelco boca abajo · buzzer activo",
     "criterio": "120 ms en inclinación, 500 ms en golpe, continuo en vuelco, apagado al rearmar",
-    "observado": "2 cambios de nivel; tramos intermedios 4880–4880 ms; nivel final 0",
+    "observado": "2 cambios de nivel; tramos intermedios 4876–4876 ms; nivel final 0",
     "estado": "OK",
     "evidencia": "evidencias/vuelco_boca_abajo/nativo/"
   },
@@ -184,14 +191,14 @@
   {
     "prueba": "Inclinacion a vuelco · clasificación",
     "criterio": "un solo evento 'vuelco', gravedad alta",
-    "observado": "detecciones 1, eventos 1: vuelco/alta t_inicio=195 t_det=1347 t_act=1348 t_fin=6299 cierre=condicion_ausente; clasificación inicial inclinacion → final vuelco",
+    "observado": "detecciones 1, eventos 1: vuelco/alta t_inicio=119 t_det=1271 t_act=1272 t_fin=6271 cierre=condicion_ausente; clasificación inicial inclinacion → final vuelco",
     "estado": "OK",
     "evidencia": "evidencias/inclinacion_a_vuelco/nativo/"
   },
   {
     "prueba": "Alertas · latencia",
     "criterio": "LED, buzzer y orden del servo < 50 ms desde la detección",
-    "observado": "firmware: LED +0.223 ms, buzzer +0.224 ms, servo +0.227 ms · señal virtual: LED +0.223 ms, buzzer +0.224 ms, pulso servo 1450 µs +0.227 ms",
+    "observado": "firmware: LED +0.403 ms, buzzer +0.404 ms, servo +0.407 ms · señal virtual: LED +0.403 ms, buzzer +0.404 ms, pulso servo 1450 µs +0.407 ms",
     "estado": "OK",
     "evidencia": "evidencias/inclinacion_a_vuelco/nativo/"
   },
@@ -205,7 +212,7 @@
   {
     "prueba": "Inclinacion a vuelco · buzzer activo",
     "criterio": "120 ms en inclinación, 500 ms en golpe, continuo en vuelco, apagado al rearmar",
-    "observado": "8 cambios de nivel; tramos intermedios 120–120 ms; nivel final 0",
+    "observado": "10 cambios de nivel; tramos intermedios 28–120 ms; nivel final 0",
     "estado": "OK",
     "evidencia": "evidencias/inclinacion_a_vuelco/nativo/"
   },
@@ -233,7 +240,7 @@
   {
     "prueba": "Alertas · latencia",
     "criterio": "LED, buzzer y orden del servo < 50 ms desde la detección",
-    "observado": "firmware: LED +0.223 ms, buzzer +0.224 ms, servo +0.227 ms · señal virtual: LED +0.223 ms, buzzer +0.224 ms, pulso servo 1450 µs +0.227 ms",
+    "observado": "firmware: LED +0.403 ms, buzzer +0.404 ms, servo +0.407 ms · señal virtual: LED +0.403 ms, buzzer +0.404 ms, pulso servo 1450 µs +0.407 ms",
     "estado": "OK",
     "evidencia": "evidencias/golpe_corto/nativo/"
   },
@@ -289,7 +296,7 @@
   {
     "prueba": "Botón · pulsación larga",
     "criterio": "≥ 3 s: LED, buzzer y servo en reposo, REINICIO con motivo y ESP.restart()",
-    "observado": "REINICIO motivo=pulsacion_larga boton=D33 t_ms=10039 sesion=RC-ABCDEF-77AE0BF3 eventos=2; desde que se pulsó 3034.7439999999997 ms; al final LED 0, buzzer 0, servo 500 µs; ESP.restart en el banco: True",
+    "observado": "REINICIO motivo=pulsacion_larga boton=D33 t_ms=10039 sesion=RC-ABCDEF-77AE0BF3 eventos=2; desde que se pulsó 3034.924 ms; al final LED 0, buzzer 0, servo 500 µs; ESP.restart en el banco: True",
     "estado": "OK",
     "evidencia": "evidencias/reinicio_boton/nativo/"
   },
@@ -324,7 +331,7 @@
   {
     "prueba": "API · envío",
     "criterio": "sesión, lotes y evento aceptados por la API local (201/200)",
-    "observado": "17 POST; códigos [200, 201]; evento guardado: GET /eventos/RC-ABCDEF-0FEC1EEF-EV001 → tipo golpe, gravedad alta, ubicacion None, 90 mediciones en la ventana",
+    "observado": "17 POST; códigos [200, 201]; evento guardado: GET /eventos/RC-ABCDEF-5CF5B6C7-EV001 → tipo golpe, gravedad alta, ubicacion None, 90 mediciones en la ventana",
     "estado": "OK",
     "evidencia": "evidencias/api/nativo/"
   },
@@ -359,14 +366,14 @@
   {
     "prueba": "API · reintento",
     "criterio": "respuesta perdida → reintento con el mismo JSON, ids y tiempos; la API responde 200",
-    "observado": "/sesiones/RC-ABCDEF-0FEC1EEF/mediciones hash 4B077217: API 201→200 (cuerpos idénticos); /eventos hash 54105134: API 201→200 (cuerpos idénticos)",
+    "observado": "/sesiones/RC-ABCDEF-5CF5B6C7/mediciones hash 37AAA57E: API 201→200 (cuerpos idénticos); /eventos hash EDED1444: API 201→200 (cuerpos idénticos)",
     "estado": "OK",
     "evidencia": "evidencias/api/nativo/"
   },
   {
     "prueba": "Frecuencias",
     "criterio": "lectura y decisión a 250 Hz; telemetría a 50 Hz (líneas EST de todos los casos)",
-    "observado": "f_adq 250.0–250.0 Hz, f_dec 250.0–250.0 Hz, f_tel 49.8–50.0 Hz, periodo 4000–4000 µs, ciclo máx 227 µs (coste modelado de I2C)",
+    "observado": "f_adq 250.0–250.0 Hz, f_dec 250.0–250.0 Hz, f_tel 50.0–50.0 Hz, periodo 4000–4000 µs, ciclo máx 407 µs (coste modelado de I2C)",
     "estado": "OK",
     "evidencia": "evidencias/*/nativo/serial.log (EST)"
   },
@@ -376,5 +383,12 @@
     "observado": "frenada: sesion → 2 intentos, hashes ['731C9EBD']; vuelco_costado: sesion → 2 intentos, hashes ['731C9EBD']; inclinacion_a_vuelco: sesion → 2 intentos, hashes ['731C9EBD']; rearme_red: sesion → 2 intentos, hashes ['731C9EBD']",
     "estado": "OK",
     "evidencia": "evidencias/*/nativo/serial.log (RED POST)"
+  },
+  {
+    "prueba": "Frenada · acelerómetro frente a filtro",
+    "criterio": "solo acelerómetro (α = 0) da inclinación aparente; con α = 0,999 no hay alarma",
+    "observado": "α=0.0: pitch máx 36.0°, alarma; α=0.98: pitch máx 34.4°, alarma; α=0.999: pitch máx 7.7°, sin alarma",
+    "estado": "OK",
+    "evidencia": "evidencias/frenada/comparacion_filtro.md"
   }
 ]

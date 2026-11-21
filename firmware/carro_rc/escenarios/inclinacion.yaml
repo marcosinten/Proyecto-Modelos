@@ -8,6 +8,66 @@ steps:
   - delay: 1000ms
   - set-control:
       part-id: imu1
+      control: rotationX
+      value: 1400.0
+  - set-control:
+      part-id: imu1
+      control: rotationY
+      value: -0.0
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0.0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0.2419
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 0.9703
+  - delay: 10ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0.0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0.4695
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 0.8829
+  - delay: 10ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0.0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0.6691
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 0.7431
+  - delay: 10ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0.0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0.829
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 0.5592
+  - delay: 10ms
+  - set-control:
+      part-id: imu1
       control: accelX
       value: 0.0
   - set-control:
@@ -18,12 +78,81 @@ steps:
       part-id: imu1
       control: accelZ
       value: 0.342
-  - delay: 200ms
+  - delay: 10ms
+  - set-control:
+      part-id: imu1
+      control: rotationX
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: rotationY
+      value: 0
+  - delay: 150ms
   - expect-pin:
       part-id: led1
       pin: 'A'
       value: 1
   - delay: 1800ms
+  - set-control:
+      part-id: imu1
+      control: rotationX
+      value: -1400.0
+  - set-control:
+      part-id: imu1
+      control: rotationY
+      value: -0.0
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0.0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0.829
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 0.5592
+  - delay: 10ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0.0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0.6691
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 0.7431
+  - delay: 10ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0.0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0.4695
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 0.8829
+  - delay: 10ms
+  - set-control:
+      part-id: imu1
+      control: accelX
+      value: 0.0
+  - set-control:
+      part-id: imu1
+      control: accelY
+      value: 0.2419
+  - set-control:
+      part-id: imu1
+      control: accelZ
+      value: 0.9703
+  - delay: 10ms
   - set-control:
       part-id: imu1
       control: accelX
@@ -36,7 +165,16 @@ steps:
       part-id: imu1
       control: accelZ
       value: 1.0
-  - delay: 1500ms
+  - delay: 10ms
+  - set-control:
+      part-id: imu1
+      control: rotationX
+      value: 0
+  - set-control:
+      part-id: imu1
+      control: rotationY
+      value: 0
+  - delay: 1450ms
   - set-control:
       part-id: btn_rearme
       control: pressed

@@ -1,16 +1,48 @@
   2200.678 ms  wait-serial 'CAL OK' OK
   2200.678 ms  wait-serial 'SESION id=' OK
-  2220.222 ms  WIFI desconectado
-  2320.222 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
+  2220.402 ms  WIFI desconectado
+  2320.402 ms  WIFI begin ssid=Wokwi-GUEST disponible=1
+  3200.678 ms  set-control imu1.rotationX = 1400
+  3200.678 ms  set-control imu1.rotationY = -0
   3200.678 ms  set-control imu1.accelX = 0
-  3200.678 ms  set-control imu1.accelY = 0.9397
-  3200.678 ms  set-control imu1.accelZ = 0.342
+  3200.678 ms  set-control imu1.accelY = 0.2419
+  3200.678 ms  set-control imu1.accelZ = 0.9703
+  3210.678 ms  set-control imu1.accelX = 0
+  3210.678 ms  set-control imu1.accelY = 0.4695
+  3210.678 ms  set-control imu1.accelZ = 0.8829
+  3220.678 ms  set-control imu1.accelX = 0
+  3220.678 ms  set-control imu1.accelY = 0.6691
+  3220.678 ms  set-control imu1.accelZ = 0.7431
+  3230.678 ms  set-control imu1.accelX = 0
+  3230.678 ms  set-control imu1.accelY = 0.829
+  3230.678 ms  set-control imu1.accelZ = 0.5592
+  3240.678 ms  set-control imu1.accelX = 0
+  3240.678 ms  set-control imu1.accelY = 0.9397
+  3240.678 ms  set-control imu1.accelZ = 0.342
+  3250.678 ms  set-control imu1.rotationX = 0
+  3250.678 ms  set-control imu1.rotationY = 0
   3400.678 ms  expect-pin led1:A = 1 -> leído 1 OK
+  5200.678 ms  set-control imu1.rotationX = -1400
+  5200.678 ms  set-control imu1.rotationY = -0
   5200.678 ms  set-control imu1.accelX = 0
-  5200.678 ms  set-control imu1.accelY = 0
-  5200.678 ms  set-control imu1.accelZ = 1
+  5200.678 ms  set-control imu1.accelY = 0.829
+  5200.678 ms  set-control imu1.accelZ = 0.5592
+  5210.678 ms  set-control imu1.accelX = 0
+  5210.678 ms  set-control imu1.accelY = 0.6691
+  5210.678 ms  set-control imu1.accelZ = 0.7431
+  5220.678 ms  set-control imu1.accelX = 0
+  5220.678 ms  set-control imu1.accelY = 0.4695
+  5220.678 ms  set-control imu1.accelZ = 0.8829
+  5230.678 ms  set-control imu1.accelX = 0
+  5230.678 ms  set-control imu1.accelY = 0.2419
+  5230.678 ms  set-control imu1.accelZ = 0.9703
+  5240.678 ms  set-control imu1.accelX = 0
+  5240.678 ms  set-control imu1.accelY = 0
+  5240.678 ms  set-control imu1.accelZ = 1
+  5250.678 ms  set-control imu1.rotationX = 0
+  5250.678 ms  set-control imu1.rotationY = 0
   6700.678 ms  set-control btn_rearme.pressed = 1
-  6820.224 ms  HTTP POST #1 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
+  6820.407 ms  HTTP POST #1 http://host.wokwi.internal:3000/api/v1/sesiones -> -1
   6852.578 ms  set-control btn_rearme.pressed = 0
   7004.478 ms  expect-pin led1:A = 0 -> leído 0 OK
   8704.478 ms  MARCA fin inclinacion

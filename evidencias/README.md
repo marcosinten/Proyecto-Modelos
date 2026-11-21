@@ -2,6 +2,13 @@
 
 Fecha: 2026-11-15 · Rama: `wokwi-carro-rc` · Firmware: `firmware/carro_rc/carro_rc.ino`
 
+> **Actualización del 21 de noviembre de 2026 (rama `entrega-cp2`).** Umbral de inclinación de 10°, latencias
+> medidas con `micros()`, estado del detector en cada medición y ángulo con filtro complementario (giroscopio +
+> acelerómetro, α = 0,999). Banco nativo: 56 de 56 (`RESULTADOS_NATIVO.md`). Frenada a −7 m/s²: pitch solo con
+> acelerómetro 36,0° → alarma; con el filtro 7,7° → sin alarma (`frenada/comparacion_filtro.md`).
+> `RESULTADOS_WOKWI.md` es del firmware del 16 de noviembre y se regenerará con `ejecutar_wokwi.py`.
+> Pruebas físicas: `fisico/` (registros seriales de la maqueta).
+
 > **Actualización del 16 de noviembre de 2026 (rama `wokwi-materiales-reales`).** Firmware con buzzer
 > activo, golpe confirmado con 2 lecturas, envío de `rueda_rps` y GPIO 27 en bajo desde el principio de
 > `setup()`; circuito con la placa de 30 pines `wokwi-esp32-devkit-v1` y pull-down de 4,7 kΩ en GPIO 27.
