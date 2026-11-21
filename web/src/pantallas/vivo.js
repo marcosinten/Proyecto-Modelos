@@ -3,12 +3,13 @@
 import {app, $, escape, seconds, get, toast} from '../app.js';
 import {vueltasEntre, PAUSA_MS, recepcion, sesionMasReciente, textoConexion} from '../telemetria.js';
 import {horaAproximadaMs, textoHora, NOTA_HORA} from '../../../compartido/hora.js';
-import {refreshData, update, start, pintarEventos} from './monitor.js';
+import {refreshData, update, start, pintarEventos, ponerConexion, estadoConexion, valorEvento, segundosRango, RANGO_INICIAL} from './monitor.js';
 
-// Ventana en vivo seleccionable: 10, 30 o 60 s a 50 Hz. /ultima entrega hasta 1000 muestras; para
-// ventanas mayores se rellena hacia atrás con /mediciones al (re)conectar.
+// Ventana en vivo seleccionable: 6 s, 30 s, 2 min o la sesión completa, a 50 Hz. /ultima entrega hasta
+// 1000 muestras; para ventanas mayores se rellena hacia atrás con /mediciones al (re)conectar.
 const MAX_ULTIMA = 1000;
-const muestrasVentana = () => (app.ventanaS ?? 10) * 50;
+const ventanaS = () => app.ventanaS ?? segundosRango(RANGO_INICIAL);
+const muestrasVentana = () => ventanaS() * 50;
 async function rellenar(id, datos, valid) {
   const faltan = muestrasVentana() - datos.length;
   if (faltan <= 0 || !datos.length || datos[0].numero <= 1) return datos;
@@ -43,11 +44,11 @@ export async function connectLive(id){
  $('#ventana').hidden=false;
  $('.monitor').classList.add('en-vivo');
  $('#live-form').hidden=true;
- $('#sesion-actual').hidden=false;$('#sesion-actual').textContent='Sesión '+id;$('#cambiar-sesion').hidden=false;
- $('#conexion-texto').textContent='Conectando…';
+ $('#sesion-actual').hidden=false;$('#sesion-actual').textContent=id;$('#cambiar-sesion').hidden=false;$('#copiar-sesion').hidden=false;
+ ponerConexion('Conectando…','atrasada');app.reloj=null;
  for(const s of ['play','reset','timeline','speed'])$('#'+s).disabled=true;
  btn.hidden=true;$('#find-session').textContent='Cambiar sesión';$('#accion-sesion').textContent='Cambiar sesión';
- for(const s of ['ax','ay','az','roll','pitch','clock','sample-time','graph-reading','protocol','samples','estado-texto','estado-detalle'])$('#'+s).textContent='—';
+ for(const s of ['ax','ay','az','roll','pitch','clock','sample-time','graph-reading','protocol','samples','estado-texto','estado-detalle','acel-total','rueda-estado'])$('#'+s).textContent='—';
  $('#car').style.visibility='hidden';refreshData();
  let reset=true, lastRecepcion=null, markerKey='', eventoVisto;
  app.reiniciarVivo=()=>{if(valid())reset=true;};
@@ -75,10 +76,11 @@ export async function connectLive(id){
      if(reset||r.recortada)data=await rellenar(id,data,valid);
      if(!valid())return;
      lastRecepcion=r.ultima_recepcion_ms;
+     app.reloj={ultima_recepcion_ms:r.ultima_recepcion_ms??null,t_ultima_medicion_ms:r.medicion?.t_ms??null};
      const oldStale=app.stale;
      app.stale=lastRecepcion==null || r.ahora_ms-lastRecepcion>PAUSA_MS;
      $('#mode-help').textContent=recepcion(lastRecepcion,r.ahora_ms,!!r.medicion);
-     $('#conexion-texto').textContent=textoConexion(lastRecepcion,r.ahora_ms);
+     ponerConexion(textoConexion(lastRecepcion,r.ahora_ms),estadoConexion(lastRecepcion,r.ahora_ms));
      if(!reset && !r.recortada && data.length && !app.stale){
        let a=prev, delta=0;
        for(const b of data){delta+=vueltasEntre(a,b);a=b;}
@@ -88,8 +90,8 @@ export async function connectLive(id){
        }
      }
      app.current.mediciones=reset||r.recortada?data:[...app.current.mediciones,...data];
-     // Conserva la ventana elegida por tiempo (10, 30 o 60 s).
-     const desde=app.current.mediciones.at(-1)?.t_ms-(app.ventanaS??10)*1000;
+     // Conserva la ventana elegida por tiempo (6 s, 30 s, 2 min o toda la sesión).
+     const desde=app.current.mediciones.at(-1)?.t_ms-ventanaS()*1000;
      const corte=app.current.mediciones.findIndex(m=>m.t_ms>desde);
      if(corte>0)app.current.mediciones=app.current.mediciones.slice(corte);
      reset=false;
@@ -114,7 +116,7 @@ export async function connectLive(id){
    } catch(e){
      if(!valid())return;
      reset=true;app.stale=true;app.wheelTo=app.liveTurns;
-     $('#conexion-texto').textContent='Conexión: interrumpida · reintentando';
+     ponerConexion('Conexión interrumpida · reintentando','desconectada');
      $('#mode-help').textContent='Conexión interrumpida. Reintentando…'+(lastRecepcion?' Última recepción: '+new Date(lastRecepcion).toLocaleString('es-EC'):'');
      if(app.current.mediciones.length)update();
    }
@@ -123,12 +125,25 @@ export async function connectLive(id){
  poll();
 }
 
+// Aviso «Evento guardado»: píldora con el tipo, el valor principal y la hora; dura 4 s y se apilan
+// como mucho 3 (la más nueva arriba). #event-saved es siempre la más reciente.
+const MAX_AVISOS = 3, DURACION_AVISO_MS = 4000, SALIDA_MS = 200;
 export function avisarEvento(ev,horaMs){
+ const caja=$('#avisos-evento'); if(!caja)return;
  const hora=textoHora(horaMs);
- let aviso=$('#event-saved');
- if(!aviso){aviso=document.createElement('div');aviso.id='event-saved';aviso.className='live-notice event-saved';aviso.setAttribute('role','status');$('#live-notices').prepend(aviso);}
- aviso.innerHTML=`<strong>Evento guardado: ${escape(tipoAviso[ev.tipo]||ev.tipo)} · ${hora?`${hora}</strong> <small>(${NOTA_HORA})</small>`:`${seconds(ev.t_deteccion_ms)} s de sesión</strong> <small>(hora sin medir)</small>`} <a href="#explicar/${escape(ev.id)}">Explicar</a>`;
- aviso.classList.remove('flash');void aviso.offsetWidth;aviso.classList.add('flash');
+ const {valor}=valorEvento(ev,app.current.mediciones);
+ caja.querySelector('#event-saved')?.removeAttribute('id');
+ const aviso=document.createElement('div');
+ aviso.className='aviso-evento';aviso.id='event-saved';aviso.dataset.tipo=ev.tipo;
+ aviso.innerHTML=`<svg class="visto" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="12.5"/><path d="M9 14.5l3.4 3.4L19.5 10.8"/></svg><strong>Evento guardado</strong><span class="chip-evento"></span>`;
+ const chip=aviso.querySelector('.chip-evento');
+ chip.dataset.tipo=ev.tipo;
+ chip.textContent=[tipoAviso[ev.tipo]||ev.tipo,valor,hora??`${seconds(ev.t_deteccion_ms)} s de sesión`].filter(Boolean).join(' · ');
+ chip.title=hora?`Hora ${NOTA_HORA}`:'Hora sin medir';
+ caja.prepend(aviso);
+ while(caja.children.length>MAX_AVISOS)caja.lastElementChild.remove();
+ const sinMovimiento=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ setTimeout(()=>{aviso.classList.add('sale');setTimeout(()=>aviso.remove(),sinMovimiento?0:SALIDA_MS);},DURACION_AVISO_MS);
 }
 
 export function avisarSesionNueva(s,ahora,ignorar){

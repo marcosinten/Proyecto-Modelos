@@ -83,13 +83,16 @@ try {
    console.log(`Emisión continua, primer POST de 20° → render de 20°: ${cambio.at-cambioPost.post} ms (muestra ${cambio.ms/20})`);
  } finally {emitting=false;await flujo;}
  await tab.waitForFunction(ms=>framesRC.at(-1)?.ms===ms,{},n*20);
- // Ventana en vivo por defecto: 10 s a 50 Hz.
- assert.equal(await tab.$eval('#sample-count',e=>e.textContent),'500 muestras');
- // Ventana de 30 s: más de las 1000 muestras de /ultima, se rellena hacia atrás con /mediciones.
+ // Rango en vivo por defecto (rediseño): 30 s a 50 Hz, más que las 1000 muestras de /ultima, así que
+ // se rellena hacia atrás con /mediciones. Opciones: 6 s · 30 s · 2 min · Sesión.
+ assert.equal(await tab.$eval('#sample-count',e=>e.textContent),'1500 muestras');
+ await tab.click('[data-ventana="6"]');
+ await tab.waitForFunction(()=>document.querySelector('#sample-count').textContent==='300 muestras',{timeout:15000});
+ // «Sesión»: todas las mediciones desde la primera; la gráfica dibuja una versión reducida (mín./máx. por cubo).
+ await tab.click('[data-ventana="sesion"]');
+ await tab.waitForFunction(total=>document.querySelector('#sample-count').textContent===total+' muestras',{timeout:30000},n);
  await tab.click('[data-ventana="30"]');
  await tab.waitForFunction(()=>document.querySelector('#sample-count').textContent==='1500 muestras',{timeout:15000});
- await tab.click('[data-ventana="10"]');
- await tab.waitForFunction(()=>document.querySelector('#sample-count').textContent==='500 muestras',{timeout:15000});
  const waitText=async(sel,value)=>tab.waitForFunction((s,v)=>document.querySelector(s)?.textContent.includes(v),{},sel,value);
  const state=()=>tab.evaluate(()=>framesRC.at(-1));
  const snap=async name=>{if(process.env.CAPTURAS){await mkdir(process.env.CAPTURAS,{recursive:true});await tab.screenshot({path:join(process.env.CAPTURAS,name+'.png')});}};
@@ -157,8 +160,12 @@ try {
    if(tipo){
      // 1a: aviso del evento recién guardado y Eventos recientes sin pulsar Actualizar.
      const aviso={golpe:'Golpe',vuelco:'Vuelco',inclinacion:'Inclinación'}[tipo];
-     await waitText('#event-saved','Evento guardado: '+aviso+' · ');
-     assert.match(await tab.$eval('#event-saved',e=>e.textContent),/\d\d:\d\d:\d\d.*±1 s/);
+     // Píldora «Evento guardado» con «Tipo · valor · hh:mm:ss» (hora aproximada, ±1 s en el título).
+     await waitText('#event-saved','Evento guardado');
+     await waitText('#event-saved .chip-evento',aviso+' · ');
+     assert.match(await tab.$eval('#event-saved .chip-evento',e=>e.textContent),/ · \d\d:\d\d:\d\d$/);
+     assert.match(await tab.$eval('#event-saved .chip-evento',e=>e.title),/±1 s/);
+     assert.ok(await tab.$eval('#avisos-evento',e=>e.children.length<=3),'como mucho 3 avisos apilados');
      await waitText('.recent','EV-'+tipo);
      const label={golpe:'Golpe',vuelco:'Vuelco',inclinacion:'Inclinación'}[tipo];
      // Bandera rotulada con su línea en el instante de detección.
@@ -242,12 +249,16 @@ try {
  assert.ok(await tab.$eval('#live-form input',e=>e.disabled&&e.value==='SEGUNDA-SESION'));
  await tab.$eval('[href="#historial"]',e=>e.click());await tab.click('#history-sessions');
  await tab.type('.session-picker input',id);await tab.waitForSelector('.session-list button.primary');await tab.click('.session-list button.primary');
+ // «Ver sesiones» abre el Detalle de sesión; su «Tabla de mediciones» empieza en la primera muestra.
+ await tab.waitForFunction(i=>location.hash==='#sesion/'+i&&document.querySelector('#ds-exportar')&&!document.querySelector('#ds-exportar').disabled,{timeout:30000},id);
+ await tab.click('#ds-tabla');
  await waitText('.session-history tbody','600');assert.equal(await tab.$eval('.session-history td',e=>e.textContent),'1');
  // Historial: un evento nuevo aparece solo, sin pulsar Actualizar.
  await tab.keyboard.press('Escape');
+ await tab.$eval('[href="#historial"]',e=>e.click());await tab.waitForSelector('#history-list');
  await post('/eventos',{evento:{id:'EV-HISTORIAL-AUTO',sesion_id:other,tipo:'golpe',gravedad:'media',estado:'confirmado',t_inicio_ms:0,t_deteccion_ms:12,t_fin_ms:12,t_activacion_ms:null,ubicacion:null}});
  await tab.waitForFunction(()=>document.querySelector('#history-list')?.textContent.includes('EV-HISTORIAL-AUTO'),{timeout:12000});
- console.log('PASS: ventana de 10 y 30 s, tres marcas de evento, giro dentro del lote, pulso aislado, aviso de evento guardado, aviso de sesión nueva, historial que se actualiza solo, pausa, reconexión, cambio con petición pendiente e historial desde la primera muestra.');
+ console.log('PASS: rangos de 30 s, 6 s y Sesión, tres marcas de evento, giro dentro del lote, pulso aislado, aviso de evento guardado, aviso de sesión nueva, historial que se actualiza solo, pausa, reconexión, cambio con petición pendiente e historial desde la primera muestra.');
  assert.deepEqual(errors,[]);
 } finally {
  await browser?.close(); await web.close(); api.close(); await once(api,'close'); repo.cerrar(); await rm(dir,{recursive:true,force:true});

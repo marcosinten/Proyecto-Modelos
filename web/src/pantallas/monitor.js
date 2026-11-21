@@ -7,7 +7,12 @@ import {buscarSesiones} from '../selector.js';
 import {vueltasEntre} from '../telemetria.js';
 import {PULSOS_POR_VUELTA, POSICION_RUEDA_SENSOR, NOMBRE_RUEDA, distanciaM, CONSTANTES_INO} from '../../../compartido/parametros-firmware.js';
 import {analizarEvento, direccionRoll, direccionPitch, NOMBRE_TIPO} from '../../../compartido/exportacion.js';
-import {htmlGraficas, crearGraficas, actualizarGraficas, moverCursor} from '../graficas.js';
+import {htmlGraficas, htmlGraficasTecnicas, crearGraficas, actualizarGraficas, moverCursor, modoPresentacion} from '../graficas.js';
+import {icono} from '../iconos.js';
+import {PAUSA_MS, VENTANA_CONECTABLE_MS} from '../telemetria.js';
+import {horaDe} from '../../../compartido/exportacion.js';
+import {textoHora} from '../../../compartido/hora.js';
+import {activarPresentacion} from './presentacion.js';
 import {estadoCarro} from '../estado-carro.js';
 import {bindRows, tablaMediciones, historialSesion} from './historial.js';
 import {openExport, descargar} from './exportar.js';
@@ -17,58 +22,70 @@ import {connectLive} from './vivo.js';
 const uno = v => v.toLocaleString('es-EC', {minimumFractionDigits: 1, maximumFractionDigits: 1});
 const ATRIBUCION = 'Modelo 3D: <a href="https://sketchfab.com/3d-models/oldsmobile-cutlass-supreme-sedan-71-78f76d386a4341b0b71745bdc50fd5ab" target="_blank" rel="noopener noreferrer">Barbo</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · adaptado al visor';
 
-function lectura(titulo, id, idDetalle) {
- return `<div class="lectura"><span class="rotulo">${titulo}</span><strong id="${id}">—</strong><span class="lectura-detalle" id="${idDetalle}"></span></div>`;
+function lectura(serie, ic, titulo, id, idDetalle, extra = '') {
+ return `<div class="tarjeta lectura" data-serie="${serie}"><div class="lectura-cabecera"><span class="lectura-icono">${icono(ic)}</span><span class="etiqueta-tarjeta">${titulo}</span></div><strong id="${id}">—</strong><span class="lectura-detalle" id="${idDetalle}"></span>${extra}</div>`;
 }
 function tecnico(nombre, id, unidad) {
  return `<div class="dato"><span>${nombre}</span><strong id="${id}">—</strong><small>${unidad}</small></div>`;
 }
+const RANGOS = [['6', '6 s'], ['30', '30 s'], ['120', '2 min'], ['sesion', 'Sesión']];
+export const RANGO_INICIAL = '30';
+export const segundosRango = v => v === 'sesion' ? Infinity : Number(v);
 
+// Tablero de En vivo, Detalle de un evento y Simulación. La rejilla de 12 columnas se reordena con CSS en
+// pantalla completa (body.presentacion): barra superior, 3D + gráficas, franja de lecturas.
 export function dashboard() {
- return `<section class="estado" aria-label="Estado del carro y conexión">
-  <div class="estado-carro" id="estado-carro" data-estado="sin-datos" aria-live="polite">
-   <span class="rotulo">Estado del carro</span><strong id="estado-texto">—</strong><span id="estado-detalle"></span>
-  </div>
-  <div class="estado-conexion"><strong id="conexion-texto">—</strong><span class="ayuda" id="mode-help"></span>
-   <div class="conexion-sesion"><span class="etiqueta" id="origin">Datos simulados</span><span id="sesion-actual" hidden></span><button type="button" class="text-button small" id="cambiar-sesion" hidden>Cambiar sesión</button></div></div>
- </section>
- <div class="vista">
-  <section class="escena" aria-label="Modelo 3D del carro">
-   <div class="stage"><div class="scene-label">Vista 3D <span id="sample-time"></span></div><div id="car"></div>
-    <div class="camera-controls" role="group" aria-label="Cámara"><button data-camera="seguimiento" class="selected">Seguimiento</button><button data-camera="lateral">Lateral</button><button data-camera="frontal">Frontal</button><button data-camera="libre" title="Arrastra para girar; rueda o pellizco para acercar">Libre</button></div>
-    <span class="axis-guide">X adelante · Y izquierda · Z arriba</span></div>
-   <div class="player"><button id="play" class="primary small">Reproducir</button><button id="reset" class="secondary small">Volver al inicio</button>
+ return `<div class="tablero">
+  <section class="tarjeta t-estado" aria-label="Estado del carro">
+   <span class="etiqueta-tarjeta">Estado del carro</span>
+   <div class="chip-estado" id="estado-carro" data-estado="sin-datos" aria-live="polite"><span id="estado-icono">${icono('sin-datos')}</span><strong id="estado-texto">—</strong></div>
+   <p class="estado-detalle" id="estado-detalle"></p>
+  </section>
+  <section class="tarjeta t-conexion" aria-label="Conexión y sesión">
+   <div class="tarjeta-cabecera"><span class="etiqueta-tarjeta">Conexión y sesión</span><span class="chip" id="origin">Datos simulados</span></div>
+   <div class="conexion-linea"><span class="punto" id="conexion-punto" data-estado="demo"></span><strong id="conexion-texto">—</strong></div>
+   <div class="sesion-linea"><code id="sesion-actual" hidden></code><button type="button" class="text-button small" id="copiar-sesion" hidden>${icono('copiar')}Copiar</button><button type="button" class="secondary small" id="cambiar-sesion" hidden>Cambiar sesión</button></div>
+   <div class="conexion-meta"><span class="ayuda" id="mode-help"></span></div>
+  </section>
+  <section class="tarjeta t-ultimo" aria-labelledby="t-ultimo"><span class="etiqueta-tarjeta" id="t-ultimo">Último evento</span><div id="ultimo-evento" class="ultimo"></div></section>
+  <section class="tarjeta t-escena" aria-label="Modelo 3D del carro">
+   <div class="escena-cabecera"><div class="escena-titulo"><span class="etiqueta-tarjeta" id="escena-nombre">Vista 3D</span><span class="mono" id="sample-time"></span></div>
+    <div class="segmentado camera-controls" role="group" aria-label="Cámara"><button type="button" data-camera="seguimiento" class="selected" aria-pressed="true">Seguimiento</button><button type="button" data-camera="lateral" aria-pressed="false">Lateral</button><button type="button" data-camera="frontal" aria-pressed="false">Frontal</button><button type="button" data-camera="libre" aria-pressed="false" title="Arrastra para girar; rueda o pellizco para acercar">Libre</button></div></div>
+   <div class="escena-extra" id="escena-extra"></div>
+   <div class="stage"><div id="car"></div><span class="axis-guide">X adelante · Y izquierda · Z arriba</span></div>
+   <div class="player"><button type="button" id="play" class="primary small">Reproducir</button><button type="button" id="reset" class="secondary small">Volver al inicio</button>
     <label class="speed">Ritmo <select id="speed"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
     <span class="mono" id="clock"></span>
     <input id="timeline" type="range" aria-label="Tiempo de la sesión en milisegundos" step="1">
     <div class="timeline-labels"><span id="range-start"></span><span id="range-end"></span></div></div>
    <p class="atribucion">${ATRIBUCION}</p>
   </section>
-  <aside class="lecturas" aria-label="Lecturas actuales">
-   ${lectura('Inclinación lateral', 'roll', 'roll-dir')}
-   ${lectura('Inclinación frontal', 'pitch', 'pitch-dir')}
-   ${lectura(`${NOMBRE_RUEDA} (${POSICION_RUEDA_SENSOR})`, 'rueda-estado', 'wheel-info')}
-  </aside>
+  <section class="tarjeta t-graficas" aria-label="Gráficas">
+   <div class="graficas-cabecera"><span class="etiqueta-tarjeta">Gráficas</span>
+    <div class="segmentado" id="ventana" role="group" aria-label="Rango de tiempo de las gráficas" hidden>${RANGOS.map(([v, t]) => `<button type="button" data-ventana="${v}" aria-pressed="${v === RANGO_INICIAL}">${t}</button>`).join('')}</div></div>
+   ${htmlGraficas('', {valores: 'Ahora'})}
+  </section>
+  <div class="t-lecturas" role="group" aria-label="Lecturas actuales">
+   ${lectura('roll', 'lateral', 'Lateral', 'roll', 'roll-dir')}
+   ${lectura('pitch', 'frontal', 'Frontal', 'pitch', 'pitch-dir')}
+   ${lectura('total', 'aceleracion', 'Aceleración total', 'acel-total', 'acel-detalle')}
+   ${lectura('rueda', 'rueda', 'Rueda', 'rueda-estado', 'wheel-info', '<span class="chip" id="rueda-chip"></span>')}
+  </div>
+  <button type="button" class="secondary t-salir" id="salir-presentacion">${icono('salir')}Salir</button>
  </div>
- <section class="bloque" aria-labelledby="t-graficas">
-  <header class="bloque-cabecera"><h2 id="t-graficas">Gráficas</h2>
-   <div class="segmentado" id="ventana" role="group" aria-label="Ventana de tiempo en vivo" hidden>
-    <button type="button" data-ventana="10" aria-pressed="true">10 s</button><button type="button" data-ventana="30" aria-pressed="false">30 s</button><button type="button" data-ventana="60" aria-pressed="false">60 s</button></div>
-  </header>
-  ${htmlGraficas('', {valores: 'Ahora'})}
-  <p class="grafica-nota">La inclinación se dibuja con un promedio móvil de 100 ms; los golpes, sin suavizar. Los datos guardados y exportados no cambian.</p>
- </section>
+ <div class="avisos-evento" id="avisos-evento" role="status" aria-live="polite"></div>
  <section class="bloque recent" aria-labelledby="t-eventos">
   <header class="bloque-cabecera"><h2 id="t-eventos">Eventos</h2><a href="#historial">Ver historial</a></header>
   <div id="lista-eventos"></div>
  </section>
  <section class="bloque acciones" aria-label="Acciones">
   <button type="button" class="secondary" id="accion-sesion" hidden>Buscar sesiones</button>
-  <button type="button" class="primary" id="accion-resumen">Descargar resumen</button>
+  <button type="button" class="primary" id="accion-resumen">${icono('exportar')}Descargar resumen</button>
   <button type="button" class="secondary" id="accion-tecnico">Descargar datos técnicos</button>
   <button type="button" class="text-button" id="export">Qué contiene cada archivo</button>
  </section>
  <details class="bloque tecnico" id="detalle-tecnico"><summary>Detalle técnico</summary>
+  ${htmlGraficasTecnicas('')}
   <div class="datos-tecnicos">${tecnico('Aceleración X', 'ax', 'm/s²')}${tecnico('Aceleración Y', 'ay', 'm/s²')}${tecnico('Aceleración Z', 'az', 'm/s²')}${tecnico('Roll', 'roll-raw', '°')}${tecnico('Pitch', 'pitch-raw', '°')}</div>
   <output id="graph-reading" class="lectura-tecnica" aria-label="Lectura seleccionada"></output>
   <div class="result-strip" id="result"></div><p class="ayuda" id="protocol" role="status"></p>
@@ -76,11 +93,42 @@ export function dashboard() {
  </details>`;
 }
 
+// Texto y punto de la conexión en vivo («Conexión activa · hace 0 s»).
+export function ponerConexion(texto, estado) {
+ $('#conexion-texto').textContent = texto.replace(/^Conexión: /, 'Conexión ');
+ $('#conexion-punto').dataset.estado = estado;
+}
+export const estadoConexion = (ultimaMs, ahora) => ultimaMs == null ? 'desconectada'
+  : ahora - ultimaMs <= PAUSA_MS ? 'activa' : ahora - ultimaMs <= VENTANA_CONECTABLE_MS ? 'atrasada' : 'desconectada';
+
+// Hora del instante t de la sesión: hh:mm:ss con el reloj de la API (en vivo) o «12,3 s».
+export const horaSesion = t => { const h = app.liveActive ? horaDe(app.reloj, t) : null; return h == null ? `${seconds(t)} s` : textoHora(h); };
+
+// Valor principal de un evento: ángulo máximo (inclinación, vuelco) o aceleración máxima (golpe).
+export function valorEvento(e, mediciones) {
+ const a = analizarEvento(e, mediciones);
+ if (!a.mediciones) return {valor: null, detalle: 'sin mediciones en la ventana', a};
+ if (e.tipo === 'golpe') return {valor: `${uno(a.aceleracion_max.valor)} m/s²`, detalle: 'aceleración total', a};
+ return {valor: `${uno(Math.abs(a.angulo_max.valor))}°`, detalle: a.angulo_max.eje, a};
+}
+
+function pintarUltimo() {
+ const caja = $('#ultimo-evento'); if (!caja) return;
+ const e = app.current.evento;
+ if (!e) { caja.innerHTML = `<p class="ultimo-vacio">${app.liveActive ? 'Sin eventos en esta sesión todavía.' : 'Sin evento en estos datos.'}</p>`; return; }
+ const {valor, detalle} = valorEvento(e, app.current.mediciones);
+ const guardado = app.liveActive || app.page === 'detalle';
+ caja.innerHTML = `<div class="ultimo-linea"><span class="chip-evento" data-tipo="${escape(e.tipo)}">${escape(NOMBRE_TIPO[e.tipo] ?? e.tipo)}</span><span class="mono">${escape(horaSesion(e.t_deteccion_ms))}</span></div>
+  <div class="ultimo-valor">${valor ?? '—'}<small>${escape(detalle)}</small></div>
+  ${guardado ? `<div class="ultimo-acciones"><a class="text-button boton-enlace small" href="#explicar/${escape(e.id)}">Explicar</a>${app.liveActive ? `<a class="text-button boton-enlace small" href="#sesion/${encodeURIComponent(app.current.sesion.id)}">Ver sesión</a>` : ''}</div>` : ''}`;
+}
+
 export const start=()=>app.liveActive ? app.current.mediciones[0]?.t_ms??0 : app.current.evento?.t_inicio_ms??app.current.mediciones[0]?.t_ms??0;
 export const end=()=>app.liveActive ? app.current.mediciones.at(-1)?.t_ms??1000 : app.current.evento?.t_fin_ms??app.current.mediciones.at(-1)?.t_ms??1000;
 
 // Eventos de la sesión conectada (en vivo), el evento abierto (detalle), o los recientes (demostración).
 export function pintarEventos() {
+ pintarUltimo();
  const caja = $('#lista-eventos'); if (!caja) return;
  const enVivo = app.liveActive, detalle = app.page === 'detalle';
  $('#t-eventos').textContent = enVivo ? 'Eventos de esta sesión' : detalle ? 'Este evento' : app.page === 'simulacion' ? 'Resultado de la corrida' : 'Eventos recientes';
@@ -96,9 +144,9 @@ export function pintarEventos() {
   const muestras = app.current.mediciones.filter(m => m.t_ms >= e.t_inicio_ms && m.t_ms <= e.t_fin_ms);
   const frase = muestras.length ? analizarEvento(e, app.current.mediciones).frase : '';
   const navegar = detalle || app.page === 'simulacion' ? '' : `<button class="text-button" data-event="${escape(e.id)}">Ver detalle</button>`;
-  return `<li class="evento" data-tipo="${escape(e.tipo)}"><span class="evento-tipo">${escape(NOMBRE_TIPO[e.tipo] ?? e.tipo)}</span>
+  return `<li class="evento" data-tipo="${escape(e.tipo)}"><span><span class="chip-evento" data-tipo="${escape(e.tipo)}">${escape(NOMBRE_TIPO[e.tipo] ?? e.tipo)}</span></span>
    <div class="evento-texto"><strong>${escape(frase || `${NOMBRE_TIPO[e.tipo] ?? e.tipo} detectado a los ${seconds(e.t_deteccion_ms)} s de la sesión`)}</strong>
-   <small>${escape(e.id)} · ${s?.origen === 'real' ? 'real' : 'simulado'} · detección ${seconds(e.t_deteccion_ms)} s · respuesta de la alarma ${e.t_activacion_ms == null ? 'sin medir' : (e.t_activacion_ms - e.t_deteccion_ms) + ' ms'}</small></div>
+   <small><span class="mono">${escape(horaSesion(e.t_deteccion_ms))}</span> · ${escape(e.id)} · ${s?.origen === 'real' ? 'real' : 'simulado'} · respuesta de la alarma ${e.t_activacion_ms == null ? 'sin medir' : (e.t_activacion_ms - e.t_deteccion_ms) + ' ms'}</small></div>
    <div class="evento-acciones">${navegar}${app.page === 'simulacion' ? '' : `<button class="secondary small" data-explain="${escape(e.id)}" aria-label="Explicar evento ${escape(e.id)}">Explicar</button>`}</div></li>`;
  }).join('')}</ol>`;
  bindRows();
@@ -172,13 +220,15 @@ export function update(drawCharts=true){
 
  // Estado del carro (palabra grande; el color solo acompaña).
  const est = estadoCarro(app.current.mediciones, app.position, {umbralGolpe: app.current.parametros?.aceleracion});
- $('#estado-carro').dataset.estado = app.liveActive && app.stale ? 'sin-datos' : est.estado;
+ const estado = app.liveActive && app.stale ? 'sin-datos' : est.estado;
+ if ($('#estado-carro').dataset.estado !== estado) { $('#estado-carro').dataset.estado = estado; $('#estado-icono').innerHTML = icono(estado); }
  $('#estado-texto').textContent = est.texto;
  $('#estado-detalle').textContent = app.liveActive && app.stale ? 'Último dato recibido; la conexión está atrasada' : est.detalle;
- if (!app.liveActive) $('#conexion-texto').textContent = app.page === 'detalle' ? 'Reproducción de datos guardados' : app.page === 'simulacion' ? 'Simulación en esta página' : 'Demostración con datos simulados';
+ if (!app.liveActive) ponerConexion(app.page === 'detalle' ? 'Reproducción de datos guardados' : app.page === 'simulacion' ? 'Simulación en esta página' : 'Demostración con datos simulados', 'demo');
 
  const rueda = m.rueda_rps == null ? 'Sin dato' : app.liveActive && app.stale ? 'Sin datos recientes' : m.rueda_rps > 0.01 ? 'Girando' : 'Detenida';
  $('#rueda-estado').textContent = rueda;
+ $('#rueda-chip').textContent = 'Rueda: ' + (m.rueda_rps == null ? 'sin dato' : app.liveActive && app.stale ? 'sin datos recientes' : m.rueda_rps > 0.01 ? `${uno(m.rueda_rps)} vueltas/s` : 'detenida');
  $('#graph-reading').innerHTML = `<strong>Lectura a ${seconds(m.t_ms)} s</strong>
   <span>X ${number(m.ax)} · Y ${number(m.ay)} · Z ${number(m.az)} m/s²</span>
    <span>Lateral ${number(m.roll_deg)}° · Frontal ${number(m.pitch_deg)}°</span><span>${NOMBRE_RUEDA}: ${rueda.toLowerCase()}${m.rueda_rps!=null?' · '+m.rueda_rps.toLocaleString('es-EC',{maximumFractionDigits:3})+' vueltas/s (estimación Hall)':''}${m.rueda_pulsos!=null?' · '+m.rueda_pulsos+' pulsos':''}</span>`;
@@ -188,11 +238,16 @@ export function update(drawCharts=true){
  const vueltas=pulsos==null?null:pulsos/PULSOS_POR_VUELTA;
  const distancia=distanciaM(vueltas);
  const rps = m.rueda_rps == null ? '' : `${uno(m.rueda_rps)} vueltas/s · `;
- $('#wheel-info').textContent=rps+(pulsos==null?'contador sin dato':`contador ${pulsos} pulsos = ${vueltas.toLocaleString('es-EC',{maximumFractionDigits:2})} vueltas`)+' · distancia '+(distancia==null?'sin medir':distancia.toLocaleString('es-EC',{maximumFractionDigits:2})+' m');
+ const info = rps + (pulsos == null ? 'contador sin dato' : `${pulsos} pulsos`) + (distancia == null ? '' : ` · ${distancia.toLocaleString('es-EC', {maximumFractionDigits: 2})} m`);
+ $('#wheel-info').textContent = info;
+ $('#wheel-info').title = rps + (pulsos == null ? 'contador sin dato' : `contador ${pulsos} pulsos = ${vueltas.toLocaleString('es-EC', {maximumFractionDigits: 2})} vueltas`) + (distancia == null ? ' · distancia sin medir (diámetro de la rueda desconocido)' : '');
 
  // Valor actual grande junto a cada gráfica.
  $('#valor-inclinacion').textContent = `${uno(m.roll_deg)}° · ${uno(m.pitch_deg)}°`;
- $('#valor-golpe').textContent = `${uno(Math.hypot(m.ax, m.ay, m.az))} m/s²`;
+ const total = Math.hypot(m.ax, m.ay, m.az);
+ $('#valor-golpe').textContent = `${uno(total)} m/s²`;
+ $('#acel-total').textContent = `${uno(total)} m/s²`;
+ $('#acel-detalle').textContent = `${uno(total / 9.81)} g · golpe desde ${CONSTANTES_INO.UMBRAL_GOLPE_MS2} m/s²`;
  const v = app.wheelTurnsBySample[sampleIndex];
  $('#valor-rueda').textContent = m.rueda_rps == null && m.rueda_pulsos == null ? 'Sin dato' : `${uno(v ?? 0)} vueltas`;
  if(drawCharts && app.graficas) moverCursor(app.graficas, app.liveActive ? null : app.position);
@@ -206,37 +261,32 @@ export function frame(time){
   }
  if(app.running){if(app.lastFrame)app.position=Math.min(end(),app.position+(time-app.lastFrame)*app.speed);app.lastFrame=time;if(app.position>=end())app.running=false;update();}requestAnimationFrame(frame);}
 
-function presentacion(activar) {
- app.presentacion = activar;
- document.body.classList.toggle('presentacion', activar);
- const b = $('#presentation-mode');
- if (b) { b.setAttribute('aria-pressed', String(activar)); b.textContent = activar ? 'Salir del modo presentación' : 'Modo presentación'; }
-}
-
 export function renderMonitor() {
  const detail=app.page==='detalle';
  const simulation=app.page==='simulacion';
- const title=detail?`${NOMBRE_TIPO[app.current.evento.tipo]||app.current.evento.tipo} · ${app.current.evento.id}`:simulation?'Simulación':'Monitor';
- const desc=detail?`Sesión ${app.current.sesion.id} · reproducción de las mediciones guardadas`:simulation?'Prueba escenarios sintéticos con las mismas reglas que el firmware.':'Postura, golpes y rueda del carro, en vivo o con la demostración.';
+ const title=detail?`${NOMBRE_TIPO[app.current.evento.tipo]||app.current.evento.tipo} · ${app.current.evento.id}`:simulation?'Simulación':'En vivo';
+ const desc=detail?`Sesión ${app.current.sesion.id} · reproducción de las mediciones guardadas`:simulation?'Escenarios sintéticos con las mismas reglas que el firmware.':'Postura, golpes y rueda del carro.';
  $('#main').innerHTML=`<div class="monitor">`+(detail?'<a class="back" href="#historial">Volver al historial</a>':'')+
   `<div class="page-heading"><div><h1>${escape(title)}</h1><p>${escape(desc)}</p></div><div class="page-actions">`+
   (detail?`<a class="secondary boton-enlace" href="#sesion/${encodeURIComponent(app.current.sesion.id)}">Ver la sesión completa</a><a class="secondary boton-enlace" href="#explicar/${escape(app.current.evento.id)}">Explicar evento</a>`:'')+
   (!simulation&&!detail?`<div class="segmentado" role="group" aria-label="Fuente de datos"><button type="button" id="demo-mode" aria-pressed="true">Demostración</button><button type="button" id="live-mode" aria-pressed="false">En vivo</button></div>`:'')+
-  `<button type="button" class="secondary" id="presentation-mode" aria-pressed="false">Modo presentación</button></div></div>`+
-  (simulation?simulationForm():detail?'':`<form id="live-form" class="form-sesion" hidden><label>ID de la sesión <input name="session" placeholder="RC-… (monitor serie del ESP32)" required pattern="[A-Za-z0-9_\\-]{1,64}" autocomplete="off" spellcheck="false"></label><button class="primary" id="connect-session">Conectar</button><button type="button" class="secondary" id="find-session">Buscar sesiones</button></form><div id="live-notices"></div>`)+
+  `<button type="button" class="secondary" id="presentation-mode" aria-pressed="false" aria-keyshortcuts="F" title="Pantalla completa (tecla F; Esc para salir)">${icono('pantalla')}Pantalla completa</button></div></div>`+
+  (simulation?simulationForm():detail?'':`<form id="live-form" class="tarjeta form-sesion" hidden><label>ID de la sesión <input name="session" placeholder="RC-… (monitor serie del ESP32)" required pattern="[A-Za-z0-9_\\-]{1,64}" autocomplete="off" spellcheck="false"></label><button class="primary" id="connect-session">Conectar</button><button type="button" class="secondary" id="find-session">Buscar sesiones</button></form><div id="live-notices"></div>`)+
   dashboard()+`</div>`;
  $('#export').onclick=()=>openExport();
  // En el detalle de un evento la exportación es solo de ese evento: un botón con ese nombre
  // (abre el diálogo con Resumen y Datos técnicos) para no confundirla con «Exportar sesión».
- if(detail){$('#accion-resumen').hidden=true;$('#accion-tecnico').hidden=true;$('#export').textContent='Exportar solo este evento';$('#export').className='primary';}
+ if(detail){$('#accion-resumen').hidden=true;$('#accion-tecnico').hidden=true;$('#export').innerHTML=icono('exportar')+'Exportar solo este evento';$('#export').className='primary';}
  for (const f of ['resumen','tecnico']) $('#accion-'+f).onclick=e=>descargar(f, e.currentTarget);
- $('#presentation-mode').onclick=()=>presentacion(!app.presentacion);
- presentacion(!!app.presentacion);
+ $('#presentation-mode').onclick=()=>activarPresentacion(!app.presentacion);
+ $('#salir-presentacion').onclick=()=>activarPresentacion(false);
  if(detail)$('#origin').textContent=app.current.sesion.origen==='real'?'Mediciones reales · historial':'Datos simulados · historial';
  else $('#origin').textContent=app.current.sesion.origen==='real'?'Mediciones reales':'Datos simulados';
+ if(detail){$('#sesion-actual').hidden=false;$('#sesion-actual').textContent=app.current.sesion.id;$('#copiar-sesion').hidden=false;}
+ $('#copiar-sesion').onclick=()=>navigator.clipboard.writeText($('#sesion-actual').textContent).then(()=>toast('ID copiado'),()=>toast('Selecciona el ID para copiarlo.'));
  app.viewer=crearVisor($('#car'));
  if(app.viewer.mode==='2d'){
-   document.querySelector('.scene-label').innerHTML='Vista 2D <span id="sample-time"></span>';
+   $('#escena-nombre').textContent='Vista 2D';
    document.querySelector('[data-camera=seguimiento]').hidden=true;
    document.querySelector('[data-camera=lateral]').classList.add('selected');
    document.querySelector('[data-camera=libre]').hidden=true;
@@ -252,6 +302,8 @@ export function renderMonitor() {
    app.running = false; update();
  }});
  app.charts=app.graficas.todas;
+ app.alCambiarPresentacion=activo=>{if(app.graficas)modoPresentacion(app.graficas,activo);};
+ if(app.presentacion)activarPresentacion(true);
  app.pintarEventos=pintarEventos;
  refreshData(); pintarEventos();
  $('.data-table').ontoggle=()=>{if(app.liveActive&&$('.data-table').open)refreshData();};
@@ -266,9 +318,11 @@ export function renderMonitor() {
   };
   $('#find-session').onclick=buscar;$('#accion-sesion').onclick=buscar;$('#cambiar-sesion').onclick=buscar;
   $('#live-form').onsubmit=e=>{e.preventDefault();connectLive(new FormData(e.target).get('session'));};
+  const rangoActual=app.ventanaS==null?RANGO_INICIAL:app.ventanaS===Infinity?'sesion':String(app.ventanaS);
+  for(const x of $('#ventana').querySelectorAll('button'))x.setAttribute('aria-pressed',String(x.dataset.ventana===rangoActual));
   $('#ventana').onclick=e=>{
     const b=e.target.closest('[data-ventana]'); if(!b)return;
-    app.ventanaS=Number(b.dataset.ventana);
+    app.ventanaS=segundosRango(b.dataset.ventana);
     for(const x of $('#ventana').querySelectorAll('button'))x.setAttribute('aria-pressed',String(x===b));
     app.reiniciarVivo?.();
   };

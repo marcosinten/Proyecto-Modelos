@@ -5,7 +5,7 @@
 import {app, $, escape, seconds, toast} from '../app.js';
 import {cargarSesionCompleta, exportarSesion, openExport} from './exportar.js';
 import {historialSesion} from './historial.js';
-import {htmlGraficas, crearGraficas, actualizarGraficas, moverCursor, zoomArrastrando, vueltasAcumuladas} from '../graficas.js';
+import {htmlGraficas, htmlGraficasTecnicas, crearGraficas, actualizarGraficas, moverCursor, zoomArrastrando, vueltasAcumuladas} from '../graficas.js';
 import {datosGenerales, tarjetasSesion, reducirMediciones, indiceDesde} from '../../../compartido/detalle-sesion.js';
 import {analizarEvento, horaDe, NOMBRE_TIPO, aceleracionTotal, SIN_MEDIR} from '../../../compartido/exportacion.js';
 import {textoHora, NOTA_HORA} from '../../../compartido/hora.js';
@@ -69,6 +69,7 @@ function pintar(paquete) {
     <div class="zoom" role="group" aria-label="Zoom de las gráficas"><button type="button" class="secondary small" id="ds-acercar">Acercar</button><button type="button" class="secondary small" id="ds-alejar">Alejar</button><button type="button" class="secondary small" id="ds-todo">Ver toda la sesión</button></div></header>
    <p class="grafica-nota" id="ds-vista" aria-live="polite"></p>
    ${htmlGraficas('ds-', {valores: 'Máximo en la vista'})}
+   ${htmlGraficasTecnicas('ds-', {valores: 'En la vista'})}
    <output class="lectura-tecnica" id="ds-lectura"></output>
    <p class="grafica-nota">Arrastra sobre una gráfica para acercar ese tramo; pulsa un punto para leer sus valores. Para dibujar rápido se muestran como mucho ${MAX_PUNTOS.toLocaleString('es-EC')} mediciones por vista, conservando en cada tramo el mayor golpe y los ángulos extremos. Sin suavizado.</p>
   </section>`;

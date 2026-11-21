@@ -14,11 +14,11 @@ export function crearVisor(element) {
   try { renderer = new T.WebGLRenderer({ antialias: true, alpha: true }); }
   catch {
     element.innerHTML = `<svg width="100%" height="100%" viewBox="0 0 650 240" role="img" aria-label="Carro deportivo en una pista recta">
-      <rect width="650" height="240" fill="#101b30"/>
-      <path d="M0 163H650V205H0Z" fill="#273449"/>
-      <path d="M0 163H650M0 205H650" stroke="#70839e" stroke-width="2"/>
+      <rect width="650" height="240" fill="#E3EAF4"/>
+      <path d="M0 163H650V205H0Z" fill="#5b6678"/>
+      <path d="M0 163H650M0 205H650" stroke="#e4e9f1" stroke-width="2"/>
       <path d="M0 184H650" stroke="#ffd470" stroke-width="2" stroke-dasharray="24 16"/>
-      <g id="fallback-shadow"><ellipse cy="158" rx="77" ry="7" fill="#070e1c" opacity=".6"/></g>
+      <g id="fallback-shadow"><ellipse cy="158" rx="77" ry="7" fill="#1d2939" opacity=".35"/></g>
       <g id="fallback-car">
         <g data-side>
           <path d="M-78 9L-75-12Q-73-21-60-22L-38-25-19-41Q-10-48 10-47Q25-47 36-37L51-26 72-19Q81-15 82-4L80 9 68 14H-65Z" fill="#2584f5" stroke="#93c5fd" stroke-width="1.5"/>
@@ -70,7 +70,8 @@ export function crearVisor(element) {
     };
   }
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  renderer.setClearColor(0x101b30);
+  // Fondo transparente: el degradado claro lo pone el CSS de .stage (#EAF0F8 → #DCE5F2).
+  renderer.setClearColor(0x000000, 0);
   element.append(renderer.domElement);
   const scene = new T.Scene();
   const camera = new T.OrthographicCamera(-8, 8, 3, -3, .1, 100);
@@ -78,12 +79,12 @@ export function crearVisor(element) {
   let view = 'seguimiento';
   let progress;
   const chaseCamera = new T.PerspectiveCamera(48, 1, .1, 110);
-  scene.fog = new T.Fog(0x101b30, 14, 32);
-  scene.add(new T.HemisphereLight(0xc2ddff, 0x364769, 3));
+  scene.fog = new T.Fog(0xe1e8f3, 16, 34);
+  scene.add(new T.HemisphereLight(0xffffff, 0x8794aa, 2.6));
   const light = new T.DirectionalLight(0xffffff, 4); light.position.set(3, 7, 5); scene.add(light);
   const roadTop = -.57;
   const fallbackRoad = new T.Group(); scene.add(fallbackRoad);
-  const verge = new T.Mesh(new T.PlaneGeometry(104, 26), new T.MeshStandardMaterial({color:0x253b30}));
+  const verge = new T.Mesh(new T.PlaneGeometry(104, 26), new T.MeshStandardMaterial({color:0xb4c4b0}));
   verge.rotation.x = -Math.PI / 2;
   verge.position.set(14, roadTop - .06, 1.6);
   scene.add(verge);
@@ -92,12 +93,12 @@ export function crearVisor(element) {
   let wheelTurns;
   let live = false;
   const roadThickness = .08;
-  const road = new T.Mesh(new T.BoxGeometry(104, roadThickness, 6.4), new T.MeshStandardMaterial({color:0x273449}));
+  const road = new T.Mesh(new T.BoxGeometry(104, roadThickness, 6.4), new T.MeshStandardMaterial({color:0x5b6678}));
   road.name = 'straight-road';
   road.position.set(14, roadTop - roadThickness / 2, 1.6);
   fallbackRoad.add(road);
-  const roadLine = new T.MeshBasicMaterial({color:0x75879f});
-  const dash = new T.MeshBasicMaterial({color:0xffd470});
+  const roadLine = new T.MeshBasicMaterial({color:0xe4e9f1});
+  const dash = new T.MeshBasicMaterial({color:0xf6c453});
   for (const z of [-1.45, 4.65]) {
     const edge = new T.Mesh(new T.PlaneGeometry(104, .045), roadLine);
     edge.rotation.x = -Math.PI / 2;

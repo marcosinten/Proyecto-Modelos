@@ -4,6 +4,9 @@
 import {app, $, escape, get, toast} from '../app.js';
 import {paginasSesion} from '../telemetria.js';
 import {crearExcel} from '../../../compartido/libro-excel.js';
+import {cargarSesiones} from '../telemetria.js';
+import {textoFechaHora} from '../../../compartido/hora.js';
+import {icono} from '../iconos.js';
 
 const NOMBRE_FORMATO = {resumen: 'Resumen', tecnico: 'Datos técnicos', completo: 'Libro completo'};
 const SUFIJO = {resumen: 'resumen', tecnico: 'datos-tecnicos', completo: 'sesion-completa'};
@@ -75,7 +78,7 @@ const generar = async (x, formato) => bajar(await x.preparar(), x.nombre, format
 
 // «Exportar sesión»: un solo libro con el resumen y todas las muestras de una sesión ya cargada.
 export async function exportarSesion(paquete, boton) {
- const texto = boton?.textContent;
+ const texto = boton?.innerHTML;
  if (boton) { boton.disabled = true; boton.textContent = 'Preparando archivo…'; }
  try {
   const p = structuredClone(paquete); delete p.evento;
@@ -83,16 +86,16 @@ export async function exportarSesion(paquete, boton) {
   await bajar(p, p.sesion.id, 'completo');
   toast(`Sesión exportada: ${p.sesion.id}-${SUFIJO.completo}.xlsx`);
  } catch (e) { toast('No se pudo preparar el archivo. ' + e.message); }
- finally { if (boton) { boton.disabled = false; boton.textContent = texto; } }
+ finally { if (boton) { boton.disabled = false; boton.innerHTML = texto; } }
 }
 
 // Botón que descarga directamente; muestra el progreso en el propio botón.
 export async function descargar(formato, boton) {
- const x = exportable(), texto = boton?.textContent;
+ const x = exportable(), texto = boton?.innerHTML;
  if (boton) { boton.disabled = true; boton.textContent = 'Preparando archivo…'; }
  try { await generar(x, formato); toast(`${NOMBRE_FORMATO[formato]} descargado: ${x.nombre}`); }
  catch (e) { toast('No se pudo preparar el archivo. ' + e.message); }
- finally { if (boton) { boton.disabled = false; boton.textContent = texto; } }
+ finally { if (boton) { boton.disabled = false; boton.innerHTML = texto; } }
 }
 
 // Sin argumento: lo que hay en pantalla. Con un paquete de evento ({sesion, evento, mediciones}):
@@ -104,7 +107,7 @@ export function openExport(paqueteEvento) {
   <div class="opcion-exportar"><h3>Resumen</h3><p>Para leer: qué pasó en cada evento (con una frase), los tramos inclinados y la rueda con sensor. Sin muestras sueltas.</p><small>Hojas Resumen, Eventos, Inclinaciones y Rueda · ${escape(nombre)}-resumen.xlsx</small></div>
   <div class="opcion-exportar"><h3>Datos técnicos</h3><p>Todas las muestras con rueda_pulsos, los eventos completos y los parámetros del firmware.</p><small>Hojas Datos, Eventos, Parámetros del firmware, ${p.parametros ? 'Parámetros simulación, ' : ''}Columnas, Léeme y Metadatos · ${escape(nombre)}-datos-tecnicos.xlsx</small></div>
   <div id="export-error" role="alert"></div>
-  <div class="dialog-actions"><button id="cancel-export" class="boton">Cancelar</button><button id="download-tecnico" class="boton">Descargar datos técnicos</button><button id="download-resumen" class="boton primario">Descargar resumen</button></div>`;
+  <div class="dialog-actions"><button id="cancel-export" class="secondary">Cancelar</button><button id="download-tecnico" class="secondary">Descargar datos técnicos</button><button id="download-resumen" class="primary">Descargar resumen</button></div>`;
  $('#export-dialog').showModal(); $('#cancel-export').onclick = () => $('#export-dialog').close();
  for (const formato of ['resumen', 'tecnico']) {
   const b = $('#download-' + formato), texto = b.textContent;
@@ -115,4 +118,39 @@ export function openExport(paqueteEvento) {
    finally { b.disabled = false; b.textContent = texto; }
   };
  }
+}
+
+// Pantalla Exportar (#exportar): sesiones guardadas, la más reciente primero, con «Exportar sesión»
+// (un solo Excel: resumen + datos técnicos de todas las muestras).
+export async function renderExportar() {
+ const generacion = app.liveGeneration, vigente = () => generacion === app.liveGeneration && app.page === 'exportar';
+ const tipo = (ic, titulo, texto) => `<div class="tarjeta cifra-pantalla"><span class="lectura-icono">${icono(ic)}</span><div><strong>${titulo}</strong><p>${texto}</p></div></div>`;
+ $('#main').innerHTML = `<div class="page-heading"><div><h1>Exportar</h1><p>Excel de una sesión guardada.</p></div></div>
+  <div class="cifras-pantalla">
+   ${tipo('exportar', 'Exportar sesión', 'Resumen y datos técnicos en un solo archivo.')}
+   ${tipo('lista', 'Resumen', 'Eventos con su frase, inclinaciones y rueda.')}
+   ${tipo('mediciones', 'Datos técnicos', 'Todas las muestras y los parámetros del firmware.')}
+  </div>
+  <section class="tarjeta lista-sesiones" aria-labelledby="t-sesiones-exportar"><h2 class="sr-only" id="t-sesiones-exportar">Sesiones guardadas</h2>
+   <div class="table-scroll" id="exportar-sesiones"><p class="vacio" style="padding:20px" role="status">Consultando la API…</p></div></section>
+  <p class="helper" style="margin-top:12px">Para un solo evento: ábrelo en Historial y usa «Exportar solo este evento».</p>`;
+ let r;
+ try { r = await cargarSesiones(get, 'historial', vigente); }
+ catch (e) { if (vigente()) $('#exportar-sesiones').innerHTML = `<p class="vacio" style="padding:20px" role="alert">No se pudo consultar la API: ${escape(e.message)}</p>`; return; }
+ if (!r || !vigente()) return;
+ const sesiones = r.sesiones.filter(s => s.mediciones > 0).sort((a, b) => (b.ultima_recepcion_ms ?? -1) - (a.ultima_recepcion_ms ?? -1));
+ $('#exportar-sesiones').innerHTML = sesiones.length ? `<table><thead><tr><th>Sesión</th><th>Origen</th><th>Mediciones</th><th>Última recepción</th><th><span class="sr-only">Acciones</span></th></tr></thead><tbody>${sesiones.map(s => `<tr>
+   <td><code>${escape(s.id)}</code></td><td><span class="chip">${s.origen === 'real' ? 'Real' : 'Simulada'}</span></td>
+   <td>${Number(s.mediciones).toLocaleString('es-EC')}</td><td class="mono">${escape(textoFechaHora(s.ultima_recepcion_ms) ?? 'sin dato')}</td>
+   <td><div class="event-actions"><a class="text-button boton-enlace small" href="#sesion/${encodeURIComponent(s.id)}">Ver detalle</a><button type="button" class="secondary small" data-exportar-sesion="${escape(s.id)}">${icono('exportar')}Exportar sesión</button></div></td></tr>`).join('')}</tbody></table>`
+  : '<p class="vacio" style="padding:20px">Todavía no hay sesiones con mediciones guardadas.</p>';
+ document.querySelectorAll('[data-exportar-sesion]').forEach(b => b.onclick = async () => {
+  const id = b.dataset.exportarSesion, original = b.innerHTML;
+  b.disabled = true;
+  try {
+   const paquete = await cargarSesionCompleta(id, {alAvanzar(n, total) { if (total) b.textContent = `Cargando ${Math.round(100 * n / total)} %…`; }});
+   b.innerHTML = original; await exportarSesion(paquete, b);
+  } catch (e) { toast('No se pudo exportar la sesión. ' + e.message); }
+  finally { b.disabled = false; b.innerHTML = original; }
+ });
 }

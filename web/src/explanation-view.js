@@ -1,5 +1,5 @@
 import { explicarPaquete, moduloA, desviacionA, direccionRoll, direccionPitch } from './explanation.js';
-import { htmlGraficas, crearGraficas, actualizarGraficas } from './graficas.js';
+import { htmlGraficas, htmlGraficasTecnicas, crearGraficas, actualizarGraficas } from './graficas.js';
 import { analizarEvento } from '../../compartido/exportacion.js';
 
 const escape = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -60,7 +60,7 @@ export function mostrarExplicacion(container, paquete, aviso = '') {
       <p class="grafica-nota">En el pico de aceleración total: X (delante/atrás) ${numero(picoTotal.ax)}, Y (lateral) ${numero(picoTotal.ay)}, Z (vertical) ${numero(picoTotal.az)} m/s². Lateral positivo eleva el lado izquierdo; frontal positivo eleva la trompa.</p>
       <p class="grafica-nota">La aceleración incluye la gravedad y no equivale por sí sola a velocidad, fuerza de choque ni causa. Los ángulos se estiman con el acelerómetro: un golpe puede alterar esa estimación. ${rueda.length ? `Máximo giro registrado: ${numero(picoRueda.rueda_rps)} vueltas/s a los ${segundo(picoRueda.t_ms)} s; el Hall mide una rueda, no el avance del carro.${rueda.length < muestras.length ? ` Hay dato de rueda en ${rueda.length} de ${muestras.length} lecturas; los huecos no significan rueda detenida.` : ''}` : 'No hay dato de rueda: su ausencia no significa que estuviera detenida.'}</p>
       ${disperso ? `<div class="aviso-bloque">Lecturas ${muestras.length < 5 ? 'escasas' : 'con intervalos sin datos'}${saltoMaximo ? ` (salto máximo: ${numero(saltoMaximo / 1000)} s)` : ''}. Los puntos no prueban qué ocurrió entre una muestra y otra.</div>` : ''}
-      <div class="explicar-graficas">${htmlGraficas('explain-', { tecnico: false, valores: 'Máximo' })}</div>`}
+      <div class="explicar-graficas">${htmlGraficas('explain-', { valores: 'Máximo' })}${htmlGraficasTecnicas('explain-', { ejes: false, valores: 'Total' })}</div>`}
     </section>
     <section class="bloque cronologia" aria-labelledby="explain-sequence">
       <h2 id="explain-sequence">Línea de tiempo</h2>

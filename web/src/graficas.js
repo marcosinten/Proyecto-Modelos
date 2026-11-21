@@ -18,28 +18,29 @@ const css = nombre => getComputedStyle(document.documentElement).getPropertyValu
 const num = (v, d = 1) => v.toLocaleString('es-EC', { minimumFractionDigits: d, maximumFractionDigits: d });
 const seg = ms => (ms / 1000).toLocaleString('es-EC', { maximumFractionDigits: 1 });
 
-export function htmlGraficas(p = '', { tecnico = true, valores = 'Ahora' } = {}) {
-  const valor = id => `<div class="grafica-valor"><span>${valores}</span><strong id="${p}valor-${id}">—</strong></div>`;
+const grafica = (p, id, titulo, sub, canvas, aria, valores, extra = '') => `
+  <section class="grafica" aria-labelledby="${p}t-${id}">
+    <header><div><h3 id="${p}t-${id}">${titulo}</h3>${sub}</div><div class="grafica-valor"><span>${valores}</span><strong id="${p}valor-${id}">—</strong></div></header>
+    <div class="grafica-lienzo"><canvas id="${p}${canvas}" role="img" aria-label="${aria}"></canvas></div>${extra}
+  </section>`;
+
+// Gráficas principales: inclinación y aceleración total.
+export function htmlGraficas(p = '', { valores = 'Ahora' } = {}) {
   return `<div class="graficas-lista">
-  <section class="grafica" aria-labelledby="${p}t-incl">
-    <header><div><h3 id="${p}t-incl">¿Qué tan inclinado está el carro?</h3><p>Inclinación lateral y frontal · grados (°)</p></div>${valor('inclinacion')}</header>
-    <div class="grafica-lienzo"><canvas id="${p}angles" role="img" aria-label="Inclinación lateral (línea continua) y frontal (línea discontinua) en grados, con bandas normal, inclinado y vuelco"></canvas></div>
-    <p class="grafica-nota" id="${p}graph-summary"></p>
-  </section>
-  <section class="grafica" aria-labelledby="${p}t-golpe">
-    <header><div><h3 id="${p}t-golpe">¿Hubo golpes?</h3><p>Aceleración total · m/s² (incluye la gravedad)</p></div>${valor('golpe')}</header>
-    <div class="grafica-lienzo"><canvas id="${p}magnitude" role="img" aria-label="Aceleración total en metros por segundo al cuadrado con la línea de umbral de golpe y la de gravedad"></canvas></div>
-    <p class="grafica-nota">Golpe: ${num(CONSTANTES_INO.UMBRAL_GOLPE_MS2, 0)} m/s² o más en ${CONSTANTES_INO.LECTURAS_GOLPE} lecturas seguidas. En reposo la línea queda en la gravedad (9,8).</p>
-  </section>
-  <section class="grafica" aria-labelledby="${p}t-rueda">
-    <header><div><h3 id="${p}t-rueda">¿La rueda gira?</h3><p>${NOMBRE_RUEDA} (${POSICION_RUEDA_SENSOR}) · vueltas acumuladas</p></div>${valor('rueda')}</header>
-    <div class="grafica-lienzo"><canvas id="${p}wheel" role="img" aria-label="Vueltas acumuladas de la rueda con sensor y franja inferior: oscura cuando gira, clara cuando está detenida"></canvas></div>
-    <p class="grafica-nota">Franja inferior: <span class="muestra muestra-gira"></span> girando · <span class="muestra muestra-quieta"></span> detenida. Estimación con una sola rueda.</p>
-  </section>
-  </div>${tecnico ? `
-  <details class="detalle-tecnico-graficas"><summary>Detalle técnico: aceleración por eje (X, Y, Z)</summary>
-    <div class="grafica-lienzo"><canvas id="${p}accel" role="img" aria-label="Aceleración por eje X, Y y Z en metros por segundo al cuadrado"></canvas></div>
-  </details>` : ''}`;
+  ${grafica(p, 'inclinacion', 'Inclinación (°)', `<div class="leyenda" aria-hidden="true"><span style="color:var(--serie-roll)"><i></i>Lateral (roll)</span><span style="color:var(--serie-pitch)"><i></i>Frontal (pitch)</span></div>`,
+    'angles', 'Inclinación lateral y frontal en grados', valores, `<p class="sr-only" id="${p}graph-summary"></p>`)}
+  ${grafica(p, 'golpe', 'Aceleración total (m/s²)', '', 'magnitude', 'Aceleración total en metros por segundo al cuadrado, con el umbral de golpe y la gravedad', valores)}
+  </div>`;
+}
+
+// Gráficas secundarias: vueltas de la rueda con sensor y aceleración por eje.
+export function htmlGraficasTecnicas(p = '', { valores = 'Ahora', ejes = true, rueda = true } = {}) {
+  return `<div class="tecnico-graficas">
+  ${rueda ? grafica(p, 'rueda', `${NOMBRE_RUEDA} (vueltas)`, `<p class="grafica-nota">${POSICION_RUEDA_SENSOR} · franja inferior: <span class="muestra muestra-gira"></span> girando · <span class="muestra muestra-quieta"></span> detenida</p>`,
+    'wheel', 'Vueltas acumuladas de la rueda con sensor', valores) : ''}
+  ${ejes ? grafica(p, 'ejes', 'Aceleración por eje (m/s²)', `<div class="leyenda" aria-hidden="true"><span style="color:var(--serie-x)"><i></i>X</span><span style="color:var(--serie-y)"><i></i>Y</span><span style="color:var(--serie-z)"><i></i>Z</span></div>`,
+    'accel', 'Aceleración por eje X, Y y Z', valores) : ''}
+  </div>`;
 }
 
 // Dibujo propio: bandas, líneas de referencia rotuladas, banderas de eventos, cursor, franja de rueda
@@ -143,7 +144,7 @@ function crear(canvas, datasets, { etiquetas = false, unidad = '', yMin, onClick
       onClick,
       plugins: {
         legend: { display: false },
-        decimation: { enabled: true, algorithm: 'min-max', threshold: 1200 },
+        decimation: { enabled: false },
         tooltip: { callbacks: { title: i => `${seg(i[0].parsed.x)} s`, label: i => `${i.dataset.label}: ${num(i.parsed.y, 2)}${unidad}` } }
       },
       scales: {
@@ -162,12 +163,12 @@ export function crearGraficas(p = '', { onClick } = {}) {
   const $ = id => document.getElementById(p + id);
   const tinta = css('--tinta'), acento = css('--acento');
   const g = {
-    angles: crear($('angles'), [
+    angles: $('angles') && crear($('angles'), [
       { label: 'Lateral', borderColor: tinta, backgroundColor: tinta },
       { label: 'Frontal', borderColor: acento, backgroundColor: acento, borderDash: [7, 4] }
     ], { etiquetas: true, unidad: '°', onClick }),
-    magnitude: crear($('magnitude'), [{ label: 'Aceleración total', borderColor: tinta, backgroundColor: tinta, borderWidth: 1.8 }], { unidad: ' m/s²', yMin: 0, onClick }),
-    wheel: crear($('wheel'), [{ label: 'Vueltas', borderColor: acento, backgroundColor: acento }], { unidad: ' vueltas', yMin: 0, onClick }),
+    magnitude: $('magnitude') && crear($('magnitude'), [{ label: 'Aceleración total', borderColor: tinta, backgroundColor: tinta, borderWidth: 1.8 }], { unidad: ' m/s²', yMin: 0, onClick }),
+    wheel: $('wheel') && crear($('wheel'), [{ label: 'Vueltas', borderColor: acento, backgroundColor: acento }], { unidad: ' vueltas', yMin: 0, onClick }),
     accel: $('accel') ? crear($('accel'), [
       { label: 'X', borderColor: tinta, backgroundColor: tinta, borderWidth: 1.5 },
       { label: 'Y', borderColor: acento, backgroundColor: acento, borderWidth: 1.5, borderDash: [7, 4] },
@@ -242,9 +243,8 @@ export function actualizarGraficas(g, { mediciones, eventos = [], desde, hasta, 
     if (ultimo && ultimo.gira === gira && ultimo.hasta === a.t_ms) ultimo.hasta = m[i].t_ms;
     else franja.push({ desde: a.t_ms, hasta: m[i].t_ms, gira });
   }
-  g.wheel.$tel.franja = franja;
   const maxV = datos.wheel[0].reduce((s, q) => Math.max(s, q.y ?? 0), 0);
-  g.wheel.options.scales.y.max = Math.max(1, Math.ceil(maxV * 1.2));
+  if (g.wheel) { g.wheel.$tel.franja = franja; g.wheel.options.scales.y.max = Math.max(1, Math.ceil(maxV * 1.2)); }
   for (const [clave, chart] of Object.entries({ angles: g.angles, magnitude: g.magnitude, wheel: g.wheel, accel: g.accel })) {
     if (!chart) continue;
     chart.data.datasets.forEach((d, i) => { d.data = datos[clave][i]; d.pointRadius = m.length < 10 ? 3 : 0; });
@@ -288,4 +288,14 @@ export function zoomArrastrando(g, alElegir) {
     quitar.push(() => { canvas.removeEventListener('pointerdown', abajo); canvas.removeEventListener('pointermove', mover); canvas.removeEventListener('pointerup', arriba); canvas.removeEventListener('pointercancel', arriba); });
   }
   return () => quitar.forEach(f => f());
+}
+
+// Pantalla completa: ticks de 14 px y líneas de 3 px.
+export function modoPresentacion(g, activo) {
+  for (const c of g.todas) {
+    c.$tel.presentacion = activo;
+    for (const eje of Object.values(c.options.scales)) eje.ticks.font = { ...(eje.ticks.font ?? {}), size: activo ? 14 : 12 };
+    c.data.datasets.forEach(d => { d.borderWidth = activo ? 3 : (d.$ancho ?? 2.5); });
+    c.update('none');
+  }
 }

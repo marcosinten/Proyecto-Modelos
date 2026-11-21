@@ -1,1 +1,6 @@
-<!doctype html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0f172a"><title>Telemetría RC · Grupo 11</title></head><body><div id="app"></div><script type="module" src="/src/main.js"></script></body></html>
+<!doctype html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#F3F5F9"><title>Telemetría RC · Grupo 11</title></head><body><div id="app"></div>
+<!-- ?vista=anterior abre la copia congelada de la interfaz previa al rediseño (web/anterior), hasta que se apruebe. -->
+<script type="module">
+if (new URLSearchParams(location.search).get('vista') === 'anterior') import('/anterior/main.js');
+else import('/src/main.js');
+</script></body></html>

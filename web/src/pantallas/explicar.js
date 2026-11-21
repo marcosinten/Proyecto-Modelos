@@ -1,5 +1,6 @@
 // Pantalla Explicar: lectura del evento guardado (#explicar/ID).
-import {app, $, escape, request} from '../app.js';
+import {app, $, escape, request, heading} from '../app.js';
+import {eventTable, bindRows} from './historial.js';
 import {mostrarExplicacion} from '../explanation-view.js';
 
 export async function showExplanation(){
@@ -23,4 +24,11 @@ export async function showExplanation(){
  }
  if(generation!==app.liveGeneration||app.page!=='explicar'||location.hash!=='#explicar/'+id)return;
  app.cerrarExplicacion=mostrarExplicacion($('#main'),paquete,aviso);
+}
+
+// #explicar sin ID: elegir un evento guardado (los más recientes primero).
+export function elegirEvento(){
+ $('#main').innerHTML=heading('Explicar evento','Elige un evento para leer qué registró el sistema.')+`<section class="tarjeta lista-sesiones">${eventTable(app.events.slice(0,12))}</section>`+
+  (app.events.length>12?'<p class="helper" style="margin-top:12px">Se muestran los 12 más recientes. Los demás están en <a href="#historial">Historial</a>.</p>':'');
+ bindRows();
 }

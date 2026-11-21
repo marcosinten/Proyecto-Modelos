@@ -1,0 +1,81 @@
+/* Tokens del sistema visual (tema claro). Todo color, tamaño, radio y sombra de la interfaz sale de aquí;
+   las gráficas los leen con getComputedStyle (web/src/graficas.js). */
+:root {
+  /* Tipografía */
+  --fuente: "IBM Plex Sans", system-ui, sans-serif;
+  --fuente-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --t-etiqueta: 12px;      /* etiquetas de tarjeta: mayúsculas, 600, tracking .06em */
+  --t-pequeno: 13px;
+  --t-cuerpo: 14px;
+  --t-cuerpo-g: 16px;
+  --t-titulo: 22px;        /* título de pantalla */
+  --t-numero: 32px;        /* número grande */
+  --t-numero-g: 36px;
+  --t-numero-p: 26px;      /* números de las tarjetas pequeñas */
+  --t-estado: 28px;        /* estado del carro */
+  --t-tick: 12px;          /* ticks de gráficas */
+  --t-leyenda: 13px;
+
+  /* Superficies y texto */
+  --fondo: #F3F5F9;
+  --superficie: #FFFFFF;
+  --superficie-2: #F8FAFC;
+  --borde: #E3E8F0;
+  --borde-fuerte: #D0D5DD;
+  --texto: #101828;
+  --texto-2: #475467;
+  --texto-3: #667085;
+  --segmentado: #EEF1F6;
+
+  /* Acento */
+  --acento: #2F5BEA;
+  --acento-hover: #2349C9;
+  --acento-suave: #E8EEFF;
+
+  /* Series */
+  --serie-roll: #2F5BEA;
+  --serie-pitch: #0E9384;
+  --serie-total: #6941C6;
+  --serie-rueda: #667085;
+  --serie-x: #2F5BEA;
+  --serie-y: #D92D20;
+  --serie-z: #0E9384;
+  --rejilla: #E8ECF3;
+
+  /* Eventos: mismo color en todas partes (línea/punto y texto) */
+  --ev-inclinacion: #F79009;  --ev-inclinacion-texto: #B54708;
+  --ev-golpe: #D92D20;        --ev-golpe-texto: #B42318;
+  --ev-vuelco: #7A271A;       --ev-vuelco-texto: #7A271A;
+
+  /* Estados (chip con icono + texto, nunca solo color) */
+  --est-normal: #067647;     --est-normal-fondo: #ECFDF3;
+  --est-inclinado: #B54708;  --est-inclinado-fondo: #FFFAEB;
+  --est-golpe: #B42318;      --est-golpe-fondo: #FEF3F2;
+  --est-vuelco: #7A271A;     --est-vuelco-fondo: #FEF3F2;
+  --est-sin-datos: #475467;  --est-sin-datos-fondo: #F2F4F7;
+  --con-activa: #12B76A;
+  --con-atrasada: #F79009;
+  --con-desconectada: #98A2B3;
+
+  /* Zona normal en las gráficas */
+  --zona: #12B76A;
+  --zona-relleno: rgba(18, 183, 106, .08);
+  --zona-linea: rgba(18, 183, 106, .6);
+
+  /* Espaciado, radios, sombra */
+  --e1: 4px; --e2: 8px; --e3: 12px; --e4: 16px; --e5: 24px; --e6: 32px;
+  --r-tarjeta: 14px; --r-boton: 10px; --r-chip: 999px;
+  --sombra: 0 1px 2px rgba(16, 24, 40, .05), 0 1px 3px rgba(16, 24, 40, .06);
+  --sombra-aviso: 0 4px 12px rgba(16, 24, 40, .10), 0 1px 3px rgba(16, 24, 40, .08);
+
+  /* Movimiento */
+  --rapido: 150ms;
+  --normal: 220ms;
+  --curva: cubic-bezier(.2, .8, .2, 1);
+
+  --barra-lateral: 220px;
+  --ancho: 1440px;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --rapido: 0ms; --normal: 0ms; }
+}
