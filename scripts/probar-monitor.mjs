@@ -39,7 +39,7 @@ try {
    window.framesRC=[];window.markers=[];
    const text=CanvasRenderingContext2D.prototype.fillText;
    CanvasRenderingContext2D.prototype.fillText=function(label,x,y,...rest){
-     if(this.canvas.id==='angles'&&['Inclinación','Vuelco','Impacto'].includes(label))window.markers.push([label,x]);
+     if(this.canvas.id==='angles'&&['Inclinación','Vuelco','Golpe'].includes(label))window.markers.push([label,x]);
      return text.call(this,label,x,y,...rest);
    };
    window.__THREE_DEVTOOLS__=new EventTarget();
@@ -83,7 +83,13 @@ try {
    console.log(`Emisión continua, primer POST de 20° → render de 20°: ${cambio.at-cambioPost.post} ms (muestra ${cambio.ms/20})`);
  } finally {emitting=false;await flujo;}
  await tab.waitForFunction(ms=>framesRC.at(-1)?.ms===ms,{},n*20);
- assert.equal(await tab.$eval('#sample-count',e=>e.textContent),'300 muestras');
+ // Ventana en vivo por defecto: 10 s a 50 Hz.
+ assert.equal(await tab.$eval('#sample-count',e=>e.textContent),'500 muestras');
+ // Ventana de 30 s: más de las 1000 muestras de /ultima, se rellena hacia atrás con /mediciones.
+ await tab.click('[data-ventana="30"]');
+ await tab.waitForFunction(()=>document.querySelector('#sample-count').textContent==='1500 muestras',{timeout:15000});
+ await tab.click('[data-ventana="10"]');
+ await tab.waitForFunction(()=>document.querySelector('#sample-count').textContent==='500 muestras',{timeout:15000});
  const waitText=async(sel,value)=>tab.waitForFunction((s,v)=>document.querySelector(s)?.textContent.includes(v),{},sel,value);
  const state=()=>tab.evaluate(()=>framesRC.at(-1));
  const snap=async name=>{if(process.env.CAPTURAS){await mkdir(process.env.CAPTURAS,{recursive:true});await tab.screenshot({path:join(process.env.CAPTURAS,name+'.png')});}};
@@ -131,12 +137,14 @@ try {
      return min;
    });
    assert.ok(Math.abs(bajo-(-.57+.008))<1e-3,`Punto más bajo ${bajo} con roll ${roll}, pitch ${pitch}`);
-   await waitText('#roll',roll.toLocaleString('es-EC',{minimumFractionDigits:2})+'°');
-   await waitText('#pitch',pitch.toLocaleString('es-EC',{minimumFractionDigits:2})+'°');
-   const charts=await tab.evaluate(()=>['angles','wheel','accel'].map(id=>testChart.getChart(id).data.datasets.map(d=>d.data.slice(-10))));
+   const uno=v=>v.toLocaleString('es-EC',{minimumFractionDigits:1,maximumFractionDigits:1})+'°';
+   await waitText('#roll',uno(roll));
+   await waitText('#pitch',uno(pitch));
+   const charts=await tab.evaluate(()=>['angles','wheel','accel'].map(id=>testChart.getChart(id).data.datasets.map(d=>d.data.slice(-11))));
    assert.equal(charts[0][0].at(-1).y,roll);assert.equal(charts[0][1].at(-1).y,pitch);
-   assert.equal(charts[1][0][4].y,5);assert.equal(charts[1][0].at(-1).y,0);
-   assert.equal(charts[2][2][6].y,rows[6].az);
+   // «¿La rueda gira?» muestra vueltas acumuladas: el lote suma 0,1 vuelta.
+   assert.ok(Math.abs(charts[1][0].at(-1).y-charts[1][0][0].y-.1)<1e-9,JSON.stringify(charts[1][0]));
+   assert.equal(charts[2][2][7].y,rows[6].az);
    // 5 vueltas/s durante el pulso triangular de 20 ms: +0,1 vuelta, aunque termine en cero.
    await tab.waitForFunction(angle=>Math.abs(framesRC.at(-1).angle-angle)<1e-7,{},before.angle-.2*Math.PI);
    const ruedaFinal=tipo===null&&roll===0?await fotoRueda('hall-despues'):null;
@@ -152,8 +160,9 @@ try {
      await waitText('#event-saved','Evento guardado: '+aviso+' · ');
      assert.match(await tab.$eval('#event-saved',e=>e.textContent),/\d\d:\d\d:\d\d.*±1 s/);
      await waitText('.recent','EV-'+tipo);
-     const label={golpe:'Impacto',vuelco:'Vuelco',inclinacion:'Inclinación'}[tipo];
-     await tab.waitForFunction((name,t)=>markers.some(([label,x])=>label===name&&Math.abs(x-testChart.getChart('angles').scales.x.getPixelForValue(t))<.1),{},label,rows[6].t_ms);
+     const label={golpe:'Golpe',vuelco:'Vuelco',inclinacion:'Inclinación'}[tipo];
+     // Bandera rotulada con su línea en el instante de detección.
+     await tab.waitForFunction((name,t)=>{const c=testChart.getChart('angles');return markers.some(([l])=>l===name)&&(c.$tel.banderas??[]).some(b=>b.texto===name&&Math.abs(b.x-c.scales.x.getPixelForValue(t))<.1);},{},label,rows[6].t_ms);
    }
    if(pitch===20||roll===90||roll===180||tipo==='golpe'){
      await tab.$eval('#car canvas',c=>c.scrollIntoView({block:'center'}));
@@ -219,7 +228,7 @@ try {
  assert.ok(await tab.$eval('#new-session button.primary',b=>b.textContent==='Cambiar a la nueva sesión'));
  assert.equal(await tab.$eval('#live-form input',e=>e.value),id,'no cambia de sesión sola');
  hold=true;
- await tab.click('#find-session');await tab.type('.session-picker input',other);
+ await tab.click('#cambiar-sesion');await tab.type('.session-picker input',other);
  await tab.waitForSelector('.session-list article button.primary');
  await snap('selector');
  assert.equal(await tab.$eval('.session-list code',e=>e.textContent),other);
@@ -238,7 +247,7 @@ try {
  await tab.keyboard.press('Escape');
  await post('/eventos',{evento:{id:'EV-HISTORIAL-AUTO',sesion_id:other,tipo:'golpe',gravedad:'media',estado:'confirmado',t_inicio_ms:0,t_deteccion_ms:12,t_fin_ms:12,t_activacion_ms:null,ubicacion:null}});
  await tab.waitForFunction(()=>document.querySelector('#history-list')?.textContent.includes('EV-HISTORIAL-AUTO'),{timeout:12000});
- console.log('PASS: ventana, tres marcas de evento, giro dentro del lote, pulso aislado, aviso de evento guardado, aviso de sesión nueva, historial que se actualiza solo, pausa, reconexión, cambio con petición pendiente e historial desde la primera muestra.');
+ console.log('PASS: ventana de 10 y 30 s, tres marcas de evento, giro dentro del lote, pulso aislado, aviso de evento guardado, aviso de sesión nueva, historial que se actualiza solo, pausa, reconexión, cambio con petición pendiente e historial desde la primera muestra.');
  assert.deepEqual(errors,[]);
 } finally {
  await browser?.close(); await web.close(); api.close(); await once(api,'close'); repo.cerrar(); await rm(dir,{recursive:true,force:true});

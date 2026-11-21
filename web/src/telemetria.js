@@ -1,6 +1,5 @@
 import {PULSOS_POR_VUELTA} from '../../compartido/parametros-firmware.js';
 
-export const VENTANA = 300; // 6 s a 50 Hz
 export const PAUSA_MS = 3000; // seis lotes de 500 ms sin datos nuevos
 // Una sesión se puede conectar en vivo si recibió datos hace como máximo 10 s
 // (PAUSA_MS sigue siendo el indicador «Recibiendo» de la conexión).
@@ -11,6 +10,14 @@ export function estadoRecepcion(ultimaMs, ahora) {
   if (ultimaMs == null) return {edad:null, etiqueta:null};
   const edad = Math.max(0, ahora - ultimaMs);
   return {edad, etiqueta: edad <= PAUSA_MS ? 'Recibiendo' : edad <= VENTANA_CONECTABLE_MS ? 'Conexión inestable' : null};
+}
+
+// «Conexión: activa / atrasada / detenida · hace 3 s» con la edad de la última recepción (reloj de la API).
+export function textoConexion(ultimaMs, ahora) {
+  if (ultimaMs == null) return 'Conexión: sin datos';
+  const edad = Math.max(0, ahora - ultimaMs);
+  const estado = edad <= PAUSA_MS ? 'activa' : edad <= VENTANA_CONECTABLE_MS ? 'atrasada' : 'detenida';
+  return `Conexión: ${estado} · hace ${Math.floor(edad / 1000)} s`;
 }
 
 export const esConectable = (s, ahora) =>
