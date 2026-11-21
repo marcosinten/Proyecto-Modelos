@@ -78,6 +78,13 @@ try {
   await tab.waitForSelector('#explain-tiempos', {timeout: 15000});
   assert.match(await tab.$eval('#main', m => m.textContent), /Tiempo de detecciónsin medir/);
 
+  // Fase 3: sin pruebas registradas, Resultados muestra el estado vacío (no inventa datos observados).
+  await tab.goto(url + '#resultados');
+  await tab.waitForFunction(() => document.querySelector('#main')?.textContent.includes('Todavía no hay pruebas físicas'), {timeout: 15000});
+  assert.equal(await tab.$eval('#res-excel', b => b.disabled), true);
+  assert.equal(await tab.$$eval('canvas', c => c.length), 0, 'sin datos físicos no hay gráficas');
+  await foto('resultados-vacio');
+
   // Fase 2: registrar la prueba física al conectar la sesión real en En vivo.
   await tab.goto(url + '#monitor');
   await tab.waitForSelector('#live-mode', {timeout: 15000});
@@ -94,6 +101,35 @@ try {
   assert.equal(registrada.prueba.escenario_esperado, 'inclinacion'); assert.equal(registrada.prueba.repeticion, 1);
   await pause(1500);
   await tab.screenshot({path: join(salida, 'en-vivo-registro-prueba.png'), clip: {x: 0, y: 0, width: 1440, height: 900}});
+
+  // Fase 3 con datos de PRUEBA (no físicos): golpes, reposos (uno con falsa alarma) y vuelcos.
+  const sesionPrueba = async (sid, escenario, rep, eventos, pico) => {
+    await post('/sesiones', {sesion: {id: sid, origen: 'real'}});
+    await post(`/sesiones/${sid}/mediciones`, {mediciones: [
+      {numero: 1, t_ms: 20, ax: 0, ay: 0, az: 9.81, roll_deg: 0, pitch_deg: 0},
+      {numero: 2, t_ms: 40, ax: pico, ay: 0, az: 9.81, roll_deg: escenario === 'vuelco' ? 178 : 2, pitch_deg: 1}]});
+    for (const [k, tipo, det, act] of eventos)
+      await post('/eventos', {evento: {id: `${sid}-EV00${k}`, sesion_id: sid, tipo, gravedad: tipo === 'inclinacion' ? 'media' : 'alta', estado: 'confirmado',
+        t_inicio_ms: 0, t_fin_ms: 40, t_deteccion_ms: 40, t_activacion_ms: 40, ubicacion: null, latencia_deteccion_ms: det, latencia_activacion_ms: act}});
+    await post(`/sesiones/${sid}/prueba`, {prueba: {escenario_esperado: escenario, repeticion: rep, nota: 'PRUEBA de captura'}});
+  };
+  for (const k of [1, 2, 3]) await sesionPrueba(`RC-PRUEBA-GOLPE${k}`, 'golpe', k, [[1, 'golpe', 4 + k / 100, 0.4 + k / 10]], 28 + k);
+  for (const k of [1, 2, 3]) await sesionPrueba(`RC-PRUEBA-REPOSO${k}`, 'reposo', k, k === 3 ? [[1, 'inclinacion', 152, 0.5]] : [], 0.2);
+  for (const k of [1, 2]) await sesionPrueba(`RC-PRUEBA-VUELCO${k}`, 'vuelco', k, [[1, 'vuelco', 152 + k, 0.6]], 1);
+  const cdp = await browser.target().createCDPSession();
+  await cdp.send('Browser.setDownloadBehavior', {behavior: 'allow', downloadPath: dir});
+  await tab.goto(url + '#resultados');
+  await tab.waitForSelector('#g-repeticiones', {timeout: 15000});
+  const texto = await tab.$eval('#main', m => m.textContent);
+  assert.match(texto, /Tasa de falsas alarmas/); assert.match(texto, /no coincide/);
+  assert.equal(await tab.$$eval('canvas', c => c.length), 4);
+  await foto('resultados-con-datos-de-prueba');
+  await tab.click('[data-png="g-pico"]');
+  await tab.click('#res-excel');
+  const {readdir} = await import('node:fs/promises');
+  for (let i = 0; i < 50 && (await readdir(dir)).filter(n => /\.(png|xlsx)$/.test(n)).length < 2; i++) await pause(200);
+  const bajados = (await readdir(dir)).filter(n => /\.(png|xlsx)$/.test(n)).sort();
+  assert.deepEqual(bajados, ['resultados-pico.png', 'resultados-simulacion-vs-prototipo.xlsx']);
 
   assert.deepEqual(errores, [], 'la página no debe lanzar errores');
   console.log(`Sin errores de página. Capturas en ${salida}`);

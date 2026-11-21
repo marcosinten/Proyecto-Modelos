@@ -15,6 +15,7 @@ import {renderExportar} from './pantallas/exportar.js';
 import {renderMonitor, frame} from './pantallas/monitor.js';
 import {renderSesion} from './pantallas/sesion.js';
 import {activarPresentacion} from './pantallas/presentacion.js';
+import {renderResultados} from './pantallas/resultados.js';
 
 const demo = generarEscenario('vuelco', 16, 90, 100);
 app.demo=demo;
@@ -26,7 +27,7 @@ app.impactTime=undefined;
 app.wheelTurnsBySample=[];
 app.liveTurns=0;app.wheelFrom=0;app.wheelTo=0;app.wheelStart=0;app.wheelDuration=0;app.stale=false;
 app.cerrarExplicacion=undefined;app.historyTimer=undefined;
-const SECCIONES = [['monitor', 'En vivo', 'vivo'], ['historial', 'Historial', 'historial'], ['explicar', 'Explicar evento', 'explicar'], ['exportar', 'Exportar', 'exportar'], ['simulacion', 'Simulación', 'simulacion']];
+const SECCIONES = [['monitor', 'En vivo', 'vivo'], ['historial', 'Historial', 'historial'], ['explicar', 'Explicar evento', 'explicar'], ['exportar', 'Exportar', 'exportar'], ['simulacion', 'Simulación', 'simulacion'], ['resultados', 'Resultados', 'resultados']];
 function layout() {
  $('#app').innerHTML=`<a class="saltar" href="#main">Saltar al contenido</a>
  <div class="app">
@@ -52,10 +53,11 @@ function render() {
   if(app.page==='explicar'){showExplanation();return;}
   if(app.page==='explicar-lista'){elegirEvento();return;}
   if(app.page==='exportar'){renderExportar();return;}
+ if(app.page==='resultados'){renderResultados();return;}
   if(app.page==='sesion'){renderSesion(app.sesionId);return;}
  renderMonitor();
 }
-function route(){const hash=location.hash.slice(1);if(hash.startsWith('sesion/')){app.page='sesion';app.sesionId=decodeURIComponent(hash.slice(7));render();return;}app.page=hash.startsWith('explicar/')?'explicar':hash==='explicar'?'explicar-lista':['simulacion','historial','detalle','exportar'].includes(hash)?hash:'monitor';if(app.page==='detalle'&&!app.current.evento){app.current=ev2;}if(app.page==='monitor'){app.current=demo;app.position=0;}if(app.page==='simulacion'){app.current=generarEscenario('vuelco');app.position=0;}render();}
+function route(){const hash=location.hash.slice(1);if(hash.startsWith('sesion/')){app.page='sesion';app.sesionId=decodeURIComponent(hash.slice(7));render();return;}app.page=hash.startsWith('explicar/')?'explicar':hash==='explicar'?'explicar-lista':['simulacion','historial','detalle','exportar','resultados'].includes(hash)?hash:'monitor';if(app.page==='detalle'&&!app.current.evento){app.current=ev2;}if(app.page==='monitor'){app.current=demo;app.position=0;}if(app.page==='simulacion'){app.current=generarEscenario('vuelco');app.position=0;}render();}
 app.render=render;
 layout();route();requestAnimationFrame(frame);window.addEventListener('hashchange',route);loadEvents().then(()=>{
  if(app.page==='historial')renderHistory();

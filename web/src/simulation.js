@@ -21,7 +21,8 @@
 //     with its own time stamp, exactly as the firmware sends them to the API.
 export function generarEscenario(tipo, aceleracion = 16, angulo = 60, permanencia = 150, permanenciaImpacto = 8, opciones = {}) {
   const { rango_g = null, ruido = 0, duracion_impacto_ms = 100, semilla = 1 } = opciones;
-  const tipos = ['normal', 'frenada', 'impacto', 'vuelco', 'inclinacion'];
+  // reposo (fase 3): carro quieto y horizontal, para comparar con la prueba física de reposo.
+  const tipos = ['reposo', 'normal', 'frenada', 'impacto', 'vuelco', 'inclinacion'];
   if (!tipos.includes(tipo) || ![aceleracion, angulo, permanencia, permanenciaImpacto].every(Number.isFinite) ||
       aceleracion <= 9.81 || angulo <= 0 || angulo > 180 || permanencia < 0 || permanenciaImpacto < 0 ||
       (rango_g !== null && ![2, 4, 8, 16].includes(rango_g)) || !Number.isFinite(ruido) || ruido < 0 || ruido > 5 ||
@@ -34,6 +35,7 @@ export function generarEscenario(tipo, aceleracion = 16, angulo = 60, permanenci
   const radio = .03; // Metres, illustrative RC wheel.
   const smooth = x => { const u = Math.max(0, Math.min(1, x)); return u*u*(3-2*u); };
   const velocity = t => {
+    if (tipo === 'reposo') return 0;
     const initial = 2 * smooth((t - 500) / 1000);
     const stopAt = tipo === 'impacto' ? 4900 : tipo === 'frenada' ? 4500 : tipo === 'vuelco' ? 3500 : 8000;
     const duration = tipo === 'impacto' ? duracion_impacto_ms : tipo === 'frenada' ? 700 : tipo === 'vuelco' ? 2000 : 1000;
@@ -82,7 +84,8 @@ export function generarEscenario(tipo, aceleracion = 16, angulo = 60, permanenci
       if (!condition(m)) { since = null; seguidas = 0; continue; }
       since ??= m.t_ms; seguidas++;
       if (porLecturas ? seguidas >= dwell : m.t_ms - since >= dwell) {
-        candidatos.push({tipo:tipoEvento, t:m.t_ms});
+        // desde: primera lectura sobre el umbral; t − desde es el tiempo de detección (igual que el firmware).
+        candidatos.push({tipo:tipoEvento, t:m.t_ms, desde:since, latencia_deteccion_ms:m.t_ms - since});
         break;
       }
     }
@@ -93,6 +96,9 @@ export function generarEscenario(tipo, aceleracion = 16, angulo = 60, permanenci
   const sesion = {id:'SIM-'+id, origen:'simulado'};
   return {
     version:1, sesion, mediciones,
+    // Cada regla que se cumplió, en orden de tiempo. La primera es la que abre el evento en el firmware
+    // (p. ej. un vuelco empieza como inclinación); su latencia es la que mide el firmware.
+    detecciones: [...candidatos].sort((a, b) => a.t - b.t),
     parametros:{escenario:tipo, aceleracion, angulo, permanencia, permanencia_impacto_ms:permanenciaImpacto, lecturas_golpe:lecturasGolpe, lectura_ms:lectura, muestreo_ms:dt, radio_rueda_m:radio, rango_g:rango_g ?? 'sin límite', ruido_m_s2:ruido, duracion_impacto_ms, semilla},
     evento:detected ? {
       id:'EV-'+id, sesion_id:sesion.id, tipo:detected.tipo,

@@ -321,6 +321,89 @@ function hojasTecnico(libro, paquete, { fuente = 'servidor', hojaEventos = 'Even
   return libro;
 }
 
+// ---- Fase 3: libro de la pantalla Resultados (simulación vs. prototipo y métricas) ----
+// resultados: salida de calcularResultados() de web/src/resultados.js. No tiene muestras sueltas:
+// cada fila sale de las pruebas físicas registradas (GET /api/v1/pruebas) o de la simulación.
+const NOMBRE_ESCENARIO = { reposo: 'Reposo', marcha: 'Marcha', frenada: 'Frenada', golpe: 'Golpe', inclinacion: 'Inclinación', vuelco: 'Vuelco' };
+const NOMBRE_CLASE = { ninguno: 'Ninguno', golpe: 'Golpe', inclinacion: 'Inclinación', vuelco: 'Vuelco' };
+const SIN_DATOS = 'sin datos';
+
+export function crearLibroResultados(ExcelJS, resultados) {
+  const libro = libroNuevo(ExcelJS);
+  const { porEscenario, repeticiones, confusion, parametros } = resultados;
+  // Simulado vacío: la activación no está modelada; la detección es null si el modelo no detecta nada.
+  const simulado = f => f.simulado ?? (f.clave === 'latencia_activacion_ms' ? 'no modelado' : 'sin detección');
+
+  tabla(libro, 'Comparación', [
+    { clave: 'escenario', titulo: 'Escenario', ancho: 13 }, { clave: 'magnitud', titulo: 'Magnitud', ancho: 28 },
+    { clave: 'unidad', titulo: 'Unidad', ancho: 11 }, { clave: 'n', titulo: 'Repeticiones con dato', ancho: 12, formato: FMT.entero },
+    { clave: 'media', titulo: 'Observado (media)', ancho: 14, formato: '0.000' }, { clave: 'desviacion', titulo: 'Desviación estándar', ancho: 14, formato: '0.000' },
+    { clave: 'simulado', titulo: 'Simulado', ancho: 14, formato: '0.000' }, { clave: 'absoluto', titulo: 'Error absoluto', ancho: 14, formato: '0.000' },
+    { clave: 'relativo', titulo: 'Error relativo', ancho: 12, formato: '0.0%' }
+  ], porEscenario.flatMap(e => e.filas.map(f => ({
+    escenario: NOMBRE_ESCENARIO[e.escenario], magnitud: f.nombre, unidad: f.unidad, n: f.n,
+    media: f.media ?? (e.repeticiones ? SIN_MEDIR : SIN_DATOS), desviacion: f.desviacion ?? (f.n === 1 ? 'una sola' : '—'),
+    simulado: simulado(f), absoluto: f.absoluto ?? '—', relativo: f.relativo ?? '—'
+  }))));
+
+  tabla(libro, 'Repeticiones', [
+    { clave: 'escenario', titulo: 'Escenario esperado', ancho: 14 }, { clave: 'repeticion', titulo: 'Repetición', ancho: 11, formato: FMT.entero },
+    { clave: 'sesion', titulo: 'Sesión', ancho: 26 }, { clave: 'esperada', titulo: 'Clase esperada', ancho: 13 },
+    { clave: 'detectada', titulo: 'Clase detectada', ancho: 13 }, { clave: 'acierto', titulo: '¿Coincide?', ancho: 10 },
+    { clave: 'eventos', titulo: 'Eventos', ancho: 9, formato: FMT.entero },
+    { clave: 'pico', titulo: 'Pico de aceleración (m/s²)', ancho: 14, formato: FMT.decimal },
+    { clave: 'roll', titulo: 'Roll máx. (°)', ancho: 11, formato: FMT.grados }, { clave: 'pitch', titulo: 'Pitch máx. (°)', ancho: 11, formato: FMT.grados },
+    { clave: 'det', titulo: 'Tiempo de detección (ms)', ancho: 14, formato: FMT.latencia }, { clave: 'act', titulo: 'Latencia de activación (ms)', ancho: 14, formato: FMT.latencia },
+    { clave: 'nota', titulo: 'Nota', ancho: 50 }
+  ], repeticiones.map(r => ({
+    escenario: NOMBRE_ESCENARIO[r.escenario], repeticion: r.repeticion, sesion: r.sesion_id,
+    esperada: NOMBRE_CLASE[r.esperada], detectada: NOMBRE_CLASE[r.detectada], acierto: r.acierto ? 'sí' : 'no', eventos: r.eventos,
+    pico: oSinMedir(r.pico_aceleracion_ms2), roll: oSinMedir(r.max_roll_deg), pitch: oSinMedir(r.max_pitch_deg),
+    det: oSinMedir(r.latencia_deteccion_ms), act: oSinMedir(r.latencia_activacion_ms), nota: r.nota
+  })));
+
+  const clases = Object.keys(confusion.matriz);
+  tabla(libro, 'Matriz de confusión', [
+    { clave: 'esperado', titulo: 'Esperado \\ Detectado', ancho: 22 },
+    ...clases.map(c => ({ clave: c, titulo: NOMBRE_CLASE[c], ancho: 13, formato: FMT.entero })),
+    { clave: 'total', titulo: 'Total', ancho: 9, formato: FMT.entero }
+  ], clases.map(f => ({ esperado: NOMBRE_CLASE[f], ...confusion.matriz[f], total: clases.reduce((s, c) => s + confusion.matriz[f][c], 0) })));
+
+  const pct = v => v ?? SIN_DATOS;
+  tabla(libro, 'Métricas', [
+    { clave: 'metrica', titulo: 'Métrica', ancho: 26 }, { clave: 'valor', titulo: 'Valor', ancho: 12, formato: '0.0%' },
+    { clave: 'formula', titulo: 'Fórmula', ancho: 34 }, { clave: 'significado', titulo: 'Qué significa', ancho: 80 }
+  ], [
+    { metrica: 'Exactitud', valor: pct(confusion.exactitud), formula: 'diagonal / total', significado: 'Repeticiones en las que el tipo detectado (incluido «ninguno») coincide con el esperado' },
+    { metrica: 'Sensibilidad', valor: pct(confusion.sensibilidad), formula: 'VP / (VP + FN)', significado: 'De las pruebas con accidente, cuántas dieron alarma (de cualquier tipo)' },
+    { metrica: 'Precisión', valor: pct(confusion.precision), formula: 'VP / (VP + FP)', significado: 'De las alarmas, cuántas correspondían a un accidente esperado' },
+    { metrica: 'Tasa de falsas alarmas', valor: pct(confusion.tasa_falsas_alarmas), formula: 'FP / (FP + VN)', significado: 'De las pruebas sin accidente (reposo, marcha, frenada), cuántas dieron alarma' },
+    { metrica: 'VP (verdaderos positivos)', valor: confusion.vp, formula: '', significado: 'Accidente esperado y alarma' },
+    { metrica: 'FN (falsos negativos)', valor: confusion.fn, formula: '', significado: 'Accidente esperado y sin alarma' },
+    { metrica: 'FP (falsos positivos)', valor: confusion.fp, formula: '', significado: 'Sin accidente esperado y alarma (falsa alarma)' },
+    { metrica: 'VN (verdaderos negativos)', valor: confusion.vn, formula: '', significado: 'Sin accidente esperado y sin alarma' },
+    { metrica: 'Repeticiones', valor: confusion.total, formula: '', significado: 'Pruebas físicas registradas en la web' }
+  ]).eachRow((fila, i) => { if (i > 5) fila.getCell(2).numFmt = FMT.entero; });
+
+  const leeme = libro.addWorksheet('Léeme');
+  leeme.columns = [{ width: 120 }];
+  [
+    ['Resultados: simulación frente al prototipo', true],
+    ['Observado: pruebas físicas registradas en Monitor → En vivo. Una sesión real del ESP32 = una repetición. El escenario esperado lo escribió la persona; lo detectado son los eventos que envió el firmware.'],
+    ['Detectado: con varios eventos en una sesión cuenta el más grave (vuelco > golpe > inclinación). Reposo, marcha y frenada esperan «ninguno»: si dan alarma es una falsa alarma.'],
+    [`Simulado: web/src/simulation.js con los parámetros del firmware (golpe ≥ ${parametros.aceleracion} m/s² durante ${parametros.permanenciaImpacto} ms, inclinación ≥ ${parametros.angulo}° y vuelco ≥ 90° durante ${parametros.permanencia} ms). Marcha = «normal» y golpe = «impacto» en la simulación.`],
+    ['Las amplitudes de la simulación son ilustrativas (p. ej. la inclinación sintética llega a 42°); el error grande en esas magnitudes compara el escenario sintético con el físico, no la precisión del sensor.'],
+    ['El ángulo simulado es el ángulo real del carro; el firmware calcula un ángulo aparente con el acelerómetro. En una frenada el aparente puede superar el umbral aunque el carro no se incline.'],
+    ['Media y desviación estándar muestral (n − 1) de las repeticiones. Error absoluto = |observado − simulado|; error relativo = absoluto / |simulado|.'],
+    [`«${SIN_MEDIR}»: el dato no se reportó. «${SIN_DATOS}»: no hay repeticiones de ese escenario. «no modelado»: la simulación no calcula la latencia de activación.`]
+  ].forEach(([texto, titulo], i) => {
+    const c = leeme.getCell(`A${i + 1}`);
+    c.value = texto; c.alignment = { wrapText: true, vertical: 'top' };
+    if (titulo) c.font = { bold: true, size: 14, color: { argb: AZUL } };
+  });
+  return libro;
+}
+
 export function crearLibro(ExcelJS, paquete, { formato = 'tecnico', ...opciones } = {}) {
   if (formato === 'resumen') return crearLibroResumen(ExcelJS, paquete, opciones);
   if (formato === 'completo') return crearLibroCompleto(ExcelJS, paquete, opciones);

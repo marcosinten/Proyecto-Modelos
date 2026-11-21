@@ -607,3 +607,18 @@ body.presentacion .avisos-evento { left: 50%; top: calc(var(--e5) + 72px + var(-
 .prueba-form .prueba-nota { flex: 1 1 260px; }
 .prueba-form .prueba-nota input { width: 100%; }
 .prueba-fisica .ayuda { margin: 0; }
+
+/* Fase 3: pantalla Resultados */
+.graficas-resultados { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--e4); }
+.graficas-resultados .bloque { margin-top: var(--e4); }
+.grafica-resultado { margin: 0; }
+.lienzo-resultado { position: relative; height: 280px; }
+.resultado-escenario table td:first-child small { color: var(--texto-3); }
+.matriz { max-width: 640px; }
+.matriz td, .matriz th { text-align: center; }
+.matriz th[scope="row"], .matriz thead th:first-child { text-align: left; }
+.matriz td.diagonal { background: var(--est-normal-fondo); color: var(--est-normal); font-weight: 600; }
+.subtitulo { font-size: 15px; margin: var(--e5) 0 var(--e3); }
+tr.no-coincide td { background: var(--est-golpe-fondo); }
+.estado-vacio-resultados h2 { margin: 0 0 var(--e2); font-size: 18px; }
+@media (max-width: 900px) { .graficas-resultados { grid-template-columns: 1fr; } }

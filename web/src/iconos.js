@@ -2,7 +2,7 @@
 import {
   Activity, Car, History, MessageSquareText, Download, FlaskConical, Copy, Maximize2, Minimize2, Radio,
   CircleCheck, TriangleAlert, Zap, RotateCcw, CircleDashed, ArrowLeftRight, ArrowUpDown, Gauge, CircleDot,
-  Clock, Rows3, Layers, Box, Image, Search, X, ChevronRight, Disc3, ListOrdered
+  Clock, Rows3, Layers, Box, Image, Search, X, ChevronRight, Disc3, ListOrdered, ChartColumn
 } from 'lucide';
 
 const ICONOS = {
@@ -11,7 +11,7 @@ const ICONOS = {
   normal: CircleCheck, inclinado: TriangleAlert, golpe: Zap, volcado: RotateCcw, 'sin-datos': CircleDashed,
   lateral: ArrowLeftRight, frontal: ArrowUpDown, aceleracion: Gauge, rueda: Disc3, punto: CircleDot,
   reloj: Clock, mediciones: Rows3, capas: Layers, cubo: Box, imagen: Image, buscar: Search, cerrar: X,
-  siguiente: ChevronRight, lista: ListOrdered
+  siguiente: ChevronRight, lista: ListOrdered, resultados: ChartColumn
 };
 
 const atributos = o => Object.entries(o).map(([k, v]) => `${k}="${String(v).replace(/"/g, '&quot;')}"`).join(' ');
