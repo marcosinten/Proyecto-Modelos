@@ -46,6 +46,8 @@ Si aparecen eventos nuevos mientras navegas el listado por offset, actualiza la 
 
 ## Registro de pruebas físicas (desde el 21 nov)
 
+`t_fin_ms` es opcional: entero no negativo del reloj de la sesión. Al marcarlo, `/pruebas` cuenta solo mediciones y eventos detectados hasta ese instante inclusive. Si falta, usa toda la sesión. La migración `005_fin_prueba.sql` añade la columna; las pruebas anteriores quedan sin fin marcado.
+
 Una sesión real del ESP32 es **una repetición** de una prueba física. La persona registra en Monitor → En vivo lo que **espera** que pase; la API nunca lo deduce del detector.
 
 - `escenario_esperado`: `reposo`, `marcha`, `frenada`, `golpe`, `inclinacion` o `vuelco`. Los tres primeros no deberían generar eventos: si los generan, son falsas alarmas.

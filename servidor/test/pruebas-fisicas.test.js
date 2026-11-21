@@ -2,6 +2,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { once } from 'node:events';
+import { readFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
 import { crearApp } from '../src/adaptadores/http/app.js';
 import { crearRepositorio } from '../src/adaptadores/sqlite/repositorio.js';
 
@@ -34,7 +38,7 @@ test('registrar, leer, corregir y quitar la prueba de una sesión real', async t
   assert.equal((await request('/sesiones/RC-1/prueba', registrar('golpe', 1, 'golpe contra la pared'))).data.resultado, 'sin_cambios');
   const c = await request('/sesiones/RC-1/prueba', registrar('vuelco', 2));
   assert.equal(c.status, 200); assert.equal(c.data.resultado, 'actualizada');
-  assert.deepEqual({ ...c.data.prueba, registrada_ms: 0 }, { escenario_esperado: 'vuelco', repeticion: 2, nota: '', registrada_ms: 0 });
+  assert.deepEqual({ ...c.data.prueba, registrada_ms: 0 }, { escenario_esperado: 'vuelco', repeticion: 2, nota: '', registrada_ms: 0, t_fin_ms: null });
   assert.equal((await request('/sesiones/RC-1/prueba', { version: 1, prueba: null })).data.quitada, true);
   assert.equal((await request('/sesiones/RC-1/prueba')).data.prueba, null);
 });
@@ -85,4 +89,48 @@ test('fase 5: estado del detector opcional en cada medición', async t => {
   assert.deepEqual(guardadas.map(m => m.estado), ['normal', 'emergencia', undefined], 'sin estado: el campo no aparece');
   assert.equal((await request('/sesiones/RC-E/mediciones', { version: 1, mediciones: [{ ...medicion(4, 0), estado: 'pendiente' }] })).status, 400);
   assert.equal((await request('/sesiones/RC-E/mediciones', { version: 1, mediciones: [{ ...medicion(2, 20), estado: 'rearme' }] })).status, 409, 'mismo número con otro estado');
+});
+
+ test('el fin limita mediciones y eventos y el reintento es idempotente', async t => {
+  const { request, sesion } = await entorno(t);
+  await sesion('FIN', 'real', [medicion(1, 0), medicion(2, 20, 30, 10)]);
+  await request('/eventos', {version: 1, evento: {id: 'FIN-E', sesion_id: 'FIN', tipo: 'golpe', gravedad: 'alta', estado: 'confirmado', t_inicio_ms: 20, t_fin_ms: 40, t_deteccion_ms: 40, t_activacion_ms: 40, ubicacion: null}});
+  const cuerpo = {version: 1, prueba: {escenario_esperado: 'golpe', repeticion: 1, t_fin_ms: 20}};
+  await request('/sesiones/FIN/prueba', cuerpo);
+  assert.equal((await request('/sesiones/FIN/prueba', cuerpo)).data.resultado, 'sin_cambios');
+  let p = (await request('/pruebas')).data.pruebas[0];
+  assert.equal(p.mediciones, 1); assert.equal(p.pico_aceleracion_ms2, 9.81); assert.equal(p.max_roll_deg, 0); assert.equal(p.eventos.length, 0);
+  for (const valor of [-1, 1.5]) assert.equal((await request('/sesiones/FIN/prueba', {...cuerpo, prueba: {...cuerpo.prueba, t_fin_ms: valor}})).status, 400);
+  await request('/sesiones/FIN/prueba', registrar('golpe', 1));
+  p = (await request('/pruebas')).data.pruebas[0];
+  assert.equal(p.t_fin_ms, null); assert.equal(p.mediciones, 2); assert.equal(p.eventos.length, 1); assert.equal(p.max_roll_deg, 30);
+});
+
+
+test('migración 005 conserva las pruebas de una base anterior', t => {
+  const dir = mkdtempSync(join(tmpdir(), 'fin-prueba-'));
+  let repo;
+  t.after(() => { repo?.cerrar(); rmSync(dir, { recursive: true, force: true }); });
+  const path = join(dir, 'antes.sqlite');
+  const vieja = new DatabaseSync(path);
+  vieja.exec(readFileSync(new URL('../db/migraciones/001_crear_tablas.sql', import.meta.url), 'utf8'));
+  vieja.exec('CREATE TABLE migraciones (nombre TEXT PRIMARY KEY, aplicada_ms INTEGER NOT NULL)');
+  for (const nombre of ['002_latencias_evento.sql', '003_pruebas_fisicas.sql', '004_estado_medicion.sql']) {
+    vieja.exec(readFileSync(new URL('../db/migraciones/' + nombre, import.meta.url), 'utf8'));
+    vieja.prepare('INSERT INTO migraciones(nombre, aplicada_ms) VALUES (?,?)').run(nombre, Date.now());
+  }
+  vieja.exec("INSERT INTO sesiones(id, origen) VALUES ('RC-ANTERIOR', 'real')");
+  vieja.exec("INSERT INTO pruebas_fisicas(sesion_id, escenario_esperado, repeticion, nota, registrada_ms) VALUES ('RC-ANTERIOR', 'inclinacion', 2, 'anterior', 1)");
+  vieja.close();
+  repo = crearRepositorio(path);
+  const prueba = repo.obtenerPrueba('RC-ANTERIOR');
+  assert.equal(prueba.escenario_esperado, 'inclinacion');
+  assert.equal(prueba.repeticion, 2);
+  assert.equal(prueba.t_fin_ms, null);
+  const lista = repo.listarPruebas();
+  assert.equal(lista.length, 1);
+  assert.equal(lista[0].sesion_id, 'RC-ANTERIOR');
+  assert.equal(lista[0].escenario_esperado, 'inclinacion');
+  assert.equal(lista[0].repeticion, 2);
+  assert.equal(lista[0].t_fin_ms, null);
 });

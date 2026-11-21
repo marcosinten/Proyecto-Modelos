@@ -43,7 +43,8 @@ export const ESCENARIOS_PRUEBA = ['reposo', 'marcha', 'frenada', 'golpe', 'incli
 export const pruebaSchema = z.object({
   escenario_esperado: z.enum(ESCENARIOS_PRUEBA),
   repeticion: z.number().int().min(1).max(1000),
-  nota: z.string().trim().max(500).optional()
+  nota: z.string().trim().max(500).optional(),
+  t_fin_ms: ms.optional()
 }).strict();
 export const registrarPruebaSchema = z.object({ version: z.literal(1), prueba: pruebaSchema.nullable() }).strict();
 export const crearSesionSchema = z.object({ version: z.literal(1), sesion: sesionSchema }).strict();

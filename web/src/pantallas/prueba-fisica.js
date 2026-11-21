@@ -2,7 +2,7 @@
 // marca qué escenario va a hacer (lo esperado), el número de repetición y una nota. Se guarda en la API
 // (POST /sesiones/:id/prueba). Lo esperado lo escribe la persona: nunca se copia de lo que detectó el
 // firmware. Una sesión = una repetición; para la siguiente, mantener el botón de rearme 3 s (sesión nueva).
-import {$, escape, get, request, toast} from '../app.js';
+import {app, $, escape, get, request, toast} from '../app.js';
 import {CONSTANTES_INO} from '../../../compartido/parametros-firmware.js';
 
 export const ESCENARIOS = [
@@ -33,16 +33,17 @@ export async function montarRegistroPrueba(sesion, valido) {
     <label>Escenario esperado<select name="escenario">${ESCENARIOS.map(([v, n, d]) => `<option value="${v}">${escape(n)} · ${escape(d)}</option>`).join('')}</select></label>
     <label>Repetición<input name="repeticion" type="number" min="1" max="1000" step="1" required value="1"></label>
     <label class="prueba-nota">Nota<input name="nota" maxlength="500" placeholder="Ej.: superficie, velocidad, ángulo del transportador" autocomplete="off"></label>
-    <button class="primary">Guardar prueba</button><button type="button" class="text-button" id="prueba-quitar" hidden>Quitar registro</button>
+    <button class="primary">Guardar prueba</button><button type="button" class="secondary" id="prueba-terminar" disabled>Terminar prueba</button><button type="button" class="text-button" id="prueba-quitar" hidden>Quitar registro</button>
    </form>
-   <p class="ayuda">Lo esperado lo escribes tú antes de hacer la prueba; el detector no lo cambia. Una sesión es una repetición: para la siguiente, mantén el botón de rearme 3 s (el ESP32 reinicia y crea otra sesión). Las pruebas sin accidente también cuentan: sirven para medir las falsas alarmas.</p>`;
+   <p class="ayuda">Lo esperado lo escribes tú antes de hacer la prueba; el detector no lo cambia. Una sesión es una repetición: para la siguiente, mantén el botón de rearme 3 s (el ESP32 reinicia y crea otra sesión). Al terminar la prueba solo cuenta lo ocurrido hasta ese momento. Las pruebas sin accidente también cuentan: sirven para medir las falsas alarmas.</p>`;
   const form = caja.querySelector('form');
   const [escenario, repeticion, nota] = ['escenario', 'repeticion', 'nota'].map(n => form.elements[n]);
   let pruebas = [], guardada = null;
   const pintar = () => {
-    $('#prueba-estado').textContent = guardada ? `${NOMBRE_ESCENARIO[guardada.escenario_esperado]} · repetición ${guardada.repeticion}` : 'Sin registrar';
+    $('#prueba-estado').textContent = guardada ? `${NOMBRE_ESCENARIO[guardada.escenario_esperado]} · repetición ${guardada.repeticion}${guardada.t_fin_ms != null ? ` · terminada a los ${(guardada.t_fin_ms / 1000).toFixed(1).replace('.', ',')} s` : ''}` : 'Sin registrar';
     $('#prueba-estado').dataset.estado = guardada ? 'ok' : 'neutro';
     caja.querySelector('#prueba-quitar').hidden = !guardada;
+    caja.querySelector('#prueba-terminar').disabled = !guardada;
   };
   try {
     const [r, lista] = await Promise.all([get(`/sesiones/${sesion.id}/prueba`), get('/pruebas')]);
@@ -56,10 +57,19 @@ export async function montarRegistroPrueba(sesion, valido) {
   form.onsubmit = async e => {
     e.preventDefault();
     try {
-      const r = await (await request(`/sesiones/${sesion.id}/prueba`, {version: 1, prueba: {escenario_esperado: escenario.value, repeticion: repeticion.valueAsNumber, nota: nota.value}})).json();
+      const r = await (await request(`/sesiones/${sesion.id}/prueba`, {version: 1, prueba: {escenario_esperado: escenario.value, repeticion: repeticion.valueAsNumber, nota: nota.value, ...(guardada?.t_fin_ms != null ? {t_fin_ms: guardada.t_fin_ms} : {})}})).json();
       if (!valido()) return;
       guardada = r.prueba; pintar();
       toast(r.resultado === 'sin_cambios' ? 'La prueba ya estaba registrada así.' : `Prueba guardada: ${NOMBRE_ESCENARIO[guardada.escenario_esperado]}, repetición ${guardada.repeticion}.`);
+    } catch (err) { toast(err.message); }
+  };
+  caja.querySelector('#prueba-terminar').onclick = async () => {
+    const tFinMs = app.current.mediciones.at(-1)?.t_ms;
+    if (tFinMs == null) { toast('No hay mediciones para terminar la prueba.'); return; }
+    try {
+      const r = await (await request(`/sesiones/${sesion.id}/prueba`, {version: 1, prueba: {escenario_esperado: escenario.value, repeticion: repeticion.valueAsNumber, nota: nota.value, t_fin_ms: tFinMs}})).json();
+      if (!valido()) return;
+      guardada = r.prueba; pintar(); toast('Prueba terminada.');
     } catch (err) { toast(err.message); }
   };
   caja.querySelector('#prueba-quitar').onclick = async () => {
