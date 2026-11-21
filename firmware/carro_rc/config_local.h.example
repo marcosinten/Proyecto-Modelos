@@ -17,3 +17,10 @@ static const char API_KEY[] = "CLAVE_API_DEL_SERVIDOR";
 // Opcional, desactivado: con 1, la inclinación ignora el ángulo cuando el carro acelera o gira
 // (|norma − 9,81| > 0,5 m/s²). Evita que una curva se lea como inclinación de 20°.
 // #define MODO_CARRO_EN_MOVIMIENTO 1
+
+// Opcional, desactivada: corrección lineal del ángulo medida con transportador (fase 4).
+// angulo_corregido = ANGULO_M · angulo + ANGULO_B, en roll y pitch. Los valores salen de
+// python3 scripts/ajuste_curvas.py → evidencias/ajuste_curvas/RESUMEN.md (el «f» final es obligatorio).
+// #define CORRECCION_ANGULO 1
+// #define ANGULO_M 1.0234f
+// #define ANGULO_B -0.41f

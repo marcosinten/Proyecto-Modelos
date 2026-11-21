@@ -23,7 +23,11 @@ export const CONSTANTES_INO = {
   HALL_TIMEOUT_CERO_MS: 750,
   PERIODO_ADQ_MS: 4,
   MUESTRAS_POR_TEL: 5,
-  LSB_POR_G: 2048
+  LSB_POR_G: 2048,
+  // Corrección opcional del ángulo (fase 4): desactivada; con 1, ángulo = ANGULO_M·ángulo + ANGULO_B.
+  CORRECCION_ANGULO: 0,
+  ANGULO_M: 1,
+  ANGULO_B: 0
 };
 
 const c = CONSTANTES_INO;
@@ -43,6 +47,7 @@ export const PARAMETROS_FIRMWARE = [
   { parametro: 'Frecuencia de adquisición', valor: 1000 / c.PERIODO_ADQ_MS, unidad: 'Hz', descripcion: `Una lectura del MPU6050 cada ${c.PERIODO_ADQ_MS} ms; las reglas se evalúan sobre estas lecturas`, constante: 'PERIODO_ADQ_MS' },
   { parametro: 'Frecuencia de publicación', valor: 1000 / (c.PERIODO_ADQ_MS * c.MUESTRAS_POR_TEL), unidad: 'Hz', descripcion: `De cada ${c.MUESTRAS_POR_TEL} lecturas se envía la de mayor aceleración (pico de una ventana de ${c.PERIODO_ADQ_MS * c.MUESTRAS_POR_TEL} ms)`, constante: 'MUESTRAS_POR_TEL' },
   { parametro: 'Rango del acelerómetro', valor: 32768 / c.LSB_POR_G, unidad: '± g', descripcion: `${c.LSB_POR_G} LSB por g`, constante: 'LSB_POR_G' },
+  { parametro: 'Corrección del ángulo', valor: c.CORRECCION_ANGULO ? 'activada' : 'desactivada', unidad: '—', descripcion: `Ángulo corregido = ${c.ANGULO_M}·ángulo + ${c.ANGULO_B} (scripts/ajuste_curvas.py); se activa en config_local.h`, constante: 'CORRECCION_ANGULO' },
   { parametro: 'Diámetro de la rueda con sensor', valor: DIAMETRO_RUEDA_M ?? 'sin medir', unidad: 'm', descripcion: 'Necesario para distancia y velocidad; no se inventa', constante: '—' }
 ];
 

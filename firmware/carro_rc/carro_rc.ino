@@ -10,7 +10,7 @@
 // Carro RC · Grupo 11 · ESP32 DevKit WROOM-32
 
 // Aparece en la línea INICIO del monitor serie: permite saber qué firmware tiene la placa.
-static const char VERSION_FIRMWARE[] = "2026.11.21-cp2-latencias";
+static const char VERSION_FIRMWARE[] = "2026.11.21-cp2-ajuste";
 
 #ifdef BANCO_NATIVO
 static const char ORIGEN_SESION[] = "simulado";
@@ -53,6 +53,22 @@ static const uint32_t I2C_ESPERA_MAX_LECTURAS = 1250;
 // otro módulo. Se cambia en config_local.h. Prueba rápida en docs/MANANA-CIRCUITO.md.
 #ifndef CORRECCION_MPU_EQUIPO
 #define CORRECCION_MPU_EQUIPO 1
+#endif
+
+// Corrección opcional del ángulo, DESACTIVADA por defecto (fase 4, ajuste de curvas):
+//   angulo_corregido = ANGULO_M · angulo + ANGULO_B   (se aplica igual a roll y a pitch)
+// m y b salen de scripts/ajuste_curvas.py con las medidas del transportador
+// (datos/calibracion_angulo.csv → evidencias/ajuste_curvas/RESUMEN.md). Se activa en config_local.h con
+// tres #define: CORRECCION_ANGULO en 1, ANGULO_M con la pendiente y ANGULO_B con la ordenada (ver
+// config_local.h.example). Sin ellos el comportamiento es el de siempre.
+#ifndef CORRECCION_ANGULO
+#define CORRECCION_ANGULO 0
+#endif
+#ifndef ANGULO_M
+#define ANGULO_M 1.0f
+#endif
+#ifndef ANGULO_B
+#define ANGULO_B 0.0f
 #endif
 
 static const float UMBRAL_GOLPE_MS2 = 16.0f;
@@ -462,6 +478,13 @@ static void actualizarBuzzer(int64_t ahora_us) {
   }
 }
 
+// Corrección lineal del ángulo (solo con CORRECCION_ANGULO 1). Se limita al rango del contrato:
+// roll −180…180 y pitch −90…90.
+static float corregirAngulo(float angulo, float limite) {
+  float a = ANGULO_M * angulo + ANGULO_B;
+  return a > limite ? limite : a < -limite ? -limite : a;
+}
+
 // Detección por episodios
 
 enum EstadoDet { REPOSO, CANDIDATO, EPISODIO, BLOQUEO };
@@ -744,6 +767,10 @@ static void tareaAdquisicion(void*) {
     float norma = sqrtf(ax * ax + ay * ay + az * az);
     float roll = atan2f(ay, az) * 180.0f / PI;
     float pitch = atan2f(ax, sqrtf(ay * ay + az * az)) * 180.0f / PI;
+#if CORRECCION_ANGULO
+    roll = corregirAngulo(roll, 180.0f);
+    pitch = corregirAngulo(pitch, 90.0f);
+#endif
 
     uint32_t pulsos;
     int64_t ultimoPulso;
@@ -1081,8 +1108,8 @@ void setup() {
     delay(1000);
   }
 
-  logq("INICIO carro_rc Grupo 11 version=%s origen=%s mpu_correccion=%d modo_movimiento=%d ppr=%d umbral_golpe=%.1f m/s2 inclinacion=%.0f deg vuelco=%.0f deg permanencia=%lu ms lecturas_golpe=%d",
-       VERSION_FIRMWARE, ORIGEN_SESION, CORRECCION_MPU_EQUIPO, MODO_CARRO_EN_MOVIMIENTO, PULSOS_POR_VUELTA, UMBRAL_GOLPE_MS2,
+  logq("INICIO carro_rc Grupo 11 version=%s origen=%s mpu_correccion=%d ang_corr=%d(m=%.3f b=%.3f) modo_movimiento=%d ppr=%d umbral_golpe=%.1f m/s2 inclinacion=%.0f deg vuelco=%.0f deg permanencia=%lu ms lecturas_golpe=%d",
+       VERSION_FIRMWARE, ORIGEN_SESION, CORRECCION_MPU_EQUIPO, CORRECCION_ANGULO, (double)ANGULO_M, (double)ANGULO_B, MODO_CARRO_EN_MOVIMIENTO, PULSOS_POR_VUELTA, UMBRAL_GOLPE_MS2,
        UMBRAL_INCLINACION_DEG, UMBRAL_VUELCO_DEG, (unsigned long)PERMANENCIA_MS,
        LECTURAS_GOLPE);
 
