@@ -1,0 +1,6 @@
+Variable,Lectura física,Unidad
+acc_dyn_peak,Desviación máxima de la gravedad,m/s²
+acc_norm_delta_peak,Cambio máximo de la norma entre muestras,m/s²
+longitudinal_min_smooth,Mínimo longitudinal suavizado,m/s²
+tilt_peak_deg,Inclinación máxima,°
+tilt_time_s,Tiempo por encima de 90°,s

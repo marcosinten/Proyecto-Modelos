@@ -1,0 +1,4 @@
+Nodo,Variable,Nombre en español,Unidad,Valor de ventana,Umbral,Rama
+0,acc_dyn_peak,Desviación de g,m/s²,6.54,7.00,izquierda (≤)
+1,tilt_time_s,Tiempo de vuelco,s,0.00,0.26,izquierda (≤)
+2,longitudinal_min_smooth,Mínimo longitudinal,m/s²,-1.89,-4.81,derecha (>)

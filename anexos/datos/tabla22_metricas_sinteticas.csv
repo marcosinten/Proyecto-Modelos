@@ -1,0 +1,9 @@
+Método,Clase,Precisión,Sensibilidad,F1,Ventanas
+Árbol,normal,0.9995,0.9990,0.9992,1909
+Árbol,frenada,0.9394,1.0000,0.9688,31
+Árbol,impacto,1.0000,1.0000,1.0000,47
+Árbol,vuelco,1.0000,0.9955,0.9977,221
+Reglas,normal,1.0000,0.9979,0.9990,1909
+Reglas,frenada,0.8857,1.0000,0.9394,31
+Reglas,impacto,1.0000,1.0000,1.0000,47
+Reglas,vuelco,1.0000,1.0000,1.0000,221

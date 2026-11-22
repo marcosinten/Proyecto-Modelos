@@ -1,0 +1,19 @@
+Escenario,Repetición,Sesión,Esperado,Firmware,Impacto,Frenada,Vuelco,Dominante no normal,¿Coincide?
+Frenada,1,RC-077000-CE13749F,Ninguno,Ninguno,0,0,0,ninguna,sí
+Frenada,2,RC-077000-E624451E,Ninguno,Golpe,15,0,0,impacto,no
+Frenada,3,RC-077000-64B894E7,Ninguno,Ninguno,0,0,0,ninguna,sí
+Golpe,1,RC-077000-7B152E09,Golpe,Golpe,10,0,0,impacto,sí
+Golpe,2,RC-077000-2BD0F270,Golpe,Golpe,3,0,0,impacto,sí
+Golpe,3,RC-077000-CB1E9E4F,Golpe,Golpe,5,0,0,impacto,sí
+Inclinación,1,RC-077000-B4A676B2,Inclinación,Inclinación,0,0,0,ninguna,no aplica
+Inclinación,2,RC-077000-17EE06C6,Inclinación,Inclinación,0,0,0,ninguna,no aplica
+Inclinación,3,RC-077000-7CC16D5A,Inclinación,Inclinación,0,0,0,ninguna,no aplica
+Marcha,1,RC-077000-3458072A,Ninguno,Ninguno,0,0,0,ninguna,sí
+Marcha,2,RC-077000-7895E89D,Ninguno,Ninguno,0,0,0,ninguna,sí
+Marcha,3,RC-077000-3ED90872,Ninguno,Golpe,57,0,0,impacto,no
+Reposo,1,RC-077000-A17A0FB0,Ninguno,Ninguno,0,0,0,ninguna,sí
+Reposo,2,RC-077000-2E0576D8,Ninguno,Ninguno,0,0,0,ninguna,sí
+Reposo,3,RC-077000-F5D72BDD,Ninguno,Ninguno,0,0,0,ninguna,sí
+Vuelco,1,RC-077000-C7DEB1DA,Vuelco,Inclinación,0,0,0,ninguna,no
+Vuelco,2,RC-077000-7A736A66,Vuelco,Vuelco,0,0,113,vuelco,sí
+Vuelco,3,RC-077000-4BE34E00,Vuelco,Vuelco,5,0,80,vuelco,sí

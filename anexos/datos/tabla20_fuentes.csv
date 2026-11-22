@@ -1,0 +1,6 @@
+Datos,Cantidad,Origen
+Repeticiones físicas,18,Excel y pruebas de SQLite
+Mediciones en las ventanas,58229,SQLite
+Eventos en las ventanas,17,SQLite
+Calibración real,13,APP de nivel del celular
+Corridas sintéticas,78,Generador arbol-rc-0.2
