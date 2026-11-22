@@ -22,3 +22,11 @@ RC-077000-C7DEB1DA vuelco 1 (de costado, lado derecho abajo): NO coincide. Roll 
 Vuelco 2: RC-077000-6D6CA446 se cortó a 5 s (reinicio del ESP32 al voltear; posible cable del power bank flojo). RC-077000-7A736A66 = vuelco boca abajo detectado (roll 177,8; det 0,865 s; lat 152,411/1,025 ms) -> registrada como vuelco 2. RC-077000-1ED00BC2: arrancó ya volcada (roll 180), no registrada; |a| boca abajo se desvía de 9,81 por la corrección del MPU (factor x9,038 en Z), pico 34,1.
 RC-077000-4BE34E00 vuelco 3 (lado izquierdo; el carro siguió hasta roll 180): correcto, vuelco det 40,709 s; lat 152,012/0,617 ms. Pico |a| 44,9 a 50,4 s boca abajo (corrección Z).
 Fin de cada prueba (t_fin_ms) cargado para las 18 repeticiones con la duración de la sesión al decir «hecho» (migración 005). Resultados exportados en evidencias/fisico/resultados/.
+RC-077000-4B0D67A3: registrada como reposo 4 al probar el botón «Terminar prueba» (el carro se movió); registro quitado a pedido del equipo.
+
+--- Prueba del Hall (21 nov, tarde; IP de la laptop pasó a 192.168.0.3: config_local.h actualizado y firmware reflasheado) ---
+Parte 1 (serial-20261121-1913-hall.log): giro a mano; 178 pulsos; velocidades 2-5 vueltas/s en su mayoría; ráfaga falsa entre 27,9 y 28,7 s (30-333 vueltas/s) al manipular el imán.
+Prueba sin rueda (RC-077000-C301E41A): imán pasado a mano frente al A3144: 16 pulsos de uno en uno (0,3-1,7 s entre pulsos); luego ráfaga falsa de 14 pulsos en 0,12 s al acercar el imán despacio.
+Imán grande montado en la rueda (RC-077000-15A8439B y RC-077000-32090524): pulsos limpios (sin saltos >1), máx 3,99 vueltas/s; golpes falsos sobre todo verticales (az 18-73 m/s2) al girar la rueda con el imán pesado o al manipular el carro; la corrección Z x9,038 amplifica la vibración vertical.
+Conteo (RC-077000-A298ACA4, USB): 10 vueltas lentas -> contador 28 -> 38 = 10 pulsos (46,8-58,4 s). PULSOS_POR_VUELTA = 1 confirmado.
+El carro se reinició dos veces con power bank durante estas pruebas.
