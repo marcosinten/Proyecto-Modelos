@@ -11,6 +11,7 @@ Guía de montaje con los materiales comprados (revisión del 16 de noviembre de 
 | 1 | MPU6050 GY-521 | Aceleración (±16 g, filtro de 94 Hz) |
 | 1 | Sensor Hall A3144 + 1 imán de neodimio en la rueda trasera | Giro de la rueda con sensor (1 pulso por vuelta) |
 | 1 | LED rojo de 5 mm + resistencia de 330 Ω | Alerta visual |
+| 1 | Resistencia de 330 Ω | En serie entre GPIO27 y el «+» del buzzer (montaje real, 22 nov) |
 | 1 | Buzzer activo de 5 V, TMB12A05 | Alerta sonora: suena con nivel alto, pitido intermitente de 200 ms |
 | 1 | Servo SG90 + banderita | Alerta mecánica (0° en reposo, 90° en alerta) |
 | 1 | Pulsador NA | Rearme |
@@ -36,7 +37,7 @@ El circuito de Wokwi (`diagram.json`) usa la misma placa que compramos, el DevKi
 | MPU6050 SDA | ESP32 GPIO21 | I2C a 400 kHz, dirección 0x68 (AD0 sin conectar o a GND) |
 | MPU6050 SCL | ESP32 GPIO22 | |
 | ESP32 GPIO25 | Resistencia 330 Ω → ánodo del LED (pata larga) | Cátodo (pata corta, lado plano) a GND |
-| ESP32 GPIO27 | Buzzer activo, pata «+» (la larga) | Pata «−» a GND. Antes haz la prueba del buzzer de más abajo |
+| ESP32 GPIO27 | Resistencia 330 Ω en serie → buzzer activo, pata «+» (la larga) | Pata «−» a GND. Antes haz la prueba del buzzer de más abajo |
 | ESP32 GPIO27 | Resistencia 4,7 kΩ → GND | **Pull-down del buzzer.** Durante el arranque (≈ 1,8 s hasta que `setup()` configura el pin) GPIO27 queda flotante; en Wokwi se vio en alto en 5 de 11 arranques, y con un buzzer activo eso es un pitido al encender. La resistencia lo mantiene en bajo; el firmware además pone el pin como salida en bajo como primera instrucción de `setup()`. Con 4,7 kΩ a 3,3 V el pin solo entrega 0,7 mA de más cuando suena |
 | ESP32 GPIO26 | Servo SG90, señal (naranja) | |
 | +5 V (ver «Alimentación de 5 V») | Servo rojo (V+) y A3144 pata 1 (VCC) | |
