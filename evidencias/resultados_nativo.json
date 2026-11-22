@@ -268,7 +268,7 @@
   {
     "prueba": "Red · alertas sin Wi-Fi",
     "criterio": "con Wi-Fi apagado la detección y las alertas siguen locales",
-    "observado": "'wifi off' en línea 162, ALERTA en línea 222; 2 avisos 'RED sin conexion' (anillo conserva muestras: 506); eventos 1",
+    "observado": "'wifi off' en línea 163, ALERTA en línea 223; 2 avisos 'RED sin conexion' (anillo conserva muestras: 506); eventos 1",
     "estado": "OK",
     "evidencia": "evidencias/rearme_red/nativo/"
   },
@@ -315,6 +315,13 @@
     "evidencia": "evidencias/i2c_fallo/nativo/"
   },
   {
+    "prueba": "Calibración movida · recuperación",
+    "criterio": "tras el reposo roll y pitch en 0 ± 2°, sin detecciones ni eventos",
+    "observado": "muestras finales 240; cero recuperado True; detecciones 0, eventos 0",
+    "estado": "OK",
+    "evidencia": "evidencias/calibracion_movida/nativo/"
+  },
+  {
     "prueba": "Sesión perdida · 404 → recrear y reenviar",
     "criterio": "404 en un lote: POST /sesiones de nuevo y el mismo lote (mismo hash) aceptado después",
     "observado": "2 POST /sesiones; 1 respuestas 404; lote rechazado reenviado con el mismo hash: True; avisos '1' RED 404",
@@ -331,7 +338,7 @@
   {
     "prueba": "API · envío",
     "criterio": "sesión, lotes y evento aceptados por la API local (201/200)",
-    "observado": "17 POST; códigos [200, 201]; evento guardado: GET /eventos/RC-ABCDEF-5CF5B6C7-EV001 → tipo golpe, gravedad alta, ubicacion None, 90 mediciones en la ventana",
+    "observado": "17 POST; códigos [200, 201]; evento guardado: GET /eventos/RC-ABCDEF-F228C3A2-EV001 → tipo golpe, gravedad alta, ubicacion None, 90 mediciones en la ventana",
     "estado": "OK",
     "evidencia": "evidencias/api/nativo/"
   },
@@ -366,7 +373,7 @@
   {
     "prueba": "API · reintento",
     "criterio": "respuesta perdida → reintento con el mismo JSON, ids y tiempos; la API responde 200",
-    "observado": "/sesiones/RC-ABCDEF-5CF5B6C7/mediciones hash 37AAA57E: API 201→200 (cuerpos idénticos); /eventos hash EDED1444: API 201→200 (cuerpos idénticos)",
+    "observado": "/sesiones/RC-ABCDEF-F228C3A2/mediciones hash 37AAA57E: API 201→200 (cuerpos idénticos); /eventos hash A584E73C: API 201→200 (cuerpos idénticos)",
     "estado": "OK",
     "evidencia": "evidencias/api/nativo/"
   },

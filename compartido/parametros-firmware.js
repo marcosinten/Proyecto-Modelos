@@ -25,6 +25,7 @@ export const CONSTANTES_INO = {
   MUESTRAS_POR_TEL: 5,
   LSB_POR_G: 2048,
   // Filtro complementario de roll y pitch (21 nov): ángulo = α·(ángulo + giro·dt) + (1 − α)·ángulo_acelerómetro.
+  GIRO_QUIETO_DPS: 0.5,
   ALFA_COMPLEMENTARIO: 0.999,
   LSB_POR_GRADO_S: 16.4,
   // Corrección opcional del ángulo (fase 4): desactivada; con 1, ángulo = ANGULO_M·ángulo + ANGULO_B.

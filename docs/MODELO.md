@@ -15,7 +15,7 @@ mismas ecuaciones y la misma máquina de estados. Valores vigentes: los de
 | ‖a‖ | `norma` | m/s² | Aceleración total √(a_x² + a_y² + a_z²) |
 | ω_x, ω_y | `gx`, `gy` | °/s | Velocidad angular medida por el giroscopio (cero restado en la calibración) |
 | φ_a, θ_a | `rollAcc`, `pitchAcc` | ° | Roll y pitch calculados solo con el acelerómetro |
-| φ, θ | `roll_deg`, `pitch_deg` (`rollEst`, `pitchEst`) | ° | Roll y pitch estimados con el filtro complementario: los que usa la regla de inclinación y los que se envían a la API. Roll positivo: sube el lado izquierdo; pitch positivo: sube la trompa |
+| φ, θ | `roll_deg`, `pitch_deg` (`rollEst`, `pitchEst`) | ° | Roll y pitch estimados con el filtro complementario: los que usa la regla de inclinación y los que se envían a la API. Sin un cero válido del giroscopio se usa el acelerómetro hasta medir el cero durante dos segundos de reposo. Roll positivo: sube el lado izquierdo; pitch positivo: sube la trompa |
 | n_g | `golpeSeguidas` | lecturas | Lecturas seguidas con ‖a‖ ≥ U_g |
 | t_inc | `tInclIni` | ms | Instante de la primera lectura con \|φ\| o \|θ\| ≥ U_i (ángulos estimados) |
 | E | `estadoDet` | — | Estado del detector: NORMAL, ALERTA, EMERGENCIA o REARME |

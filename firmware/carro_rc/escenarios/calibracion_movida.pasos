@@ -1,0 +1,132 @@
+# Solo banco nativo: movimiento durante los tres intentos, luego reposo horizontal.
+set imu1 accelX 0
+set imu1 accelY 0
+set imu1 accelZ -1
+set imu1 rotationX -20
+delay 100.0
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 20
+delay 100
+set imu1 rotationX -20
+delay 100
+set imu1 rotationX 0
+set imu1 accelX 0
+set imu1 accelY 0
+set imu1 accelZ 1
+delay 8900
+mark fin calibracion_movida

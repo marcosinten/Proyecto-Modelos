@@ -1,8 +1,9 @@
-INICIO carro_rc Grupo 11 version=2026.11.21-cp2-filtro origen=simulado mpu_correccion=1 ang_corr=0(m=1.000 b=0.000) modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
+INICIO carro_rc Grupo 11 version=2026.11.22-cp2-giro origen=simulado mpu_correccion=1 ang_corr=0(m=1.000 b=0.000) modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
 MPU WHO_AM_I=0x68 SMPLRT_DIV=3 CONFIG=0x02 GYRO_CONFIG=0x18 ACCEL_CONFIG=0x18 (esperado 3, 0x02, 0x18, 0x18) filtro_alfa=0.9990 OK
 CAL mantén el carro quieto y horizontal 2 s
 RED escaneo: 1 redes
 RED WiFi: [Wokwi-GUEST] | canal 6 | senal -50 dBm
+CAL GIRO OK cero=(1.524, -0.976, 0.488) dps
 CAL OK muestras=500 media=(0.2955, -0.1960, 10.1978) m/s2 desv_norma=0.0406 offsets=(0.2955, -0.1960, 0.3912) giro_cero=(1.524, -0.976, 0.488) dps
 SESION id=RC-ABCDEF-77AE0BF3 origen=simulado t0_us_arranque=2200402
 TEL n=1 t=15 ax=-0.056 ay=-0.067 az=9.846 roll=0.08 pitch=-0.27 rps=0.00 k=3 roll_acc=-0.39 pitch_acc=-0.33

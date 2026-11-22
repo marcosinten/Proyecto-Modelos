@@ -121,7 +121,8 @@ class Linea:
                 nat.append(f"api {p[1]}")
                 yml.append(f"  # (solo banco nativo) api falsa {p[1]}")
         (AQUI / f"{self.nombre}.pasos").write_text("\n".join(nat) + "\n", encoding="utf-8")
-        (AQUI / f"{self.nombre}.yaml").write_text("\n".join(yml) + "\n", encoding="utf-8")
+        if self.nombre != "calibracion_movida":
+            (AQUI / f"{self.nombre}.yaml").write_text("\n".join(yml) + "\n", encoding="utf-8")
 
 
 def salidas_apagadas(L, t):
@@ -262,6 +263,16 @@ def escenarios():
     L.en(8400, "expect", "led1", "A", 1)
     L.en(10500, "set", "btn_rearme", "pressed", 0)
     L.en(11000, "mark", "fin reinicio_boton (no se alcanza: el ESP32 se reinicia antes)")
+    res.append(L)
+
+    L = Linea("calibracion_movida", "Solo banco nativo: movimiento durante los tres intentos, luego reposo horizontal.")
+    L.inicio = []
+    L.imu(0, 0, 0, -1)
+    for t in range(0, 6100, 100):
+        L.en(t, "set", "imu1", "rotationX", 20 if (t // 100) % 2 else -20)
+    L.en(6100, "set", "imu1", "rotationX", 0)
+    L.imu(6100, 0, 0, 1)
+    L.en(15000, "mark", "fin calibracion_movida")
     res.append(L)
 
     L = Linea("i2c_fallo", "Bus I2C colgado a los 2 s (falla hasta reiniciar Wire); después el MPU desconectado "

@@ -10,7 +10,7 @@
 // Carro RC · Grupo 11 · ESP32 DevKit WROOM-32
 
 // Aparece en la línea INICIO del monitor serie: permite saber qué firmware tiene la placa.
-static const char VERSION_FIRMWARE[] = "2026.11.21-cp2-filtro";
+static const char VERSION_FIRMWARE[] = "2026.11.22-cp2-giro";
 
 #ifdef BANCO_NATIVO
 static const char ORIGEN_SESION[] = "simulado";
@@ -206,6 +206,9 @@ static volatile uint32_t hallPulsos = 0;
 static volatile int64_t hallUltimo = 0;
 
 static float offX = 0, offY = 0, offZ = 0;
+// 0,5 °/s tolera el ruido del MPU y distingue variaciones propias del movimiento.
+static const float GIRO_QUIETO_DPS = 0.5f;
+static bool giroValido = false;
 static float offGX = 0, offGY = 0, offGZ = 0;  // cero del giroscopio (°/s), medido con el carro quieto
 
 // Registro serial
@@ -312,7 +315,7 @@ static bool mpuLeerSensor(float& ax, float& ay, float& az, float& gx, float& gy,
 static void calibrar() {
   const int N = 500;
   for (int intento = 1; intento <= 3; intento++) {
-    double sx = 0, sy = 0, sz = 0, sn = 0, sn2 = 0, sgx = 0, sgy = 0, sgz = 0;
+    double sx = 0, sy = 0, sz = 0, sn = 0, sn2 = 0, sgx = 0, sgy = 0, sgz = 0, sgx2 = 0, sgy2 = 0;
     int validas = 0;
     TickType_t prox = xTaskGetTickCount();
 
@@ -324,6 +327,8 @@ static void calibrar() {
       sgx += gx;
       sgy += gy;
       sgz += gz;
+      sgx2 += gx * gx;
+      sgy2 += gy * gy;
       sx += x;
       sy += y;
       sz += z;
@@ -341,6 +346,16 @@ static void calibrar() {
     double mn = sn / validas;
     double dn = sqrt(fmax(0.0, sn2 / validas - mn * mn));
 
+    double dx = sqrt(fmax(0.0, sgx2 / validas - (sgx / validas) * (sgx / validas)));
+    double dy = sqrt(fmax(0.0, sgy2 / validas - (sgy / validas) * (sgy / validas)));
+    if (dx < GIRO_QUIETO_DPS && dy < GIRO_QUIETO_DPS) {
+      offGX = sgx / validas; offGY = sgy / validas; offGZ = sgz / validas;
+      giroValido = true;
+      logq("CAL GIRO OK cero=(%.3f, %.3f, %.3f) dps", offGX, offGY, offGZ);
+    } else {
+      logq("CAL GIRO ADVERTENCIA: movimiento desv=(%.3f, %.3f) dps", dx, dy);
+    }
+
     if (mz < 0.5 * G_MS2) {
       logq("CAL intento=%d ERROR Z=%.3f m/s2: coloca el MPU6050 horizontal y boca arriba",
            intento, mz);
@@ -355,10 +370,6 @@ static void calibrar() {
     offX = mx;
     offY = my;
     offZ = mz - G_MS2;
-    // Con el carro quieto el giroscopio debería dar 0 °/s: lo que marca es su error de cero.
-    offGX = sgx / validas;
-    offGY = sgy / validas;
-    offGZ = sgz / validas;
     logq("CAL OK muestras=%d media=(%.4f, %.4f, %.4f) m/s2 desv_norma=%.4f offsets=(%.4f, %.4f, %.4f) giro_cero=(%.3f, %.3f, %.3f) dps",
          validas, mx, my, mz, dn, offX, offY, offZ, offGX, offGY, offGZ);
     return;
@@ -519,7 +530,7 @@ static float envolver180(float a) {
 // gx: giro sobre X (positivo sube el lado izquierdo = roll positivo).
 // gy: giro sobre Y (positivo baja la trompa = pitch negativo).
 static void filtroComplementario(float rollAcc, float pitchAcc, float gx, float gy, float dt) {
-  if (!filtroIniciado) {  // primera lectura: se parte del ángulo del acelerómetro
+  if (!giroValido || !filtroIniciado) {  // primera lectura: se parte del ángulo del acelerómetro
     rollEst = rollAcc;
     pitchEst = pitchAcc;
     filtroIniciado = true;
@@ -795,6 +806,8 @@ static void tareaAdquisicion(void*) {
   uint32_t rearmeCambio = 0, rearmeDesde = 0;
   bool rpsEraCero = true;
 
+  double sxg = 0, syg = 0, szg = 0, sxg2 = 0, syg2 = 0;
+  int muestrasGiro = 0;
   TickType_t prox = xTaskGetTickCount();
   for (;;) {
     vTaskDelayUntil(&prox, pdMS_TO_TICKS(PERIODO_ADQ_MS));
@@ -814,6 +827,22 @@ static void tareaAdquisicion(void*) {
     bool leida = mpuLeerSensor(x, y, z, gxl, gyl, gzl);
     uint32_t usLectura = micros();  // instante de esta lectura, para las latencias
     if (leida) {
+      // Sin cero válido no se integra: una desviación fija produciría una inclinación falsa.
+      // Una ventana completa de dos segundos estable permite recuperar el cero en marcha.
+      if (!giroValido) {
+        sxg += gxl; syg += gyl; szg += gzl;
+        sxg2 += gxl * gxl; syg2 += gyl * gyl; muestrasGiro++;
+        if (muestrasGiro >= 2000 / PERIODO_ADQ_MS) {
+          double dx = sqrt(fmax(0.0, sxg2 / muestrasGiro - (sxg / muestrasGiro) * (sxg / muestrasGiro)));
+          double dy = sqrt(fmax(0.0, syg2 / muestrasGiro - (syg / muestrasGiro) * (syg / muestrasGiro)));
+          if (dx < GIRO_QUIETO_DPS && dy < GIRO_QUIETO_DPS) {
+            offGX = sxg / muestrasGiro; offGY = syg / muestrasGiro; offGZ = szg / muestrasGiro;
+            giroValido = true;
+            logq("CAL GIRO OK cero=(%.3f, %.3f, %.3f) dps", offGX, offGY, offGZ);
+          }
+          sxg = syg = szg = sxg2 = syg2 = 0; muestrasGiro = 0;
+        }
+      }
       ax = x - offX;
       ay = y - offY;
       az = z - offZ;
@@ -828,6 +857,7 @@ static void tareaAdquisicion(void*) {
       i2cProximo = i2cEspera = I2C_FALLOS_PARA_REINICIAR;
     } else {
       errI2c++;
+      sxg = syg = szg = sxg2 = syg2 = 0; muestrasGiro = 0;
       gx = gy = 0;  // sin lectura nueva no se integra giro: el ángulo se mantiene
       // Mientras falla se conservan las últimas lecturas válidas (no se inventan valores nuevos).
       if (++i2cSeguidos >= i2cProximo) {

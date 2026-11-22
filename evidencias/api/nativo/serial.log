@@ -1,16 +1,17 @@
-INICIO carro_rc Grupo 11 version=2026.11.21-cp2-filtro origen=simulado mpu_correccion=1 ang_corr=0(m=1.000 b=0.000) modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
+INICIO carro_rc Grupo 11 version=2026.11.22-cp2-giro origen=simulado mpu_correccion=1 ang_corr=0(m=1.000 b=0.000) modo_movimiento=0 ppr=1 umbral_golpe=16.0 m/s2 inclinacion=10 deg vuelco=90 deg permanencia=150 ms lecturas_golpe=2
 MPU WHO_AM_I=0x68 SMPLRT_DIV=3 CONFIG=0x02 GYRO_CONFIG=0x18 ACCEL_CONFIG=0x18 (esperado 3, 0x02, 0x18, 0x18) filtro_alfa=0.9990 OK
 CAL mantén el carro quieto y horizontal 2 s
 RED escaneo: 1 redes
 RED WiFi: [Wokwi-GUEST] | canal 6 | senal -50 dBm
+CAL GIRO OK cero=(1.524, -0.976, 0.488) dps
 CAL OK muestras=500 media=(0.2955, -0.1960, 10.1978) m/s2 desv_norma=0.0406 offsets=(0.2955, -0.1960, 0.3912) giro_cero=(1.524, -0.976, 0.488) dps
-SESION id=RC-ABCDEF-5CF5B6C7 origen=simulado t0_us_arranque=2200402
+SESION id=RC-ABCDEF-F228C3A2 origen=simulado t0_us_arranque=2200402
 TEL n=1 t=15 ax=-0.056 ay=-0.067 az=9.846 roll=0.08 pitch=-0.27 rps=0.00 k=3 roll_acc=-0.39 pitch_acc=-0.33
 TEL n=2 t=27 ax=0.030 ay=0.014 az=9.856 roll=0.08 pitch=-0.27 rps=0.00 k=1 roll_acc=0.08 pitch_acc=0.17
 TEL n=3 t=43 ax=0.040 ay=0.009 az=9.894 roll=0.08 pitch=-0.27 rps=0.00 k=0 roll_acc=0.05 pitch_acc=0.23
 TEL n=4 t=67 ax=0.001 ay=-0.000 az=9.885 roll=0.08 pitch=-0.27 rps=0.00 k=1 roll_acc=-0.00 pitch_acc=0.01
 TEL n=5 t=87 ax=-0.027 ay=-0.005 az=9.832 roll=0.08 pitch=-0.26 rps=0.00 k=1 roll_acc=-0.03 pitch_acc=-0.16
-JSON sesion {"version":1,"sesion":{"id":"RC-ABCDEF-5CF5B6C7","origen":"simulado"}}
+JSON sesion {"version":1,"sesion":{"id":"RC-ABCDEF-F228C3A2","origen":"simulado"}}
 TEL n=6 t=119 ax=0.001 ay=0.033 az=9.832 roll=0.08 pitch=-0.26 rps=0.00 k=4 roll_acc=0.19 pitch_acc=0.01
 RED conectando a Wokwi-GUEST t_ms=20
 TEL n=7 t=131 ax=-0.042 ay=0.019 az=9.823 roll=0.08 pitch=-0.26 rps=0.00 k=2 roll_acc=0.11 pitch_acc=-0.24
@@ -89,7 +90,7 @@ TEL n=78 t=1547 ax=0.078 ay=-0.043 az=9.832 roll=0.05 pitch=-0.19 rps=4.00 k=1 r
 TEL n=79 t=1579 ax=0.025 ay=-0.000 az=9.818 roll=0.05 pitch=-0.19 rps=4.00 k=4 roll_acc=-0.00 pitch_acc=0.15
 TEL n=80 t=1587 ax=-0.018 ay=0.014 az=9.837 roll=0.05 pitch=-0.19 rps=4.00 k=1 roll_acc=0.08 pitch_acc=-0.10
 TEL n=81 t=1611 ax=-0.047 ay=-0.039 az=9.856 roll=0.05 pitch=-0.18 rps=4.00 k=2 roll_acc=-0.22 pitch_acc=-0.27
-RED POST /sesiones sesion intento=1 bytes=70 hash=E85F5BBB resultado=201 t_ms=1635
+RED POST /sesiones sesion intento=1 bytes=70 hash=4F2B22DF resultado=201 t_ms=1635
 TEL n=82 t=1623 ax=-0.042 ay=0.004 az=9.832 roll=0.05 pitch=-0.18 rps=4.00 k=0 roll_acc=0.03 pitch_acc=-0.24
 JSON primer_lote {"version":1,"mediciones":[{"numero":1,"t_ms":15,"ax":-0.0561,"ay":-0.0674,"az":9.8464,"roll_deg":0.081,"pitch_deg":-0.271,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":2,"t_ms":27,"ax":0.0301,"ay":0.0140,"az":9.8560,"roll_deg":0.081,"pitch_deg":-0.270,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":3,"t_ms":43,"ax":0.0397,"ay":0.0092,"az":9.8943,"roll_deg":0.080,"pitch_deg":-0.269,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":4,"t_ms":67,"ax":0.0014,"ay":-0.0004,"az":9.8847,"roll_deg":0.079,"pitch_deg":-0.267,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":5,"t_ms":87,"ax":-0.0274,"ay":-0.0052,"az":9.8321,"roll_deg":0.079,"pitch_deg":-0.265,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":6,"t_ms":119,"ax":0.0014,"ay":0.0332,"az":9.8321,"roll_deg":0.079,"pitch_deg":-0.262,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":7,"t_ms":131,"ax":-0.0417,"ay":0.0188,"az":9.8225,"roll_deg":0.079,"pitch_deg":-0.261,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":8,"t_ms":151,"ax":-0.0130,"ay":0.0332,"az":9.8656,"roll_deg":0.079,"pitch_deg":-0.260,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":9,"t_ms":179,"ax":0.0349,"ay":-0.0052,"az":9.8464,"roll_deg":0.079,"pitch_deg":-0.258,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":10,"t_ms":195,"ax":-0.0226,"ay":0.0523,"az":9.8273,"roll_deg":0.079,"pitch_deg":-0.257,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":11,"t_ms":219,"ax":-0.0178,"ay":0.0427,"az":9.8704,"roll_deg":0.079,"pitch_deg":-0.257,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":12,"t_ms":235,"ax":0.0061,"ay":0.0236,"az":9.8321,"roll_deg":0.079,"pitch_deg":-0.256,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":13,"t_ms":247,"ax":0.0588,"ay":-0.0004,"az":9.8895,"roll_deg":0.078,"pitch_deg":-0.255,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":14,"t_ms":263,"ax":-0.0705,"ay":-0.0195,"az":9.8608,"roll_deg":0.078,"pitch_deg":-0.254,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":15,"t_ms":283,"ax":-0.0178,"ay":-0.0387,"az":9.8704,"roll_deg":0.076,"pitch_deg":-0.254,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":16,"t_ms":307,"ax":0.0014,"ay":-0.0435,"az":9.8464,"roll_deg":0.076,"pitch_deg":-0.253,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":17,"t_ms":331,"ax":-0.0082,"ay":-0.0195,"az":9.8225,"roll_deg":0.075,"pitch_deg":-0.252,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":18,"t_ms":347,"ax":0.0157,"ay":0.0906,"az":9.8608,"roll_deg":0.076,"pitch_deg":-0.251,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":19,"t_ms":379,"ax":-0.0274,"ay":0.0044,"az":9.8081,"roll_deg":0.075,"pitch_deg":-0.251,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":20,"t_ms":399,"ax":-0.0705,"ay":0.0571,"az":9.8081,"roll_deg":0.075,"pitch_deg":-0.250,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":21,"t_ms":419,"ax":0.0540,"ay":0.0140,"az":9.8225,"roll_deg":0.075,"pitch_deg":-0.250,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":22,"t_ms":435,"ax":0.0253,"ay":-0.0004,"az":9.8704,"roll_deg":0.074,"pitch_deg":-0.249,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":23,"t_ms":459,"ax":0.0349,"ay":0.0475,"az":9.8608,"roll_deg":0.074,"pitch_deg":-0.246,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":24,"t_ms":479,"ax":0.0109,"ay":-0.0435,"az":9.8560,"roll_deg":0.074,"pitch_deg":-0.245,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":25,"t_ms":487,"ax":0.0444,"ay":0.0092,"az":9.8321,"roll_deg":0.073,"pitch_deg":-0.244,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":26,"t_ms":503,"ax":0.0109,"ay":0.0044,"az":9.8704,"roll_deg":0.073,"pitch_deg":-0.243,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":27,"t_ms":539,"ax":-0.0417,"ay":-0.0099,"az":9.8464,"roll_deg":0.072,"pitch_deg":-0.241,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":28,"t_ms":543,"ax":-0.0561,"ay":-0.0147,"az":9.8800,"roll_deg":0.072,"pitch_deg":-0.242,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":29,"t_ms":579,"ax":0.0828,"ay":0.0906,"az":9.8752,"roll_deg":0.071,"pitch_deg":-0.239,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":30,"t_ms":595,"ax":-0.0513,"ay":0.0475,"az":9.8752,"roll_deg":0.070,"pitch_deg":-0.238,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":31,"t_ms":611,"ax":-0.0226,"ay":-0.0052,"az":9.8704,"roll_deg":0.070,"pitch_deg":-0.238,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":32,"t_ms":627,"ax":0.0397,"ay":-0.0004,"az":9.8704,"roll_deg":0.069,"pitch_deg":-0.237,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":33,"t_ms":643,"ax":-0.1040,"ay":-0.0195,"az":9.8225,"roll_deg":0.069,"pitch_deg":-0.236,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":34,"t_ms":675,"ax":-0.0322,"ay":-0.0435,"az":9.9183,"roll_deg":0.069,"pitch_deg":-0.234,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":35,"t_ms":691,"ax":-0.0561,"ay":-0.0435,"az":9.9326,"roll_deg":0.068,"pitch_deg":-0.234,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":36,"t_ms":703,"ax":-0.0417,"ay":-0.0004,"az":9.8512,"roll_deg":0.068,"pitch_deg":-0.233,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":37,"t_ms":735,"ax":-0.0609,"ay":0.0284,"az":9.8321,"roll_deg":0.067,"pitch_deg":-0.232,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":38,"t_ms":759,"ax":0.1354,"ay":-0.0482,"az":9.8273,"roll_deg":0.068,"pitch_deg":-0.229,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":39,"t_ms":779,"ax":0.0636,"ay":-0.0387,"az":9.8512,"roll_deg":0.067,"pitch_deg":-0.227,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":40,"t_ms":791,"ax":0.0061,"ay":-0.0482,"az":9.8800,"roll_deg":0.067,"pitch_deg":-0.227,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":41,"t_ms":803,"ax":-0.0465,"ay":-0.0052,"az":9.8033,"roll_deg":0.067,"pitch_deg":-0.226,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":42,"t_ms":823,"ax":-0.0848,"ay":0.0379,"az":9.8895,"roll_deg":0.066,"pitch_deg":-0.225,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":43,"t_ms":851,"ax":-0.0753,"ay":0.0284,"az":9.8752,"roll_deg":0.065,"pitch_deg":-0.224,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":44,"t_ms":875,"ax":0.0061,"ay":0.0092,"az":9.8560,"roll_deg":0.064,"pitch_deg":-0.224,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":45,"t_ms":883,"ax":0.0349,"ay":0.0475,"az":9.8033,"roll_deg":0.064,"pitch_deg":-0.223,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":46,"t_ms":919,"ax":0.0636,"ay":-0.0052,"az":9.8369,"roll_deg":0.064,"pitch_deg":-0.221,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":47,"t_ms":939,"ax":0.0061,"ay":-0.0578,"az":9.8417,"roll_deg":0.063,"pitch_deg":-0.220,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":48,"t_ms":947,"ax":-0.0034,"ay":0.0284,"az":9.8512,"roll_deg":0.063,"pitch_deg":-0.219,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":49,"t_ms":963,"ax":-0.0274,"ay":-0.0482,"az":9.8608,"roll_deg":0.064,"pitch_deg":-0.219,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"},{"numero":50,"t_ms":987,"ax":0.0061,"ay":0.0044,"az":9.8464,"roll_deg":0.063,"pitch_deg":-0.218,"rueda_rps":0.000,"rueda_pulsos":0,"estado":"normal"}]}
 TEL n=83 t=1647 ax=0.001 ay=-0.020 az=9.846 roll=0.05 pitch=-0.18 rps=4.00 k=1 roll_acc=-0.11 pitch_acc=0.01
@@ -111,9 +112,9 @@ TEL n=98 t=1947 ax=0.011 ay=0.024 az=9.851 roll=0.05 pitch=-0.17 rps=4.00 k=1 ro
 TEL n=99 t=1975 ax=0.011 ay=0.048 az=9.851 roll=0.05 pitch=-0.17 rps=4.00 k=3 roll_acc=0.28 pitch_acc=0.06
 TEL n=100 t=1987 ax=-0.032 ay=-0.024 az=9.846 roll=0.05 pitch=-0.17 rps=4.00 k=1 roll_acc=-0.14 pitch_acc=-0.19
 EST t=1999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=402 err_i2c=0 anillo=50 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
-DETECCION id=RC-ABCDEF-5CF5B6C7-EV001 tipo_inicial=golpe motivo=lecturas_golpe t_ms=2007 inicio_condicion=2003 norma=26.39 roll=0.05 pitch=-0.03
+DETECCION id=RC-ABCDEF-F228C3A2-EV001 tipo_inicial=golpe motivo=lecturas_golpe t_ms=2007 inicio_condicion=2003 norma=26.39 roll=0.05 pitch=-0.03
 ALERTA tipo=golpe t_det_ms=2007 t_det_us_arranque=4208000 LED=+0.403 ms BUZZER=+0.404 ms SERVO(orden)=+0.407 ms
-LATENCIA id=RC-ABCDEF-5CF5B6C7-EV001 deteccion_ms=4.000 activacion_ms=0.005
+LATENCIA id=RC-ABCDEF-F228C3A2-EV001 deteccion_ms=4.000 activacion_ms=0.005
 TEL n=101 t=2019 ax=24.575 ay=0.009 az=9.779 roll=0.05 pitch=0.17 rps=4.00 k=4 roll_acc=0.05 pitch_acc=68.30
 TEL n=102 t=2039 ax=24.585 ay=0.057 az=9.851 roll=0.05 pitch=0.51 rps=4.00 k=4 roll_acc=0.33 pitch_acc=68.16
 TEL n=103 t=2043 ax=24.561 ay=-0.039 az=9.717 roll=0.05 pitch=0.58 rps=4.00 k=0 roll_acc=-0.23 pitch_acc=68.41
@@ -153,7 +154,7 @@ TEL n=136 t=2715 ax=0.006 ay=-0.034 az=9.837 roll=0.03 pitch=4.30 rps=4.00 k=3 r
 TEL n=137 t=2723 ax=0.054 ay=0.038 az=9.818 roll=0.03 pitch=4.29 rps=4.00 k=0 roll_acc=0.22 pitch_acc=0.32
 TEL n=138 t=2751 ax=0.001 ay=-0.087 az=9.856 roll=0.03 pitch=4.26 rps=4.00 k=2 roll_acc=-0.50 pitch_acc=0.01
 TEL n=139 t=2779 ax=-0.013 ay=0.048 az=9.880 roll=0.03 pitch=4.23 rps=4.00 k=4 roll_acc=0.28 pitch_acc=-0.08
-EVENTO id=RC-ABCDEF-5CF5B6C7-EV001 tipo=golpe gravedad=alta t_inicio=1003 t_det=2007 t_act=2008 t_fin=2799 cierre=condicion_ausente lat_det_ms=4.000 lat_act_ms=0.005
+EVENTO id=RC-ABCDEF-F228C3A2-EV001 tipo=golpe gravedad=alta t_inicio=1003 t_det=2007 t_act=2008 t_fin=2799 cierre=condicion_ausente lat_det_ms=4.000 lat_act_ms=0.005
 TEL n=140 t=2795 ax=0.006 ay=0.024 az=9.827 roll=0.03 pitch=4.22 rps=4.00 k=3 roll_acc=0.14 pitch_acc=0.04
 TEL n=141 t=2811 ax=-0.027 ay=-0.029 az=9.837 roll=0.03 pitch=4.20 rps=4.00 k=2 roll_acc=-0.17 pitch_acc=-0.16
 TEL n=142 t=2835 ax=-0.003 ay=-0.034 az=9.827 roll=0.03 pitch=4.17 rps=4.00 k=3 roll_acc=-0.20 pitch_acc=-0.02
@@ -253,7 +254,7 @@ TEL n=230 t=4595 ax=0.011 ay=0.024 az=9.875 roll=0.02 pitch=2.69 rps=0.00 k=3 ro
 TEL n=231 t=4619 ax=0.011 ay=-0.048 az=9.842 roll=0.02 pitch=2.67 rps=0.00 k=4 roll_acc=-0.28 pitch_acc=0.06
 TEL n=232 t=4627 ax=0.035 ay=0.024 az=9.832 roll=0.02 pitch=2.67 rps=0.00 k=1 roll_acc=0.14 pitch_acc=0.20
 TEL n=233 t=4647 ax=0.040 ay=0.076 az=9.880 roll=0.02 pitch=2.65 rps=0.00 k=1 roll_acc=0.44 pitch_acc=0.23
-RED POST /sesiones/RC-ABCDEF-5CF5B6C7/mediciones lote numero 1-50 intento=1 bytes=7565 hash=37AAA57E resultado=-11 t_ms=4670
+RED POST /sesiones/RC-ABCDEF-F228C3A2/mediciones lote numero 1-50 intento=1 bytes=7565 hash=37AAA57E resultado=-11 t_ms=4670
 TEL n=234 t=4667 ax=0.021 ay=-0.000 az=9.837 roll=0.02 pitch=2.64 rps=0.00 k=1 roll_acc=-0.00 pitch_acc=0.12
 TEL n=235 t=4695 ax=0.054 ay=0.004 az=9.894 roll=0.02 pitch=2.62 rps=0.00 k=3 roll_acc=0.03 pitch_acc=0.31
 TEL n=236 t=4703 ax=-0.008 ay=-0.029 az=9.823 roll=0.02 pitch=2.62 rps=0.00 k=0 roll_acc=-0.17 pitch_acc=-0.05
@@ -281,20 +282,20 @@ TEL n=256 t=5119 ax=-0.013 ay=-0.043 az=9.832 roll=0.02 pitch=2.36 rps=0.00 k=4 
 TEL n=257 t=5123 ax=0.021 ay=-0.020 az=9.861 roll=0.02 pitch=2.36 rps=0.00 k=0 roll_acc=-0.11 pitch_acc=0.12
 TEL n=258 t=5147 ax=0.030 ay=0.014 az=9.890 roll=0.02 pitch=2.34 rps=0.00 k=1 roll_acc=0.08 pitch_acc=0.17
 TEL n=259 t=5163 ax=0.030 ay=0.028 az=9.846 roll=0.02 pitch=2.33 rps=0.00 k=0 roll_acc=0.17 pitch_acc=0.18
-RED POST /sesiones/RC-ABCDEF-5CF5B6C7/mediciones lote numero 1-50 intento=2 bytes=7565 hash=37AAA57E resultado=200 t_ms=5185
+RED POST /sesiones/RC-ABCDEF-F228C3A2/mediciones lote numero 1-50 intento=2 bytes=7565 hash=37AAA57E resultado=200 t_ms=5185
 TEL n=260 t=5187 ax=0.021 ay=-0.005 az=9.851 roll=0.01 pitch=2.32 rps=0.00 k=1 roll_acc=-0.03 pitch_acc=0.12
 TEL n=261 t=5203 ax=-0.003 ay=-0.043 az=9.842 roll=0.02 pitch=2.31 rps=0.00 k=0 roll_acc=-0.25 pitch_acc=-0.02
-RED POST /sesiones/RC-ABCDEF-5CF5B6C7/mediciones lote numero 51-100 intento=1 bytes=7629 hash=C34C4412 resultado=201 t_ms=5220
+RED POST /sesiones/RC-ABCDEF-F228C3A2/mediciones lote numero 51-100 intento=1 bytes=7629 hash=C34C4412 resultado=201 t_ms=5220
 TEL n=262 t=5235 ax=-0.027 ay=-0.000 az=9.832 roll=0.01 pitch=2.29 rps=0.00 k=3 roll_acc=-0.00 pitch_acc=-0.16
-RED POST /sesiones/RC-ABCDEF-5CF5B6C7/mediciones lote numero 101-150 intento=1 bytes=7796 hash=A7682A97 resultado=201 t_ms=5255
+RED POST /sesiones/RC-ABCDEF-F228C3A2/mediciones lote numero 101-150 intento=1 bytes=7796 hash=A7682A97 resultado=201 t_ms=5255
 TEL n=263 t=5243 ax=0.025 ay=0.028 az=9.856 roll=0.01 pitch=2.29 rps=0.00 k=0 roll_acc=0.16 pitch_acc=0.15
 TEL n=264 t=5263 ax=-0.008 ay=0.009 az=9.846 roll=0.01 pitch=2.28 rps=0.00 k=0 roll_acc=0.05 pitch_acc=-0.05
-RED POST /sesiones/RC-ABCDEF-5CF5B6C7/mediciones lote numero 151-200 intento=1 bytes=7673 hash=5B5F24CE resultado=201 t_ms=5290
+RED POST /sesiones/RC-ABCDEF-F228C3A2/mediciones lote numero 151-200 intento=1 bytes=7673 hash=5B5F24CE resultado=201 t_ms=5290
 TEL n=265 t=5295 ax=-0.066 ay=0.033 az=9.866 roll=0.01 pitch=2.26 rps=0.00 k=3 roll_acc=0.19 pitch_acc=-0.38
 TEL n=266 t=5307 ax=-0.104 ay=0.043 az=9.823 roll=0.01 pitch=2.25 rps=0.00 k=1 roll_acc=0.25 pitch_acc=-0.61
-RED POST /sesiones/RC-ABCDEF-5CF5B6C7/mediciones lote numero 201-250 intento=1 bytes=7669 hash=61821414 resultado=201 t_ms=5325
+RED POST /sesiones/RC-ABCDEF-F228C3A2/mediciones lote numero 201-250 intento=1 bytes=7669 hash=61821414 resultado=201 t_ms=5325
 TEL n=267 t=5323 ax=0.025 ay=0.028 az=9.813 roll=0.02 pitch=2.24 rps=0.00 k=0 roll_acc=0.17 pitch_acc=0.15
-JSON evento {"version":1,"evento":{"id":"RC-ABCDEF-5CF5B6C7-EV001","sesion_id":"RC-ABCDEF-5CF5B6C7","tipo":"golpe","gravedad":"alta","estado":"confirmado","t_inicio_ms":1003,"t_fin_ms":2799,"t_deteccion_ms":2007,"t_activacion_ms":2008,"ubicacion":null,"latencia_deteccion_ms":4.000,"latencia_activacion_ms":0.005}}
+JSON evento {"version":1,"evento":{"id":"RC-ABCDEF-F228C3A2-EV001","sesion_id":"RC-ABCDEF-F228C3A2","tipo":"golpe","gravedad":"alta","estado":"confirmado","t_inicio_ms":1003,"t_fin_ms":2799,"t_deteccion_ms":2007,"t_activacion_ms":2008,"ubicacion":null,"latencia_deteccion_ms":4.000,"latencia_activacion_ms":0.005}}
 TEL n=268 t=5347 ax=-0.018 ay=0.004 az=9.827 roll=0.02 pitch=2.23 rps=0.00 k=1 roll_acc=0.03 pitch_acc=-0.10
 TEL n=269 t=5375 ax=-0.008 ay=0.019 az=9.904 roll=0.02 pitch=2.21 rps=0.00 k=3 roll_acc=0.11 pitch_acc=-0.05
 TEL n=270 t=5399 ax=-0.070 ay=0.019 az=9.832 roll=0.01 pitch=2.20 rps=0.00 k=4 roll_acc=0.11 pitch_acc=-0.41
@@ -449,7 +450,7 @@ TEL n=415 t=8295 ax=-0.023 ay=-0.029 az=9.823 roll=0.00 pitch=1.06 rps=0.00 k=3 
 TEL n=416 t=8311 ax=-0.070 ay=-0.020 az=9.913 roll=0.00 pitch=1.06 rps=0.00 k=2 roll_acc=-0.11 pitch_acc=-0.41
 TEL n=417 t=8327 ax=0.011 ay=-0.000 az=9.823 roll=-0.00 pitch=1.05 rps=0.00 k=1 roll_acc=-0.00 pitch_acc=0.06
 TEL n=418 t=8351 ax=0.044 ay=-0.020 az=9.827 roll=0.00 pitch=1.05 rps=0.00 k=2 roll_acc=-0.11 pitch_acc=0.26
-RED POST /eventos evento RC-ABCDEF-5CF5B6C7-EV001 intento=1 bytes=302 hash=EDED1444 resultado=-11 t_ms=8360
+RED POST /eventos evento RC-ABCDEF-F228C3A2-EV001 intento=1 bytes=302 hash=A584E73C resultado=-11 t_ms=8360
 TEL n=419 t=8363 ax=0.078 ay=0.057 az=9.818 roll=0.00 pitch=1.04 rps=0.00 k=0 roll_acc=0.33 pitch_acc=0.45
 TEL n=420 t=8383 ax=0.021 ay=0.067 az=9.837 roll=0.00 pitch=1.04 rps=0.00 k=0 roll_acc=0.39 pitch_acc=0.12
 TEL n=421 t=8403 ax=-0.085 ay=0.014 az=9.880 roll=0.00 pitch=1.03 rps=0.00 k=0 roll_acc=0.08 pitch_acc=-0.49
@@ -475,19 +476,19 @@ TEL n=440 t=8783 ax=-0.008 ay=-0.096 az=9.856 roll=-0.00 pitch=0.94 rps=0.00 k=0
 TEL n=441 t=8815 ax=-0.061 ay=-0.000 az=9.856 roll=-0.00 pitch=0.93 rps=0.00 k=3 roll_acc=-0.00 pitch_acc=-0.35
 TEL n=442 t=8823 ax=-0.037 ay=0.009 az=9.846 roll=-0.00 pitch=0.93 rps=0.00 k=0 roll_acc=0.05 pitch_acc=-0.22
 TEL n=443 t=8847 ax=0.011 ay=0.028 az=9.861 roll=-0.00 pitch=0.92 rps=0.00 k=1 roll_acc=0.16 pitch_acc=0.06
-RED POST /eventos evento RC-ABCDEF-5CF5B6C7-EV001 intento=2 bytes=302 hash=EDED1444 resultado=200 t_ms=8875
+RED POST /eventos evento RC-ABCDEF-F228C3A2-EV001 intento=2 bytes=302 hash=A584E73C resultado=200 t_ms=8875
 TEL n=444 t=8867 ax=0.011 ay=0.048 az=9.808 roll=-0.00 pitch=0.92 rps=0.00 k=1 roll_acc=0.28 pitch_acc=0.06
 TEL n=445 t=8887 ax=0.001 ay=0.081 az=9.875 roll=-0.00 pitch=0.91 rps=0.00 k=1 roll_acc=0.47 pitch_acc=0.01
-RED POST /sesiones/RC-ABCDEF-5CF5B6C7/mediciones lote numero 251-300 intento=1 bytes=7677 hash=2E755589 resultado=201 t_ms=8910
+RED POST /sesiones/RC-ABCDEF-F228C3A2/mediciones lote numero 251-300 intento=1 bytes=7677 hash=2E755589 resultado=201 t_ms=8910
 TEL n=446 t=8919 ax=-0.056 ay=-0.029 az=9.842 roll=-0.00 pitch=0.91 rps=0.00 k=4 roll_acc=-0.17 pitch_acc=-0.33
 TEL n=447 t=8923 ax=-0.018 ay=0.052 az=9.880 roll=-0.00 pitch=0.90 rps=0.00 k=0 roll_acc=0.30 pitch_acc=-0.10
-RED POST /sesiones/RC-ABCDEF-5CF5B6C7/mediciones lote numero 301-350 intento=1 bytes=7691 hash=687457C6 resultado=201 t_ms=8945
+RED POST /sesiones/RC-ABCDEF-F228C3A2/mediciones lote numero 301-350 intento=1 bytes=7691 hash=687457C6 resultado=201 t_ms=8945
 TEL n=448 t=8959 ax=0.088 ay=0.014 az=9.866 roll=-0.00 pitch=0.90 rps=0.00 k=4 roll_acc=0.08 pitch_acc=0.51
 TEL n=449 t=8967 ax=0.078 ay=-0.043 az=9.851 roll=-0.00 pitch=0.89 rps=0.00 k=1 roll_acc=-0.25 pitch_acc=0.45
-RED POST /sesiones/RC-ABCDEF-5CF5B6C7/mediciones lote numero 351-400 intento=1 bytes=7676 hash=FB1CE53A resultado=201 t_ms=8980
+RED POST /sesiones/RC-ABCDEF-F228C3A2/mediciones lote numero 351-400 intento=1 bytes=7676 hash=FB1CE53A resultado=201 t_ms=8980
 TEL n=450 t=8991 ax=-0.032 ay=-0.015 az=9.861 roll=-0.00 pitch=0.89 rps=0.00 k=2 roll_acc=-0.09 pitch_acc=-0.19
 EST t=8999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=402 err_i2c=0 anillo=50 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
-RED POST /sesiones/RC-ABCDEF-5CF5B6C7/mediciones lote numero 401-450 intento=1 bytes=7712 hash=10406D00 resultado=201 t_ms=9015
+RED POST /sesiones/RC-ABCDEF-F228C3A2/mediciones lote numero 401-450 intento=1 bytes=7712 hash=10406D00 resultado=201 t_ms=9015
 TEL n=451 t=9007 ax=0.011 ay=-0.000 az=9.851 roll=-0.00 pitch=0.89 rps=0.00 k=1 roll_acc=-0.00 pitch_acc=0.06
 TEL n=452 t=9035 ax=-0.056 ay=0.009 az=9.856 roll=-0.00 pitch=0.88 rps=0.00 k=3 roll_acc=0.05 pitch_acc=-0.33
 TEL n=453 t=9059 ax=0.049 ay=-0.020 az=9.866 roll=-0.00 pitch=0.88 rps=0.00 k=4 roll_acc=-0.11 pitch_acc=0.29
@@ -514,7 +515,7 @@ TEL n=473 t=9459 ax=0.021 ay=0.038 az=9.880 roll=-0.00 pitch=0.80 rps=0.00 k=4 r
 TEL n=474 t=9471 ax=-0.008 ay=0.028 az=9.846 roll=-0.00 pitch=0.79 rps=0.00 k=2 roll_acc=0.17 pitch_acc=-0.05
 TEL n=475 t=9499 ax=0.059 ay=-0.077 az=9.823 roll=-0.00 pitch=0.79 rps=0.00 k=4 roll_acc=-0.45 pitch_acc=0.34
 TEL n=476 t=9503 ax=0.040 ay=-0.043 az=9.808 roll=-0.00 pitch=0.79 rps=0.00 k=0 roll_acc=-0.25 pitch_acc=0.23
-RED POST /sesiones/RC-ABCDEF-5CF5B6C7/mediciones lote numero 451-475 intento=1 bytes=3879 hash=003DE295 resultado=201 t_ms=9530
+RED POST /sesiones/RC-ABCDEF-F228C3A2/mediciones lote numero 451-475 intento=1 bytes=3879 hash=003DE295 resultado=201 t_ms=9530
 TEL n=477 t=9531 ax=0.025 ay=-0.024 az=9.894 roll=-0.00 pitch=0.78 rps=0.00 k=2 roll_acc=-0.14 pitch_acc=0.15
 TEL n=478 t=9551 ax=-0.013 ay=-0.039 az=9.861 roll=-0.00 pitch=0.78 rps=0.00 k=2 roll_acc=-0.22 pitch_acc=-0.08
 TEL n=479 t=9567 ax=0.006 ay=-0.058 az=9.856 roll=-0.00 pitch=0.78 rps=0.00 k=1 roll_acc=-0.34 pitch_acc=0.04
@@ -541,7 +542,7 @@ TEL n=499 t=9975 ax=0.001 ay=0.009 az=9.861 roll=-0.00 pitch=0.70 rps=0.00 k=3 r
 TEL n=500 t=9983 ax=-0.003 ay=0.038 az=9.842 roll=-0.00 pitch=0.70 rps=0.00 k=0 roll_acc=0.22 pitch_acc=-0.02
 EST t=9999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=402 err_i2c=0 anillo=25 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
 TEL n=501 t=10003 ax=0.064 ay=0.004 az=9.880 roll=-0.00 pitch=0.70 rps=0.00 k=0 roll_acc=0.03 pitch_acc=0.37
-RED POST /sesiones/RC-ABCDEF-5CF5B6C7/mediciones lote numero 476-500 intento=1 bytes=3878 hash=D87A2EF1 resultado=201 t_ms=10025
+RED POST /sesiones/RC-ABCDEF-F228C3A2/mediciones lote numero 476-500 intento=1 bytes=3878 hash=D87A2EF1 resultado=201 t_ms=10025
 TEL n=502 t=10039 ax=-0.008 ay=-0.029 az=9.842 roll=-0.00 pitch=0.69 rps=0.00 k=4 roll_acc=-0.17 pitch_acc=-0.05
 TEL n=503 t=10059 ax=0.025 ay=0.019 az=9.842 roll=-0.00 pitch=0.69 rps=0.00 k=4 roll_acc=0.11 pitch_acc=0.15
 TEL n=504 t=10079 ax=-0.008 ay=-0.010 az=9.818 roll=-0.00 pitch=0.68 rps=0.00 k=4 roll_acc=-0.06 pitch_acc=-0.05
@@ -567,7 +568,7 @@ TEL n=523 t=10443 ax=0.035 ay=-0.053 az=9.861 roll=-0.00 pitch=0.62 rps=0.00 k=0
 TEL n=524 t=10471 ax=-0.047 ay=0.028 az=9.851 roll=-0.00 pitch=0.62 rps=0.00 k=2 roll_acc=0.16 pitch_acc=-0.27
 TEL n=525 t=10483 ax=0.035 ay=-0.039 az=9.851 roll=-0.00 pitch=0.62 rps=0.00 k=0 roll_acc=-0.22 pitch_acc=0.20
 TEL n=526 t=10503 ax=-0.075 ay=-0.015 az=9.866 roll=-0.00 pitch=0.61 rps=0.00 k=0 roll_acc=-0.09 pitch_acc=-0.44
-RED POST /sesiones/RC-ABCDEF-5CF5B6C7/mediciones lote numero 501-525 intento=1 bytes=3899 hash=2FC86FF2 resultado=201 t_ms=10520
+RED POST /sesiones/RC-ABCDEF-F228C3A2/mediciones lote numero 501-525 intento=1 bytes=3899 hash=2FC86FF2 resultado=201 t_ms=10520
 TEL n=527 t=10535 ax=-0.013 ay=0.014 az=9.861 roll=-0.00 pitch=0.61 rps=0.00 k=3 roll_acc=0.08 pitch_acc=-0.08
 TEL n=528 t=10555 ax=-0.018 ay=-0.029 az=9.880 roll=-0.00 pitch=0.60 rps=0.00 k=3 roll_acc=-0.17 pitch_acc=-0.10
 TEL n=529 t=10563 ax=-0.008 ay=0.091 az=9.827 roll=-0.00 pitch=0.60 rps=0.00 k=0 roll_acc=0.53 pitch_acc=-0.05
@@ -593,7 +594,7 @@ TEL n=548 t=10943 ax=0.011 ay=0.028 az=9.880 roll=-0.00 pitch=0.55 rps=0.00 k=0 
 TEL n=549 t=10963 ax=0.001 ay=0.004 az=9.870 roll=-0.00 pitch=0.54 rps=0.00 k=0 roll_acc=0.03 pitch_acc=0.01
 TEL n=550 t=10995 ax=0.025 ay=-0.043 az=9.827 roll=-0.00 pitch=0.54 rps=0.00 k=3 roll_acc=-0.25 pitch_acc=0.15
 EST t=10999 f_adq=250.0 f_dec=250.0 f_tel=50.0 dt_min_us=4000 dt_max_us=4000 ciclo_max_us=402 err_i2c=0 anillo=25 perdidas=0 log_perdidas=0 wifi=1 estado=NORMAL heap_libre=200000 heap_bloque_max=110000 heap_min=180000
-RED POST /sesiones/RC-ABCDEF-5CF5B6C7/mediciones lote numero 526-550 intento=1 bytes=3901 hash=FE07A93C resultado=201 t_ms=11015
+RED POST /sesiones/RC-ABCDEF-F228C3A2/mediciones lote numero 526-550 intento=1 bytes=3901 hash=FE07A93C resultado=201 t_ms=11015
 TEL n=551 t=11003 ax=-0.008 ay=-0.029 az=9.846 roll=-0.00 pitch=0.54 rps=0.00 k=0 roll_acc=-0.17 pitch_acc=-0.05
 TEL n=552 t=11031 ax=-0.008 ay=-0.010 az=9.823 roll=-0.00 pitch=0.53 rps=0.00 k=2 roll_acc=-0.06 pitch_acc=-0.05
 TEL n=553 t=11059 ax=-0.008 ay=0.043 az=9.837 roll=-0.00 pitch=0.53 rps=0.00 k=4 roll_acc=0.25 pitch_acc=-0.05

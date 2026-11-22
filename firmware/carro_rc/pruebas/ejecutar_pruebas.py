@@ -44,7 +44,7 @@ CASOS = {
     # Exactamente en el umbral: verificar >=90° sin ruido. Los otros escenarios
     # conservan sesgo y ruido; un ángulo que fluctúa bajo 90° no cumple permanencia.
     "inclinacion": SENSOR, "vuelco_costado": [], "vuelco_boca_abajo": SENSOR,
-    "inclinacion_a_vuelco": SENSOR, "pico": SENSOR, "golpe_corto": SENSOR, "rearme_red": SENSOR, "rebote_hall": SENSOR, "reinicio_boton": SENSOR, "i2c_fallo": SENSOR, "sesion_perdida": [*SENSOR, "--api", "falsa"], "api": SENSOR,
+    "inclinacion_a_vuelco": SENSOR, "pico": SENSOR, "golpe_corto": SENSOR, "rearme_red": SENSOR, "rebote_hall": SENSOR, "reinicio_boton": SENSOR, "i2c_fallo": SENSOR, "calibracion_movida": SENSOR, "sesion_perdida": [*SENSOR, "--api", "falsa"], "api": SENSOR,
 }
 
 
@@ -359,6 +359,14 @@ def evaluar(caso, d, vcd, ev, extra):
                      bool(rein) and espera is not None and 3000 <= espera <= 3100 and ultimo("led_gpio25") == 0
                      and ultimo("buzzer_gpio27_activo") == 0 and ultimo("servo_gpio26_pulso_us") == 500
                      and any(l.startswith("BANCO ESP.restart()") for l in L), ev))
+    elif caso == "calibracion_movida":
+        finales = [m for m in tel if m["t"] > 4000]
+        recuperado = any(l.startswith("CAL GIRO OK") for l in d["lineas"])
+        rechazo = any(l.startswith("CAL ADVERTENCIA:") for l in d["lineas"])
+        bien = finales and all(abs(m["roll"]) <= 2 and abs(m["pitch"]) <= 2 for m in finales)
+        res.append(r("Calibración movida · recuperación", "tras el reposo roll y pitch en 0 ± 2°, sin detecciones ni eventos",
+                     f"muestras finales {len(finales)}; cero recuperado {recuperado}; detecciones {len(dets)}, eventos {len(eventos)}",
+                     rechazo and recuperado and bien and not dets and not eventos, ev))
     elif caso == "i2c_fallo":
         L = d["lineas"]
         rec = [re.search(r"n=(\d+) t_ms=(\d+) tras (\d+) .* (OK|ERROR)$", l).groups() for l in L if l.startswith("I2C recuperacion")]
