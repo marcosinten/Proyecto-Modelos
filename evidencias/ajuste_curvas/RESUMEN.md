@@ -5,16 +5,16 @@ m = (n·Σxy − Σx·Σy) / (n·Σx² − (Σx)²), b = (Σy − m·Σx) / n. R
 
 ## a) Calibración del ángulo (transportador frente al MPU6050)
 
-11 puntos. x = ángulo del MPU (°), y = ángulo real (°).
+13 puntos. x = ángulo del MPU (°), y = ángulo real (°).
 
 | Grado | R² | R² ajustado | Error medio (°) | RMSE (°) |
 |---:|---:|---:|---:|---:|
-| 1 | 0.9973 | 0.9970 | 1.234 | 1.592 |
-| 2 | 0.9978 | 0.9972 | 1.126 | 1.428 |
+| 1 | 0.9977 | 0.9974 | 1.259 | 1.604 |
+| 2 | 0.9980 | 0.9976 | 1.217 | 1.474 |
 
-- Lineal: **angulo_real = 1.0093·angulo_mpu − 0.5437**
-- Grado 2: angulo_real = 0.0007·angulo_mpu² + 1.0218·angulo_mpu − 1.1773
-- Se usa el ajuste de grado 1: el grado 2 solo baja el error medio 0.108 (< 0.5); un parámetro más con pocos puntos se ajusta al ruido. Se usa la recta, que además se programa con m y b.
+- Lineal: **angulo_real = 1.0085·angulo_mpu − 0.7064**
+- Grado 2: angulo_real = 0.0005·angulo_mpu² + 1.0091·angulo_mpu − 1.2554
+- Se usa el ajuste de grado 1: el grado 2 solo baja el error medio 0.042 (< 0.5); un parámetro más con pocos puntos se ajusta al ruido. Se usa la recta, que además se programa con m y b.
 
 ![Calibración del ángulo](calibracion_angulo.png)
 
@@ -22,8 +22,8 @@ Para activarlo en el carro, en `firmware/carro_rc/config_local.h`:
 
 ```c
 #define CORRECCION_ANGULO 1
-#define ANGULO_M 1.0093f
-#define ANGULO_B -0.5437f
+#define ANGULO_M 1.0085f
+#define ANGULO_B -0.7064f
 ```
 
 Luego compila, flashea y repite dos o tres ángulos con el transportador para comprobarlo.

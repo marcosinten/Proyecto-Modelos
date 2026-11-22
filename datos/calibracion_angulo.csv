@@ -11,3 +11,5 @@ angulo_real_grados,angulo_mpu_grados,eje,nota
 20,19.84,roll,lado izquierdo del carro arriba; app 20; pitch 4,7 en esa posición; sesión RC-077000-363BD120 t=1575825 ms; apoyado sin mano
 30,31.69,roll,lado izquierdo del carro arriba; app 30; sensor 31,2-31,7 (asentándose); pitch 4,5; sesión RC-077000-363BD120 t=1632157 ms
 45,42.07,roll,lado izquierdo del carro arriba; app 45; sensor 41,8-42,2 (asentándose); pitch 1,7-2,8; sesión RC-077000-363BD120 t=1685309 ms
+60.5,60.2,roll,app 60-61 (±0,5); media roll_acc; sesión RC-077000-5689DBAE t=50000-56000 ms; mismo lado levantado que prueba de signo positivo; pitch filtrado ≈2,8
+10,12.84,pitch,trompa arriba; app 10; media pitch_acc; sesión RC-077000-5689DBAE t=540000-550000 ms; roll filtrado ≈3,9
