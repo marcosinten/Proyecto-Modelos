@@ -84,7 +84,7 @@ La ficha exigía integrar modelización, detección y respuesta automática. Se 
 Se definieron primero los identificadores de sesión, las unidades, el origen real o simulado y los intervalos de un evento. Así se pudo desarrollar el visor con datos de demostración y conectarlo después al circuito sin cambiar el significado de los campos.
 ### 4.2.3 Circuito virtual en Wokwi
 Se prepararon secuencias reproducibles de entradas y verificaciones de pines. Durante las primeras pruebas, iniciar Wi-Fi provocaba pérdida de ciclos. El historial del 15 de noviembre recoge la corrección. El circuito virtual permitió revisar esa interacción antes de llevar el sistema a la maqueta (Wokwi, s. f.).
-@F wokwi | La {n} identifica los periféricos que se representaron en el circuito virtual.
+@F wokwi | La {n} muestra el circuito virtual y sus conexiones.
 ### 4.2.4 Banco de pruebas nativo
 Se ejecutó el mismo programa de detección en la computadora con sustitutos del reloj, los sensores y las salidas. Al repetir señales idénticas se pudo localizar qué lectura confirmaba el evento. El banco también permitió revisar reintentos de red y cambiar el filtro manteniendo la frenada de entrada.
 ### 4.2.5 Montaje en protoboard
