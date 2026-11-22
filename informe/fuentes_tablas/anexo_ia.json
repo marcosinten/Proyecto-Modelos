@@ -1,0 +1,489 @@
+{
+ "tablas": [
+  {
+   "n": 20,
+   "titulo": "Fuentes de datos",
+   "nota": "Las mediciones y eventos se limitan a los intervalos registrados de cada sesión. Fuente: archivos del proyecto y generador sintético. Elaboración propia.",
+   "cab": [
+    "Datos",
+    "Cantidad",
+    "Origen"
+   ],
+   "filas": [
+    [
+     "Repeticiones físicas",
+     "18",
+     "Excel y pruebas de SQLite"
+    ],
+    [
+     "Mediciones en las ventanas",
+     "58229",
+     "SQLite"
+    ],
+    [
+     "Eventos en las ventanas",
+     "17",
+     "SQLite"
+    ],
+    [
+     "Calibración real",
+     "13",
+     "APP de nivel del celular"
+    ],
+    [
+     "Corridas sintéticas",
+     "78",
+     "Generador arbol-rc-0.2"
+    ]
+   ]
+  },
+  {
+   "n": 21,
+   "titulo": "Características de cada ventana",
+   "nota": "El suavizado longitudinal usa 0,1 s. Fuente: cuaderno original de la IA. Elaboración propia.",
+   "cab": [
+    "Variable",
+    "Lectura física",
+    "Unidad"
+   ],
+   "filas": [
+    [
+     "acc_dyn_peak",
+     "Desviación máxima de la gravedad",
+     "m/s²"
+    ],
+    [
+     "acc_norm_delta_peak",
+     "Cambio máximo de la norma entre muestras",
+     "m/s²"
+    ],
+    [
+     "longitudinal_min_smooth",
+     "Mínimo longitudinal suavizado",
+     "m/s²"
+    ],
+    [
+     "tilt_peak_deg",
+     "Inclinación máxima",
+     "°"
+    ],
+    [
+     "tilt_time_s",
+     "Tiempo por encima de 90°",
+     "s"
+    ]
+   ]
+  },
+  {
+   "n": 22,
+   "titulo": "Métricas sintéticas por clase",
+   "nota": "La precisión, sensibilidad y F1 se calculan por clase. Fuente: ventanas reservadas. Elaboración propia.",
+   "cab": [
+    "Método",
+    "Clase",
+    "Precisión",
+    "Sensibilidad",
+    "F1",
+    "Ventanas"
+   ],
+   "filas": [
+    [
+     "Árbol",
+     "normal",
+     "0,9995",
+     "0,999",
+     "0,9992",
+     "1909"
+    ],
+    [
+     "Árbol",
+     "frenada",
+     "0,9394",
+     "1,00",
+     "0,9688",
+     "31"
+    ],
+    [
+     "Árbol",
+     "impacto",
+     "1,00",
+     "1,00",
+     "1,00",
+     "47"
+    ],
+    [
+     "Árbol",
+     "vuelco",
+     "1,00",
+     "0,9955",
+     "0,9977",
+     "221"
+    ],
+    [
+     "Reglas",
+     "normal",
+     "1,00",
+     "0,9979",
+     "0,999",
+     "1909"
+    ],
+    [
+     "Reglas",
+     "frenada",
+     "0,8857",
+     "1,00",
+     "0,9394",
+     "31"
+    ],
+    [
+     "Reglas",
+     "impacto",
+     "1,00",
+     "1,00",
+     "1,00",
+     "47"
+    ],
+    [
+     "Reglas",
+     "vuelco",
+     "1,00",
+     "1,00",
+     "1,00",
+     "221"
+    ]
+   ]
+  },
+  {
+   "n": 23,
+   "titulo": "Árbol y firmware en las pruebas físicas",
+   "nota": "La coincidencia compara la clase no normal dominante con la alarma esperada; en las tres pruebas de inclinación se indica «no aplica», porque el árbol no tiene esa clase. Fuente: Excel y registros físicos. Elaboración propia.",
+   "cab": [
+    "Escenario",
+    "Repetición",
+    "Sesión",
+    "Esperado",
+    "Firmware",
+    "Impacto",
+    "Frenada",
+    "Vuelco",
+    "Dominante no normal",
+    "¿Coincide?"
+   ],
+   "filas": [
+    [
+     "Frenada",
+     "1",
+     "RC-077000-CE13749F",
+     "Ninguno",
+     "Ninguno",
+     "0",
+     "0",
+     "0",
+     "ninguna",
+     "sí"
+    ],
+    [
+     "Frenada",
+     "2",
+     "RC-077000-E624451E",
+     "Ninguno",
+     "Golpe",
+     "15",
+     "0",
+     "0",
+     "impacto",
+     "no"
+    ],
+    [
+     "Frenada",
+     "3",
+     "RC-077000-64B894E7",
+     "Ninguno",
+     "Ninguno",
+     "0",
+     "0",
+     "0",
+     "ninguna",
+     "sí"
+    ],
+    [
+     "Golpe",
+     "1",
+     "RC-077000-7B152E09",
+     "Golpe",
+     "Golpe",
+     "10",
+     "0",
+     "0",
+     "impacto",
+     "sí"
+    ],
+    [
+     "Golpe",
+     "2",
+     "RC-077000-2BD0F270",
+     "Golpe",
+     "Golpe",
+     "3",
+     "0",
+     "0",
+     "impacto",
+     "sí"
+    ],
+    [
+     "Golpe",
+     "3",
+     "RC-077000-CB1E9E4F",
+     "Golpe",
+     "Golpe",
+     "5",
+     "0",
+     "0",
+     "impacto",
+     "sí"
+    ],
+    [
+     "Inclinación",
+     "1",
+     "RC-077000-B4A676B2",
+     "Inclinación",
+     "Inclinación",
+     "0",
+     "0",
+     "0",
+     "ninguna",
+     "no aplica"
+    ],
+    [
+     "Inclinación",
+     "2",
+     "RC-077000-17EE06C6",
+     "Inclinación",
+     "Inclinación",
+     "0",
+     "0",
+     "0",
+     "ninguna",
+     "no aplica"
+    ],
+    [
+     "Inclinación",
+     "3",
+     "RC-077000-7CC16D5A",
+     "Inclinación",
+     "Inclinación",
+     "0",
+     "0",
+     "0",
+     "ninguna",
+     "no aplica"
+    ],
+    [
+     "Marcha",
+     "1",
+     "RC-077000-3458072A",
+     "Ninguno",
+     "Ninguno",
+     "0",
+     "0",
+     "0",
+     "ninguna",
+     "sí"
+    ],
+    [
+     "Marcha",
+     "2",
+     "RC-077000-7895E89D",
+     "Ninguno",
+     "Ninguno",
+     "0",
+     "0",
+     "0",
+     "ninguna",
+     "sí"
+    ],
+    [
+     "Marcha",
+     "3",
+     "RC-077000-3ED90872",
+     "Ninguno",
+     "Golpe",
+     "57",
+     "0",
+     "0",
+     "impacto",
+     "no"
+    ],
+    [
+     "Reposo",
+     "1",
+     "RC-077000-A17A0FB0",
+     "Ninguno",
+     "Ninguno",
+     "0",
+     "0",
+     "0",
+     "ninguna",
+     "sí"
+    ],
+    [
+     "Reposo",
+     "2",
+     "RC-077000-2E0576D8",
+     "Ninguno",
+     "Ninguno",
+     "0",
+     "0",
+     "0",
+     "ninguna",
+     "sí"
+    ],
+    [
+     "Reposo",
+     "3",
+     "RC-077000-F5D72BDD",
+     "Ninguno",
+     "Ninguno",
+     "0",
+     "0",
+     "0",
+     "ninguna",
+     "sí"
+    ],
+    [
+     "Vuelco",
+     "1",
+     "RC-077000-C7DEB1DA",
+     "Vuelco",
+     "Inclinación",
+     "0",
+     "0",
+     "0",
+     "ninguna",
+     "no"
+    ],
+    [
+     "Vuelco",
+     "2",
+     "RC-077000-7A736A66",
+     "Vuelco",
+     "Vuelco",
+     "0",
+     "0",
+     "113",
+     "vuelco",
+     "sí"
+    ],
+    [
+     "Vuelco",
+     "3",
+     "RC-077000-4BE34E00",
+     "Vuelco",
+     "Vuelco",
+     "5",
+     "0",
+     "80",
+     "vuelco",
+     "sí"
+    ]
+   ]
+  },
+  {
+   "n": 24,
+   "titulo": "Recorrido de la ventana seleccionada",
+   "nota": "La rama izquierda satisface el umbral. Fuente: árbol entrenado. Elaboración propia.",
+   "cab": [
+    "Nodo",
+    "Variable",
+    "Nombre en español",
+    "Unidad",
+    "Valor de ventana",
+    "Umbral",
+    "Rama"
+   ],
+   "filas": [
+    [
+     "0",
+     "acc_dyn_peak",
+     "Desviación de g",
+     "m/s²",
+     "6,54",
+     "7,00",
+     "izquierda (≤)"
+    ],
+    [
+     "1",
+     "tilt_time_s",
+     "Tiempo de vuelco",
+     "s",
+     "0",
+     "0,26",
+     "izquierda (≤)"
+    ],
+    [
+     "2",
+     "longitudinal_min_smooth",
+     "Mínimo longitudinal",
+     "m/s²",
+     "−1,89",
+     "−4,81",
+     "derecha (>)"
+    ]
+   ]
+  },
+  {
+   "n": 25,
+   "titulo": "Ajuste del ángulo real frente al MPU",
+   "nota": "El error medio es absoluto. Fuente: calibracion_angulo.csv; referencia mediante app de nivel. Elaboración propia.",
+   "cab": [
+    "Grado",
+    "R²",
+    "R² ajustado",
+    "Error medio absoluto (°)",
+    "RMSE (°)"
+   ],
+   "filas": [
+    [
+     "1",
+     "0,9977",
+     "0,9974",
+     "1,26",
+     "1,60"
+    ],
+    [
+     "2",
+     "0,998",
+     "0,9976",
+     "1,22",
+     "1,47"
+    ]
+   ]
+  }
+ ],
+ "figuras": [
+  {
+   "n": 18,
+   "titulo": "Matrices de confusión sintéticas del árbol y las reglas",
+   "nota": "Filas: referencia; columnas: predicción. El color representa la proporción dentro de cada fila y las cifras son números de ventanas. Fuente: ventanas sintéticas reservadas. Elaboración propia.",
+   "archivo": "figura18_matrices_sinteticas.png"
+  },
+  {
+   "n": 19,
+   "titulo": "Ventanas por clase y alarma en las pruebas físicas",
+   "nota": "Cada fila indica escenario y repetición, alarma esperada / firmware; los números son ventanas solapadas. Fuente: pruebas físicas. Elaboración propia.",
+   "archivo": "figura19_ventanas_fisicas.png"
+  },
+  {
+   "n": 20,
+   "titulo": "Señal y clases del árbol en Frenada 2",
+   "nota": "La banda marca la ventana elegida y la línea discontinua la detección del firmware. Fuente: mediciones y eventos físicos. Elaboración propia.",
+   "archivo": "figura20_senal_frenada_2.png"
+  },
+  {
+   "n": 21,
+   "titulo": "Recorrido de la ventana por el árbol",
+   "nota": "El trazo azul y más grueso destaca el recorrido; los números identifican nodos. Fuente: árbol entrenado y ventana seleccionada. Elaboración propia.",
+   "archivo": "figura21_recorrido_arbol.png"
+  }
+ ]
+}
